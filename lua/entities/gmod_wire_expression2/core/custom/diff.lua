@@ -38,23 +38,35 @@ end
 
 
 
-e2function void entity:setInputNumber(string input,number num)
+e2function void entity:setInput(string input,...)
 	if !validEntity(this) then return end
-	if !isOwner(self,ent)  then return end
 	if !isOwner(self,this)  then return end
-	--this.Inputs[input]=ent.Outputs[output]
-	this:TriggerInput( input , num )
+	local ret = {...}
+	this:TriggerInput( input , ret[1] )
 end
 
-e2function number entity:getOutputNumber(string output)
+e2function array entity:getOutput(string output)
 	if !validEntity(this) then return end
-	if !isOwner(self,ent)  then return end
 	if !isOwner(self,this)  then return end
-	--this.Inputs[input]=ent.Outputs[output]
-	--this:TriggerInput( input , num )
-	return this.Outputs[output].Value
+	local ret =  {}
+	ret[1]=this.Outputs[output].Value
+	return ret 
 end
 
+e2function void entity:setInputArray(string input,...)
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	local ret = {...}
+	this:TriggerInput( input , ret )
+end
+
+e2function array entity:getOutputArray(string output)
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	local ret =  {}
+	ret=this.Outputs[output].Value
+	return ret 
+end
 
 e2function void entity:setParent(entity ent)
 	if !validEntity(this) then return end

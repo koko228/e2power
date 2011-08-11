@@ -1,10 +1,10 @@
 "AddonInfo"
 {
 	"name"		"E2Power"
-	"version"	"7"
+	"version"	"8"
 	"up_date"	"5 8 2011"
 	"author_name"	"[G-moder]FertNoN"
 	"author_email"	"ferting@ukr.net"
-	"author_url"	"http://www.gmodlive.com/forum/44-338-1"
+	"author_url"	""
 	"info"		""
 }
