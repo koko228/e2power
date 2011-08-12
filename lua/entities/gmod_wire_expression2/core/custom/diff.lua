@@ -3,14 +3,6 @@ e2function number entity:isPhysics()
 	if !validPhysics(this) then return 0 else return 1 end
 end
 
-e2function string nullS()
-	return nil
-end
-
-e2function entity nullE()
-	return nil
-end
-
 __e2setcost(20)
 e2function void entity:setVel(vector vel)
 	if !validEntity(this)  then return end
@@ -35,8 +27,6 @@ e2function void entity:tele(vector vec)
 	if !isOwner(self,this)  then return end
 	this:SetPos(Vector(vec[1], vec[2], vec[3]))
 end
-
-
 
 e2function void entity:setInput(string input,...)
 	if !validEntity(this) then return end
@@ -79,15 +69,6 @@ e2function void entity:setKeyValue(string name,...)
 	if !validEntity(this) then return end
 	if !isOwner(self,this)  then return end
 	this:SetKeyValue(name,ret[1])
-end
-
-e2function void entity:physWake()
-if !validEntity(this) then return end
-if !isOwner(self,this)  then return end
-local phys = this:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:Wake()
-	end
 end
 
 __e2setcost(200)
