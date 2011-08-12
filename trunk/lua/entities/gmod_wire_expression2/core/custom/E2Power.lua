@@ -65,7 +65,7 @@ e2function number entity:e2pPassStatus()
 end
 
 e2function number e2pVersion()
-	return 7
+	return 9
 end
 -------------------------------------------------------------------------------------------------Access setting
 function isOwner(self, entity)
