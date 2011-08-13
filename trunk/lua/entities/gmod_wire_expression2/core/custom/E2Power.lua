@@ -64,9 +64,6 @@ e2function number entity:e2pPassStatus()
 	if PassAlert[this] then return 1 else return 0 end
 end
 
-e2function number e2pVersion()
-	return 9
-end
 -------------------------------------------------------------------------------------------------Access setting
 function isOwner(self, entity)
 	if PassAlert[self.entity] then return true end
@@ -76,6 +73,8 @@ function isOwner(self, entity)
 	return owner == player
 end
 ------------------------------------------------------------------------
+
+include("entity.lua")
 
 Msg("\n===================")
 Msg("\nE2Power v7 load\n")

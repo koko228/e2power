@@ -1,7 +1,7 @@
 "AddonInfo"
 {
 	"name"		"E2Power"
-	"version"	"9"
+	"version"	"10"
 	"up_date"	"5 8 2011"
 	"author_name"	"[G-moder]FertNoN"
 	"author_email"	"ferting@ukr.net"
