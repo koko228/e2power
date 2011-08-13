@@ -270,6 +270,18 @@ e2function void entity:effectSpawn(string effect,vector pos,number size)
 	util.Effect( effect , effectdata )
 end
 
+e2function void entity:effectSpawn(string effect,vector pos,number size,vector hitbox)	
+	
+	local effectdata = EffectData()
+	
+	effectdata:SetOrigin(Vector(pos[1],pos[2],pos[3]))
+	effectdata:SetScale( size )
+	effectdata:SetEntity( this )
+	effectdata:SetHitBox( Vector(hitbox[1],hitbox[2],hitbox[3]) )
+		
+	util.Effect( effect , effectdata )
+end
+
 e2function void entity:effectSpawn(string effect,number size)	
 	
 	local effectdata = EffectData()
