@@ -291,19 +291,3 @@ e2function void entity:effectSpawn(string effect,number size)
 		
 	util.Effect( effect , effectdata )
 end
-
-/*
-------------------------------------SPRITE DRAW
-e2function void drawSprite(vector Pos,number Size)
-umsg.Start("DrawSprite", self.player )
-     --umsg.Short( e2 )
-     --umsg.String( k )
-     --umsg.String( s )
-    umsg.End()
-end
-
-e2function void drawSprite2(vector Pos)
-if !validEntity(this)  then return end
-DrawSprite2(Vector(Pos[1],Pos[2],Pos[3]))
-end
-*/
