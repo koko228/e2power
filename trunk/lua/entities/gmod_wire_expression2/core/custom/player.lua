@@ -3,7 +3,7 @@ e2function void entity:playerFreeze()
 	if !validEntity(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
-       this:Lock()
+        this:Lock()
        --this:DisallowSpawning( true )
 end
 
@@ -18,7 +18,7 @@ end
 e2function void entity:playerRemove()
     if (!self.player:IsSuperAdmin()) then return end
     if (!this:IsPlayer()) then return end
-     this:Remove()
+    this:Remove()
 end
 
 e2function void entity:playerSetAlpha(rv2)
