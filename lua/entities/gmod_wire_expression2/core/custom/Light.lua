@@ -3,7 +3,13 @@
 
 local Clamp = math.Clamp
 
+local sbox_E2_maxdLightPerSecond = CreateConVar( "sbox_E2_maxdLightPerSecond", "5", FCVAR_ARCHIVE )
+local dLightSpawnInSecond=0
+local dLightCount=0
 
+timer.Create( "ResetTempdLight", 1, 0, function()
+dLightSpawnInSecond=0
+end)
 
 ------------------------------------------Dynamic LIGHT
 __e2setcost(200)
@@ -12,6 +18,10 @@ e2function entity entity:setdLight(vector pos,vector color,number brightness,num
 
 if !validEntity(this)  then return end
 if !isOwner(self,this)  then return end
+
+if this:GetClass()=="light_dynamic" then return end
+
+if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return end
 
 local dynlight = ents.Create( "light_dynamic" )
 		
@@ -22,7 +32,9 @@ local dynlight = ents.Create( "light_dynamic" )
 	dynlight:SetKeyValue( "brightness", Clamp(brightness, 0, 15) )
 	dynlight:SetParent( this )
 	--dynlight:setOwner( self.player )
-
+	
+	dLightSpawnInSecond=dLightSpawnInSecond+1
+		
 	if validEntity(this.e2_dlight) then this.e2_dlight:Remove() end
         this.e2_dlight=dynlight
         
@@ -32,6 +44,10 @@ local dynlight = ents.Create( "light_dynamic" )
 end
 
 __e2setcost(20)
+e2function number dLightCanSet()
+if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return 0 else return 1 end
+end
+
 e2function void entity:dLightPos(vector pos)
 if !validEntity(this)  then return end
 if !validEntity(this.e2_dlight)  then return end
@@ -92,8 +108,24 @@ end
 
 ------------------------------------------Flash LIGHT
 
+local sbox_E2_maxfLightPerSecond = CreateConVar( "sbox_E2_maxfLightPerSecond", "5", FCVAR_ARCHIVE )
+local fLightSpawnInSecond=0
+local fLightCount=0
+
+timer.Create( "ResetTempfLight", 1, 0, function()
+fLightSpawnInSecond=0
+end)
+
 __e2setcost(200)
 e2function entity entity:setfLight(vector pos,vector color,angle ang,string material,number fov,number farz,number nearz)
+	
+	if !validEntity(this)  then return end
+	if !isOwner(self,this)  then return end
+	
+	if this:GetClass()=="env_projectedtexture" then return end
+
+	if fLightSpawnInSecond > sbox_E2_maxfLightPerSecond:GetInt() then return end
+	
 	local flashlight = ents.Create( "env_projectedtexture" )
 	flashlight:SetParent( this )	
 	flashlight:SetPos( Vector( pos[1], pos[2], pos[3] ) )
@@ -104,7 +136,9 @@ e2function entity entity:setfLight(vector pos,vector color,angle ang,string mate
 	flashlight:SetKeyValue( "lightfov", fov )
 	flashlight:SetKeyValue( "lightcolor", Clamp(color[1], 0, 255) .. " " .. Clamp(color[2], 0, 255) .. " " .. Clamp(color[3], 0, 255) )	
 	--flashlight:setPlayer( self.player )	
-
+	
+	fLightSpawnInSecond=fLightSpawnInSecond+1
+	
 	if validEntity(this.e2_flight) then this.e2_flight:Remove() end
         this.e2_flight=flashlight
 
@@ -115,6 +149,10 @@ e2function entity entity:setfLight(vector pos,vector color,angle ang,string mate
 end
 
 __e2setcost(20)
+e2function number fLightCanSet()
+if fLightSpawnInSecond > sbox_E2_maxfLightPerSecond:GetInt() then return 0 else return 1 end
+end
+
 e2function void entity:fLightPos(vector pos)
 if !validEntity(this)  then return end
 if !validEntity(this.e2_flight)  then return end
