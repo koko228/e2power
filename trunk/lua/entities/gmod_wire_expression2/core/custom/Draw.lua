@@ -20,6 +20,7 @@ local n = indx
 					table.insert(Ent.IdxS, n, sprite)
 					sprite:Spawn()
 					sprite:Activate()
+					return sprite
 			end
 		end
 end
@@ -67,6 +68,7 @@ local n = indx
 					table.insert(Ent.IdxD, n, beam)
 					beam:Spawn()
 					beam:Activate()
+					return beam
 			end		
 		end
 end
@@ -114,11 +116,12 @@ local n = indx
 					table.insert(Ent.IdxQ, n, Quad)
 					Quad:Spawn()
 					Quad:Activate()
+					return Quad
 			end
 		end
 end
 
-e2function void drawQuad(number indx, string name, vector pos, vector Dir, number Sizex, number Sizey, vector Color, number alpha, angle ang, number parent)
+e2function entity drawQuad(number indx, string name, vector pos, vector Dir, number Sizex, number Sizey, vector Color, number alpha, angle ang, number parent)
 	return DrawQuad(self,indx,name,pos,Dir,Sizex,Sizey,Color,alpha,ang,parent)
 end
 
@@ -148,11 +151,11 @@ local n = indx
 		end
 	end
 end
-e2function void drawSprite(number indx, string name, vector pos, number sizex, number sizey, vector color, number alpha, number parent)
+e2function entity drawSprite(number indx, string name, vector pos, number sizex, number sizey, vector color, number alpha, number parent)
 	return createGlowShit(self,indx,name,pos,sizex,sizey,color,alpha,parent)
 end
 
-e2function void drawBeam(number indx, string name, vector startpos, vector endpos, number width, number TextStart, number TextEnd, vector color, number alpha, number parent)
+e2function entity drawBeam(number indx, string name, vector startpos, vector endpos, number width, number TextStart, number TextEnd, vector color, number alpha, number parent)
 	return DrawBeam(self,indx,name,startpos,endpos,width,TextStart,TextEnd,color,alpha,parent)
 end
 
