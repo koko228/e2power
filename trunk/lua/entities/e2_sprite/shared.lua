@@ -1,6 +1,6 @@
  ENT.Type = "anim"  
  ENT.Base = "base_gmodentity"     
- ENT.PrintName		= "E2 Light"  
+ ENT.PrintName		= "e2_sprite"  
  
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= false
