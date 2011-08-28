@@ -22,3 +22,28 @@ undo.Finish()
 
 return sprite
 end
+
+e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
+local beam=ents.Create("e2_beam")
+	beam:SetModel("models/effects/teleporttrail.mdl")
+	beam:SetMaterial(mat)
+	beam:SetPos(Vector(pos[1],pos[2],pos[3]))
+	beam:SetAngles(Angle(0,0,0))
+	beam:SetColor(color[1],color[2],color[3],alpha)
+	beam:SetParent( this )
+	
+	beam:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
+	beam:SetNWFloat("width",width)
+	beam:SetNWFloat("TextStart",textstart)
+	beam:SetNWFloat("TextEnd",textend)
+
+	beam:Spawn()
+	beam:Activate()
+
+undo.Create("E2_beam")
+    undo.AddEntity(beam)
+    undo.SetPlayer(self.player)
+undo.Finish()
+
+return beam
+end
