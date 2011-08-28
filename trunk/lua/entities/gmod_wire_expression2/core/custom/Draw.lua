@@ -1,12 +1,13 @@
 --Draw mod made by [G-moder]FertNoN
 __e2setcost(200)
-e2function entity drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
+e2function entity entity:drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
 local sprite=ents.Create("e2_sprite")
 	sprite:SetModel("models/effects/teleporttrail.mdl")
 	sprite:SetMaterial(mat)
 	sprite:SetPos(Vector(pos[1],pos[2],pos[3]))
 	sprite:SetAngles(Angle(0,0,0))
 	sprite:SetColor(color[1],color[2],color[3],alpha)
+	sprite:SetParent( this )
 	
 	sprite:SetNWFloat("x",sizex)
 	sprite:SetNWFloat("y",sizey)
