@@ -5,6 +5,7 @@ local sprite=ents.Create("e2_sprite")
 	sprite:SetModel("models/effects/teleporttrail.mdl")
 	sprite:SetMaterial(mat)
 	sprite:SetPos(Vector(pos[1],pos[2],pos[3]))
+	sprite:SetAngles(Angle(0,0,0))
 	sprite:SetColor(color[1],color[2],color[3],alpha)
 	
 	sprite:SetNWFloat("x",sizex)
