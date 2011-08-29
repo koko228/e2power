@@ -3,7 +3,7 @@
 
 local Clamp = math.Clamp
 
-local sbox_E2_maxdLightPerSecond = CreateConVar( "sbox_E2_maxdLightPerSecond", "5", FCVAR_ARCHIVE )
+local sbox_E2_maxdLightPerSecond = CreateConVar( "sbox_E2_maxdLightPerSecond", "12", FCVAR_ARCHIVE )
 local dLightSpawnInSecond=0
 local dLightCount=0
 
