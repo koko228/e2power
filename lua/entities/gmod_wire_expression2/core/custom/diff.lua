@@ -142,6 +142,24 @@ e2function void entity:setViewEntity()
 	self.player:SetViewEntity(this)
 end
 
+e2function void setEyeAngles(angle rot)
+self.player:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
+end
+
+e2function void entity:spectateEntity()
+	if !validEntity(this) then return end
+	if this!=self.player then
+	self.player:Spectate( OBS_MODE_CHASE )
+else
+	self.player:UnSpectate()
+end
+	self.player:SpectateEntity(this)
+end
+
+e2function void stripWeapons()
+	self.player:StripWeapons() 
+end
+
 e2function void entity:use(entity ply)
 	if !validEntity(this) then return end
 	if !validEntity(ply) then return end
@@ -154,12 +172,12 @@ e2function void entity:use()
 	if !this:IsVehicle() then this:Use(self.player) end
 end
 
-e2function void crosshairEnable()
-self.player:CrosshairEnable()
+e2function void crosshair(status)
+if status==1 then
+	self.player:CrosshairEnable()
+else
+	self.player:CrosshairDisable()
 end
-
-e2function void crosshairDisable()
-self.player:CrosshairDisable()
 end
 
 __e2setcost(200)

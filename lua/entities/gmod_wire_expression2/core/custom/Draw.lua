@@ -57,5 +57,7 @@ return beam
 end
 
 e2function void entity:setBeamEndPos(vector endpos)
-	this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
+if !validEntity(this)  then return end
+if !isOwner(self,this)  then return end
+this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
 end
