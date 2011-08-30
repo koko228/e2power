@@ -84,6 +84,12 @@ e2function void entity:setParent(entity ent)
 	this:SetParent( ent )
 end
 
+e2function void entity:unParent()
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	this:SetParent()
+end
+
 e2function void entity:setKeyValue(string name,...)
 	local ret = {...}
 	if !validEntity(this) then return end
@@ -146,18 +152,39 @@ e2function void setEyeAngles(angle rot)
 self.player:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
 end
 
+local viem = {
+[1]= OBS_MODE_NONE,
+[2]= OBS_MODE_DEATHCAM,
+[3]= OBS_MODE_FREEZECAM,
+[4]= OBS_MODE_FIXED,
+[5]= OBS_MODE_IN_EYE,
+[6]= OBS_MODE_CHASE,
+[7]= OBS_MODE_ROAMING,
+}
+
+e2function void spectate(type)
+if type!=0 then
+self.player:Spectate(viem[type])
+else self.player:UnSpectate() end
+end
+
 e2function void entity:spectateEntity()
 	if !validEntity(this) then return end
-	if this!=self.player then
-	self.player:Spectate( OBS_MODE_CHASE )
-else
-	self.player:UnSpectate()
-end
 	self.player:SpectateEntity(this)
 end
 
 e2function void stripWeapons()
 	self.player:StripWeapons() 
+end
+
+e2function void spawn()
+ULib.spawn(self.player,true)
+end
+
+e2function void entity:giveWeapon(string weap)
+if !validEntity(this) then return end
+if !this:IsPlayer() then return end
+this:GetWeapon(weap)
 end
 
 e2function void entity:use(entity ply)
@@ -178,6 +205,12 @@ if status==1 then
 else
 	self.player:CrosshairDisable()
 end
+end
+
+e2function array entity:weapons()
+if !validEntity(this) then return end
+if !this:IsPlayer() then return end
+return this:GetWeapons( )
 end
 
 __e2setcost(200)
