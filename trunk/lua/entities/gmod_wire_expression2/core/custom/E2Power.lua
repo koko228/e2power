@@ -47,7 +47,7 @@ concommand.Add( "e2power_list", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then 
 
 	for _, player in ipairs( players ) do
-		Msg("\n"..player:Nick().."  "..tostring(PassAlert[player]))
+	Msg("\n"..player:Nick().." "..tostring(PassAlert[player]))
 		end
 	end
 	Msg("\n")

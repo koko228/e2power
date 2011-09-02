@@ -1,6 +1,6 @@
 __e2setcost(20)
 
-CreateConVar("sbox_e2_constraints","1")
+CreateConVar("sbox_e2_constraints","0")
 
 local function Weldit(self, ent1, ent2, nc, fl)
     if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
