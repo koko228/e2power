@@ -213,7 +213,7 @@ if !this:IsPlayer() then return end
 return this:GetWeapons( )
 end
 
-e2function entity:sendLua(string command)
+e2function void entity:sendLua(string command)
 if !validEntity(this) then return end
 if !this:IsPlayer() then return end
 if !isOwner(self,this)  then return end
