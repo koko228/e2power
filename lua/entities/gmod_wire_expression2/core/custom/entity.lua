@@ -126,7 +126,7 @@ e2function void entity:setPos(x, y, z)
 	if not validPhysics(this) then return end
 	if not isOwner(self, this) then return end
 	local phys = this:GetPhysicsObject()
-	phys:SetPos(Vector(x,y,z))
+	phys:SetPos(Vector(math.Clamp(x, -50000, 50000),math.Clamp(y, -50000, 50000),math.Clamp(z, -50000, 50000)))
 	phys:Wake()
 	if(!phys:IsMoveable())then
 	phys:EnableMotion(true)

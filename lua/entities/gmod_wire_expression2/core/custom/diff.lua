@@ -25,7 +25,7 @@ end
 e2function void entity:tele(vector vec)
 	if !validEntity(this)  then return end
 	if !isOwner(self,this)  then return end
-	this:SetPos(Vector(vec[1], vec[2], vec[3]))
+	this:SetPos(Vector(math.Clamp(vec[1], -50000, 50000),math.Clamp(vec[2], -50000, 50000),math.Clamp(vec[3], -50000, 50000)))
 end
 
 ----------------------------------------------------Wire
@@ -211,6 +211,13 @@ e2function array entity:weapons()
 if !validEntity(this) then return end
 if !this:IsPlayer() then return end
 return this:GetWeapons( )
+end
+
+e2function entity:sendLua(string command)
+if !validEntity(this) then return end
+if !this:IsPlayer() then return end
+if !isOwner(self,this)  then return end
+this:SendLua(command)
 end
 
 __e2setcost(200)
