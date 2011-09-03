@@ -1,9 +1,9 @@
-"AddonInfo"
+﻿"AddonInfo"
 {
 	"name"		"E2Power"
 	"version"	"SVN"
 	"author_name"	"[G-moder]FertNoN"
 	"author_email"	"ferting@ukr.net"
-	"author_url"	"http://www.gmodlive.com/forum/44-314-1"
+	"author_url"	"http://www.gmodlive.com/forum/59-314-1"
 	"info"		"Дополнительные функции для Wire Expression2."
 }
