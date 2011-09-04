@@ -1,6 +1,7 @@
 //E2POWER made by [G-moder]FertNoN
 
 local function findPlayer(target)
+	if not target then return 1 end
 	local players = player.GetAll()
 	target = target:lower()
 	
@@ -11,7 +12,7 @@ local function findPlayer(target)
 	end
 
 	Msg("\nPlayer not find")
-	
+	return 1
 end
 
 -----------------------------------------------------------setup PASS
