@@ -67,7 +67,12 @@ local e2_all_Keys={
 local KeyAct={}
 
 concommand.Add("wire_e2_keypress",function(ply, cmd, argm)
-	e2_all_Keys[ply:EntIndex()][tonumber(argm[1])] = tonumber(argm[2])==1
+	if tonumber(argm[2])==1 then
+		e2_all_Keys[ply:EntIndex()][tonumber(argm[1])] = true
+		ply.e2_last_key=tonumber(argm[1])
+	else
+		e2_all_Keys[ply:EntIndex()][tonumber(argm[1])] = nil
+	end
 end)
 
 __e2setcost(20)
@@ -76,6 +81,16 @@ e2function number clKeyPress(number key)
 		return 1
 	else
 		return 0
+	end
+end
+
+e2function number clLastKeyPress()
+	if self.player.e2_last_key then 
+		local key=self.player.e2_last_key 
+		self.player.e2_last_key=0
+		return key 
+	else 
+		return 0 
 	end
 end
 
