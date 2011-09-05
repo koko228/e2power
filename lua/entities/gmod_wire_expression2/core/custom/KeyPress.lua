@@ -1,24 +1,24 @@
 -- made by [G-moder]FertNoN
 
 local keys = {
-["W"]= IN_FORWARD,
-["A"]= IN_MOVELEFT,
-["S"]= IN_BACK,
-["D"]= IN_MOVERIGHT,
-["Mouse1"]= IN_ATTACK,
-["Mouse2"]= IN_ATTACK2,
-["Reload"]= IN_RELOAD,
-["Jump"]= IN_JUMP,
-["Speed"] = IN_SPEED,
-["Run"] = IN_SPEED,
-["Zoom"]= IN_ZOOM,
-["Walk"]= IN_WALK,
-["TurnLeftKey"]= IN_LEFT,
-["TurnRightKey"]= IN_RIGHT,
-["Duck"]= IN_DUCK,
-["Use"]= IN_USE,
-["Cancel"]= IN_CANCEL,
-["Alt1"]= IN_ALT1,
+["w"]= IN_FORWARD,
+["a"]= IN_MOVELEFT,
+["s"]= IN_BACK,
+["d"]= IN_MOVERIGHT,
+["mouse1"]= IN_ATTACK,
+["mouse2"]= IN_ATTACK2,
+["reload"]= IN_RELOAD,
+["jump"]= IN_JUMP,
+["speed"] = IN_SPEED,
+["run"] = IN_SPEED,
+["zoom"]= IN_ZOOM,
+["walk"]= IN_WALK,
+["turnLeftKey"]= IN_LEFT,
+["turnRightKey"]= IN_RIGHT,
+["duck"]= IN_DUCK,
+["use"]= IN_USE,
+["cancel"]= IN_CANCEL,
+["alt1"]= IN_ALT1,
 }
 
 local e2_all_Keys={
@@ -108,5 +108,5 @@ e2function number runOnKey(number active)
 end
 
 e2function number keyPress(string key)
-if self.player:KeyDown(keys[key]) then return 1 else return 0 end
+if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
 end
