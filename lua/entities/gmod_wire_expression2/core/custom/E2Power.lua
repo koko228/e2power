@@ -1,17 +1,17 @@
 //E2POWER made by [G-moder]FertNoN
 
-local function findPlayer(target)
+local function findPlayer(ply,target)
 	if not target then return 1 end
 	local players = player.GetAll()
 	target = target:lower()
 	
 	for _, player in ipairs( players ) do
-		if target == player:Nick():lower() then
+		if string.find(player:Nick():lower(),target,1,true) then
+			ply:PrintMessage( HUD_PRINTCONSOLE ,"player find: "..player:Nick())
 			return player
 		end
 	end
-
-	Msg("\nPlayer not find")
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"\nPlayer not find")
 	return 1
 end
 
@@ -20,25 +20,25 @@ PassAlert = {}
 
 Password = file.Read( "E2Power/pass.txt" )
 if Password==nil then
-local str
-str="MingeBag"
-file.Write( "E2Power/pass.txt", str ) 
-Password=str
+	local str
+	str="MingeBag"
+	file.Write( "E2Power/pass.txt", str ) 
+	Password=str
 end
 
 if Password=="null" then 
-Password=nil
+	Password=nil
 end
 
 ------------------------------------------------------------CONSOLE COMMAND
 concommand.Add( "e2power_all_remove_access", function()
-PassAlert = {}
+	PassAlert = {}
 end )
 
 concommand.Add( "e2power_disable", function()
-Password=nil
-PassAlert = {}
-file.Write( "E2Power/pass.txt", "null" )
+	Password=nil
+	PassAlert = {}
+	file.Write( "E2Power/pass.txt", "null" )
 end )
 
 concommand.Add( "e2power_list", function(ply,cmd,argm)
@@ -47,45 +47,49 @@ concommand.Add( "e2power_list", function(ply,cmd,argm)
 	
 	if ply:IsSuperAdmin() or ply:IsAdmin() then 
 
-	for _, player in ipairs( players ) do
-	Msg("\n"..player:Nick().." "..tostring(PassAlert[player]))
+		for _, player in ipairs( players ) do
+			ply:PrintMessage( HUD_PRINTCONSOLE ,"\n"..player:Nick().." "..tostring(PassAlert[player]))
 		end
+		
+		ply:PrintMessage( HUD_PRINTCONSOLE ,"\n")
+	else
+		ply:PrintMessage( HUD_PRINTCONSOLE ,"\nYou not Admin")
 	end
-	Msg("\n")
+		
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
-if !ply:IsSuperAdmin() and !ply:IsAdmin() then PassAlert[ply]=true end
-if argm[1] == Password then PassAlert[ply]=true end
+	if !ply:IsSuperAdmin() and !ply:IsAdmin() then PassAlert[ply]=true end
+	if argm[1] == Password then PassAlert[ply]=true end
 end )
 
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
-if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(argm[1])]=nil end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(ply,argm[1])]=nil end
 end )
 
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
-if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(argm[1])]=true end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(ply,argm[1])]=true end
 end )
 
 concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
-if ply:IsSuperAdmin() or ply:IsAdmin() then  
+	if ply:IsSuperAdmin() or ply:IsAdmin() then 
 
-local newpass
-newpass=argm[1]
+	local newpass
+	newpass=argm[1]
 
-if newpass==nil then return end
-if newpass=="" then return end
-if newpass==Password then return end
-if newpass=="null" then Password=nil else Password=newpass end
-file.Write( "E2Power/pass.txt", newpass ) 
-
-end
+	if newpass==nil then return end
+	if newpass=="" then return end
+	if newpass==Password then return end
+	if newpass=="null" then Password=nil else Password=newpass end
+	file.Write( "E2Power/pass.txt", newpass ) 
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"pass set")
+	end
 end )
 
 concommand.Add( "e2power_get_pass", function(ply,cmd,argm)
-if ply:IsSuperAdmin() or ply:IsAdmin() then  
-Msg(Password.."\n")
-end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+		ply:PrintMessage( HUD_PRINTCONSOLE ,"\n"..Password)
+	end
 end )
 
 -------------------------------------------------------------E2 COMMAND
