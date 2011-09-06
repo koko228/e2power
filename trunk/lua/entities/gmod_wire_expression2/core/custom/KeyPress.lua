@@ -84,6 +84,15 @@ e2function number clKeyPress(number key)
 	end
 end
 
+e2function number clKeyPressVel(number key)
+	if e2_all_Keys[self.player:EntIndex()][key] then
+		e2_all_Keys[self.player:EntIndex()][key]=nil
+		return 1
+	else
+		return 0
+	end
+end
+
 e2function number clLastKeyPress()
 	if self.player.e2_last_key then 
 		local key=self.player.e2_last_key 
