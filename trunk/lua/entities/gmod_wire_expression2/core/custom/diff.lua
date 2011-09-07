@@ -220,6 +220,14 @@ if !isOwner(self,this)  then return end
 this:SendLua(command)
 end
 
+e2function void entity:setPlayer(entity ply)
+	if !validEntity(this) then return end
+	if !validEntity(ply) then return end
+	if !ply:IsPlayer() then return end
+	if !isOwner(self,this) then return end
+	this:SetPlayer(ply)
+end
+
 __e2setcost(200)
 e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)
 	if !validEntity(this) then return end
