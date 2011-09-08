@@ -8,10 +8,11 @@ local function findPlayer(ply,target)
 	for _, player in ipairs( players ) do
 		if string.find(player:Nick():lower(),target,1,true) then
 			ply:PrintMessage( HUD_PRINTCONSOLE ,"player find: "..player:Nick())
+			player:PrintMessage( HUD_PRINTTALK ,"you have e2p access")
 			return player
 		end
 	end
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"\nPlayer not find")
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"Player not find")
 	return 1
 end
 
@@ -50,10 +51,8 @@ concommand.Add( "e2power_list", function(ply,cmd,argm)
 		for _, player in ipairs( players ) do
 			ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(PassAlert[player]))
 		end
-		
-		ply:PrintMessage( HUD_PRINTCONSOLE ,"\n")
 	else
-		ply:PrintMessage( HUD_PRINTCONSOLE ,"\nYou not Admin")
+		ply:PrintMessage( HUD_PRINTCONSOLE ,"You are not Admin")
 	end
 		
 end )
@@ -88,7 +87,7 @@ end )
 
 concommand.Add( "e2power_get_pass", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then  
-		ply:PrintMessage( HUD_PRINTCONSOLE ,"\n"..Password)
+		ply:PrintMessage( HUD_PRINTCONSOLE ,Password)
 	end
 end )
 
