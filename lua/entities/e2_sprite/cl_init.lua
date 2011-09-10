@@ -1,7 +1,7 @@
 include('shared.lua')     
 
 function ENT:Initialize()
-		self.Glow = self:GetMaterial()
+		self.Glow = Material(self:GetMaterial())
 		self.Glow:SetMaterialInt("$spriterendermode",9)
 		self.Glow:SetMaterialInt("$ignorez",1)
 		self.Glow:SetMaterialInt("$illumfactor",8)
