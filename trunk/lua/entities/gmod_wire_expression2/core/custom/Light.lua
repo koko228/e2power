@@ -5,7 +5,6 @@ local Clamp = math.Clamp
 
 local sbox_E2_maxdLightPerSecond = CreateConVar( "sbox_E2_maxdLightPerSecond", "12", FCVAR_ARCHIVE )
 local dLightSpawnInSecond=0
-local dLightCount=0
 
 timer.Create( "ResetTempdLight", 1, 0, function()
 dLightSpawnInSecond=0
@@ -21,7 +20,7 @@ if !isOwner(self,this)  then return end
 
 if this:GetClass()=="light_dynamic" then return end
 
-if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return end
+if dLightSpawnInSecond >= sbox_E2_maxdLightPerSecond:GetInt() then return end
 
 local dynlight = ents.Create( "light_dynamic" )
 		
@@ -110,7 +109,6 @@ end
 
 local sbox_E2_maxfLightPerSecond = CreateConVar( "sbox_E2_maxfLightPerSecond", "5", FCVAR_ARCHIVE )
 local fLightSpawnInSecond=0
-local fLightCount=0
 
 timer.Create( "ResetTempfLight", 1, 0, function()
 fLightSpawnInSecond=0

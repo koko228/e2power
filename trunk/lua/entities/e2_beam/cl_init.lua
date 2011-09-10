@@ -27,5 +27,4 @@ end
 function ENT:Draw()
 	render.SetMaterial(self.Glow)
 	render.DrawBeam(self:GetPos(), self.endpos, self.width, self.TextStart, self.TextEnd, Color(self.r,self.g,self.b,self.alpha))
-	render.DrawBeam(self.endpos, self:GetPos(), self.width, self.TextStart, self.TextEnd, Color(self.r,self.g,self.b,self.alpha))
 end
