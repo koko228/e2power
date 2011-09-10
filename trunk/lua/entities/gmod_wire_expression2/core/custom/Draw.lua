@@ -3,7 +3,7 @@
 -----------------------SPRITIES
 
 local sbox_E2_maxSpritesPerSecond = CreateConVar( "sbox_E2_maxSpritesPerSecond", "12", FCVAR_ARCHIVE )
-local sbox_E2_maxSprites = CreateConVar( "sbox_E2_maxSprites", "12", FCVAR_ARCHIVE )
+local sbox_E2_maxSprites = CreateConVar( "sbox_E2_maxSprites", "300", FCVAR_ARCHIVE )
 local SpritesSpawnInSecond=0
 local SpritesCount=0
 
