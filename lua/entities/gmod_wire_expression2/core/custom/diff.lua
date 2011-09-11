@@ -251,12 +251,11 @@ if !isOwner(self,this)  then return end
 this:SendLua(command)
 end
 
-e2function void entity:setPlayer(entity ply)
-	if !validEntity(this) then return end
+e2function void setOwner(entity ply)
 	if !validEntity(ply) then return end
 	if !ply:IsPlayer() then return end
-	if !isOwner(self,this) then return end
-	this:SetPlayer(ply)
+	if !PassAlert[self.player] then return end
+	self.player=ply
 end
 
 __e2setcost(200)
