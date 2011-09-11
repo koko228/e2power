@@ -97,6 +97,31 @@ e2function void entity:setKeyValue(string name,...)
 	this:SetKeyValue(name,ret[1])
 end
 
+e2function void entity:setVar(string name,...)
+	local ret = {...}
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	this:SetVar(name,ret[1])
+end
+
+e2function array entity:getVar(string name)
+	local ret = {}
+	if !validEntity(this) then return end
+	ret[1]=this:GetVar(name)
+	return ret
+end
+
+e2function void entity:setVarNum(string name,value)
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	this:SetVar(name,value)
+end
+
+e2function array entity:getVarNum(string name)
+	if !validEntity(this) then return end
+	return this:GetVar(name)
+end
+
 e2function void setUndoName(string name)
 	undo.Create( name )
 	undo.AddEntity( self.entity )
