@@ -127,7 +127,8 @@ e2function void entity:e2pRemoveAccess()
 end
 
 e2function number entity:e2pPassStatus()
-	if PassAlert[getOwner(self,this)] then return 1 else return 0 end
+	if !validEntity(this)  then return end
+	if PassAlert[this] then return 1 else return 0 end
 end
 
 -------------------------------------------------------------------------------------------------Access setting

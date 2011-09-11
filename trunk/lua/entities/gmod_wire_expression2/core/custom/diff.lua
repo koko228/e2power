@@ -117,7 +117,7 @@ e2function void entity:setVarNum(string name,value)
 	this:SetVar(name,value)
 end
 
-e2function array entity:getVarNum(string name)
+e2function number entity:getVarNum(string name)
 	if !validEntity(this) then return end
 	return this:GetVar(name)
 end
