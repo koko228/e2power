@@ -122,6 +122,12 @@ e2function array entity:getVarNum(string name)
 	return this:GetVar(name)
 end
 
+e2function void entity:drawShadow(status)
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	this:DrawShadow( status!=0 )
+end
+
 e2function void setUndoName(string name)
 	undo.Create( name )
 	undo.AddEntity( self.entity )
