@@ -3,6 +3,10 @@ e2function number entity:isPhysics()
 	if !validPhysics(this) then return 0 else return 1 end
 end
 
+e2function number entity:isExist()
+	if !validEntity(this) then return 0 else return 1 end
+end
+
 __e2setcost(20)
 e2function void entity:setVel(vector vel)
 	if !validEntity(this)  then return end
@@ -124,7 +128,7 @@ end
 
 e2function void entity:drawShadow(status)
 	if !validEntity(this) then return end
-	if !isOwner(self,this)  then return end
+	if !isOwner(self,this) then return end
 	this:DrawShadow( status!=0 )
 end
 
@@ -171,7 +175,7 @@ e2function void setFOV(FOV)
 end
 
 e2function number entity:getFOV()
-	return	this:GetFOV()
+	returnthis:GetFOV()
 end
 
 e2function void entity:setViewEntity()

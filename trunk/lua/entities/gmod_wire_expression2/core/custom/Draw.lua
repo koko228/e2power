@@ -58,7 +58,7 @@ end
 
 --------------------------------------BEAM
 local sbox_E2_maxBeamPerSecond = CreateConVar( "sbox_E2_maxBeamPerSecond", "12", FCVAR_ARCHIVE )
-local sbox_E2_maxBeam = CreateConVar( "sbox_E2_maxBeam", "12", FCVAR_ARCHIVE )
+local sbox_E2_maxBeam = CreateConVar( "sbox_E2_maxBeam", "300", FCVAR_ARCHIVE )
 local BeamSpawnInSecond=0
 local BeamCount=0
 

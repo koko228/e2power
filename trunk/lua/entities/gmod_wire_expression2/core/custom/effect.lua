@@ -1,13 +1,20 @@
 --made by [G-moder]FertNoN
 ---------------------------------------------EFFECK SPAWN
 
+local sbox_E2_maxEffectPerSecond = CreateConVar( "sbox_e2_maxEffectPerSecond", "100", FCVAR_ARCHIVE )
+local EffectInSecond=0
+
+timer.Create( "ResetTempEffect", 0.1, 0, function()
+EffectInSecond=0
+end)
+
 function E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
 	
 	--if ent!=nil then
 	--	if !validEntity(ent)  then return end
 	--	if !isOwner(self,ent)  then return end
 	--end
-
+	if EffectInSecond >= sbox_E2_maxEffectPerSecond:GetInt() then return end
 	local effectdata = EffectData()
 	
 	if pos!=nil then effectdata:SetOrigin( Vector(pos[1],pos[2],pos[3]) ) end
@@ -18,6 +25,8 @@ function E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
 	if this!=nil then effectdata:SetEntity( this ) end
 
 	util.Effect( effect , effectdata )
+	
+	EffectInSecond=EffectInSecond+1
 end
 
 --E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
