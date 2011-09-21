@@ -1,5 +1,5 @@
 -- made by [G-moder]FertNoN
-
+--AddCSLuaFile( "entities\gmod_wire_expression2\core\custom\cl_KeyPress.lua" )
 local keys = {
 ["w"]= IN_FORWARD,
 ["a"]= IN_MOVELEFT,
