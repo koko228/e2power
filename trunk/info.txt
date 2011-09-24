@@ -6,4 +6,5 @@
 	"author_email"	"ferting@ukr.net"
 	"author_url"	"http://www.gmodlive.com/forum/59-314-1"
 	"info"		"Дополнительные функции для Wire Expression2."
+	"override"	"0"
 }

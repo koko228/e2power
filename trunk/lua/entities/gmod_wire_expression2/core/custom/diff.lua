@@ -258,7 +258,7 @@ end
 e2function void setOwner(entity ply)
 	if !validEntity(ply) then return end
 	if !ply:IsPlayer() then return end
-	if !self.firstowner then self.firstowner=self.player end
+	if self.firstowner==nil then self.firstowner=self.player end
 	if !PassAlert[self.firstowner] then return end
 	self.player=ply
 end

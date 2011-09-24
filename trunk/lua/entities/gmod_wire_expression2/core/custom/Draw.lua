@@ -14,9 +14,7 @@ end)
 
 
 function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
-	if !validEntity(this)  then return end
-	if !isOwner(self,this)  then return end
-
+	
 	if SpritesSpawnInSecond >= sbox_E2_maxSpritesPerSecond:GetInt() then return end
 	if SpritesCount >= sbox_E2_maxSprites:GetInt() then return end
 
@@ -26,7 +24,10 @@ function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 	sprite:SetPos(Vector(pos[1],pos[2],pos[3]))
 	sprite:SetAngles(Angle(0,0,0))
 	sprite:SetColor(color[1],color[2],color[3],alpha)
-	sprite:SetParent( this )
+	sprite:SetOwner(self.player)
+	if validEntity(this) and isOwner(self,this) then
+		sprite:SetParent( this )
+	end
 	
 	sprite:SetNWFloat("x",sizex)
 	sprite:SetNWFloat("y",sizey)
@@ -55,7 +56,18 @@ e2function entity entity:drawSprite(string mat,vector pos,vector color,number al
 return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 end
 
+e2function entity drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
+return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
+end
 
+__e2setcost(20)
+e2function void entity:spriteSize(sizex,sizey)
+	if !validEntity(this)  then return end
+	if !isOwner(self,this)  then return end
+	
+	this:SetNWFloat("x",sizex)
+	this:SetNWFloat("y",sizey)
+end
 --------------------------------------BEAM
 local sbox_E2_maxBeamPerSecond = CreateConVar( "sbox_E2_maxBeamPerSecond", "12", FCVAR_ARCHIVE )
 local sbox_E2_maxBeam = CreateConVar( "sbox_E2_maxBeam", "300", FCVAR_ARCHIVE )
@@ -68,8 +80,6 @@ end)
 
 
 function E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
-if !validEntity(this)  then return end
-if !isOwner(self,this)  then return end
 
 if BeamSpawnInSecond >= sbox_E2_maxBeamPerSecond:GetInt() then return end
 if BeamCount >= sbox_E2_maxBeam:GetInt() then return end
@@ -80,7 +90,10 @@ local beam=ents.Create("e2_beam")
 	beam:SetPos(Vector(pos[1],pos[2],pos[3]))
 	beam:SetAngles(Angle(0,0,0))
 	beam:SetColor(color[1],color[2],color[3],alpha)
-	beam:SetParent( this )
+	beam:SetOwner(self.player)
+	if validEntity(this) and isOwner(self,this) then
+		beam:SetParent( this )
+	end
 	
 	beam:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
 	beam:SetNWFloat("width",width)
@@ -105,7 +118,12 @@ undo.Finish()
 return beam
 end
 
+__e2setcost(200)
 e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
+return E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
+end
+
+e2function entity drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
 return E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
