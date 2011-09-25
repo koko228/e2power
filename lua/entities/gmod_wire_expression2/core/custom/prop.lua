@@ -207,7 +207,7 @@ end
 
 e2function void entity:propSleep()
 	if not PropCore.ValidAction(self, this, "gravity") then return end
-	this:Sleep()
+	this:GetPhysicsObject():Sleep()
 end
 --------------------------------------------------------------------------------
 
