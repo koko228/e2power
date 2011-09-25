@@ -204,6 +204,11 @@ e2function void entity:propGravity(number gravity)
 	if not PropCore.ValidAction(self, this, "gravity") then return end
 	PropCore.PhysManipulate(this, pos, rot, freeze, gravity, notsolid)
 end
+
+e2function void entity:propSleep()
+	if not PropCore.ValidAction(self, this, "gravity") then return end
+	this:Sleep()
+end
 --------------------------------------------------------------------------------
 
 e2function void entity:setPos(vector pos)
