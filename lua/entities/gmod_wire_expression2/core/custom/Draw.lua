@@ -132,3 +132,72 @@ if !validEntity(this)  then return end
 if !isOwner(self,this)  then return end
 this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
 end
+
+-----------------------Quad
+
+local sbox_E2_maxQuadsPerSecond = CreateConVar( "sbox_E2_maxQuadsPerSecond", "12", FCVAR_ARCHIVE )
+local sbox_E2_maxQuads = CreateConVar( "sbox_E2_maxQuads", "300", FCVAR_ARCHIVE )
+local QuadsSpawnInSecond=0
+local QuadsCount=0
+
+timer.Create( "ResetTempQuads", 1, 0, function()
+QuadsSpawnInSecond=0
+end)
+
+
+
+function E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+	
+	if QuadsSpawnInSecond >= sbox_E2_maxQuadsPerSecond:GetInt() then return end
+	if QuadsCount >= sbox_E2_maxQuads:GetInt() then return end
+
+	local quad=ents.Create("e2_quad")
+	quad:SetModel("models/effects/teleporttrail.mdl")
+	quad:SetMaterial(mat)
+	quad:SetPos(Vector(pos[1],pos[2],pos[3]))
+	quad:SetAngles(Angle(0,0,0))
+	quad:SetColor(color[1],color[2],color[3],alpha)
+	quad:SetOwner(self.player)
+	if validEntity(this) and isOwner(self,this) then
+		quad:SetParent( this )
+	end
+	
+	quad:SetNWFloat("x",sizex)
+	quad:SetNWFloat("y",sizey)
+
+	quad:Spawn()
+	quad:Activate()
+	
+	quad:CallOnRemove("minus_quad",function()
+		QuadsCount=QuadsCount-1
+	end)
+	
+	QuadsSpawnInSecond=QuadsSpawnInSecond+1
+	QuadsCount=QuadsCount+1
+
+	undo.Create("E2_quad")
+		undo.AddEntity(quad)
+		undo.SetPlayer(self.player)
+	undo.Finish()
+
+return quad
+end
+
+
+__e2setcost(200)
+e2function entity entity:drawQuad(string mat,vector pos,vector color,number alpha,sizex,sizey)
+return E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+end
+
+e2function entity drawQuad(string mat,vector pos,vector color,number alpha,sizex,sizey)
+return E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+end
+
+__e2setcost(20)
+e2function void entity:quadSize(sizex,sizey)
+	if !validEntity(this)  then return end
+	if !isOwner(self,this)  then return end
+	
+	this:SetNWFloat("x",sizex)
+	this:SetNWFloat("y",sizey)
+end
