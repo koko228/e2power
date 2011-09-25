@@ -53,6 +53,8 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
 return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 end
 
@@ -120,6 +122,8 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
 return E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
@@ -143,8 +147,6 @@ local QuadsCount=0
 timer.Create( "ResetTempQuads", 1, 0, function()
 QuadsSpawnInSecond=0
 end)
-
-
 
 function E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
 	
@@ -186,6 +188,8 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawQuad(string mat,vector pos,vector color,number alpha,sizex,sizey)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
 return E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
 end
 
