@@ -26,10 +26,34 @@ e2function void entity:remove()
 end
 
 
-e2function void entity:tele(vector vec)
+e2function void entity:tele(vector pos)
 	if !validEntity(this)  then return end
 	if !isOwner(self,this)  then return end
-	this:SetPos(Vector(math.Clamp(vec[1], -50000, 50000),math.Clamp(vec[2], -50000, 50000),math.Clamp(vec[3], -50000, 50000)))
+	this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
+end
+
+e2function void entity:setPos(vector pos)
+	if !validEntity(this)  then return end
+	if !isOwner(self, this) then return end
+	if validPhysics(this) then 
+		local phys = this:GetPhysicsObject()
+		phys:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
+		phys:Wake()
+	else
+		this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
+	end
+end
+
+e2function void entity:setAng(angle rot)
+	if !validEntity(this)  then return end
+	if !isOwner(self, this) then return end
+	if validPhysics(this) then 
+		local phys = this:GetPhysicsObject()
+		phys:SetAngle(Angle(rot[1],rot[2],rot[3]))
+		phys:Wake()
+	else
+		this:SetAngles(Angle(rot[1],rot[2],rot[3]))
+	end
 end
 
 ----------------------------------------------------Wire
@@ -175,7 +199,7 @@ e2function void setFOV(FOV)
 end
 
 e2function number entity:getFOV()
-	returnthis:GetFOV()
+	return this:GetFOV()
 end
 
 e2function void entity:setViewEntity()

@@ -1,4 +1,4 @@
-//E2POWER made by [G-moder]FertNoN
+--E2POWER made by [G-moder]FertNoN
 
 local function findPlayer(ply,target)
 	if not target then return 1 end
@@ -151,6 +151,6 @@ end
 ------------------------------------------------------------------------
 
 Msg("\n========================================")
-Msg("\nE2Power by [G-moder]FertNoN\n")
+Msg("\nE2Power by [G-moder]FertNoN")
 Msg("\nhttp://www.gmodlive.com/forum/59-314-1")
-Msg("========================================\n")
+Msg("\n========================================\n")

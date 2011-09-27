@@ -211,20 +211,6 @@ e2function void entity:propSleep()
 end
 --------------------------------------------------------------------------------
 
-e2function void entity:setPos(vector pos)
-	if not PropCore.ValidAction(self, this, "pos") then return end
-	PropCore.PhysManipulate(this, pos, rot, freeze, gravity, notsolid)
-end
-
-e2function void entity:reposition(vector pos) = e2function void entity:setPos(vector pos)
-
-e2function void entity:setAng(angle rot)
-	if not PropCore.ValidAction(self, this, "ang") then return end
-	PropCore.PhysManipulate(this, pos, rot, freeze, gravity, notsolid)
-end
-
-e2function void entity:rerotate(angle rot) = e2function void entity:setAng(angle rot)
-
 --------------------------------------------------------------------------------
 
 local function parent_check( child, parent )
