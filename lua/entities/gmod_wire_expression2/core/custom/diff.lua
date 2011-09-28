@@ -134,7 +134,7 @@ end
 
 e2function array entity:getVar(string name)
 	local ret = {}
-	if !validEntity(this) then return end
+	if !validEntity(this) then return nil end
 	ret[1]=this:GetVar(name)
 	return ret
 end
@@ -146,7 +146,7 @@ e2function void entity:setVarNum(string name,value)
 end
 
 e2function number entity:getVarNum(string name)
-	if !validEntity(this) then return end
+	if !validEntity(this) then return 0 end
 	return this:GetVar(name)
 end
 
