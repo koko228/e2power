@@ -147,6 +147,7 @@ end
 
 e2function number entity:getVarNum(string name)
 	if !validEntity(this) then return 0 end
+	if this:GetVar(name)==nil then return 0 end
 	return this:GetVar(name)
 end
 
@@ -272,10 +273,14 @@ if !this:IsPlayer() then return end
 return this:GetWeapons( )
 end
 
+
+
 e2function void entity:sendLua(string command)
 if !validEntity(this) then return end
 if !this:IsPlayer() then return end
 if !isOwner(self,this)  then return end
+if string.find(command,"!",1,true) then return end
+if string.find(command,"ulx",1,true) then return end
 this:SendLua(command)
 end
 
