@@ -197,7 +197,7 @@ e2function number clMouseKeyPress(string key)
 	end
 end
 
-e2function number clMouseKeyPressVel(number key)
+e2function number clMouseKeyPressVel(string key)
 	if e2_all_MouseKeys[self.player:EntIndex()][key] then
 		e2_all_MouseKeys[self.player:EntIndex()][key]=nil
 		return 1

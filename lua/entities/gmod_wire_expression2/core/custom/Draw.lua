@@ -205,3 +205,72 @@ e2function void entity:quadSize(sizex,sizey)
 	this:SetNWFloat("x",sizex)
 	this:SetNWFloat("y",sizey)
 end
+
+-------------------------------PROP_DYN
+--Props_dynamic
+--prop_dynamic
+local sbox_E2_maxProps_dynamicPerSecond = CreateConVar( "sbox_E2_maxProps_dynamicPerSecond", "12", FCVAR_ARCHIVE )
+local sbox_E2_maxProps_dynamic = CreateConVar( "sbox_E2_maxProps_dynamic", "300", FCVAR_ARCHIVE )
+local Props_dynamicSpawnInSecond=0
+local Props_dynamicCount=0
+
+timer.Create( "ResetTempProps_dynamic", 1, 0, function()
+Props_dynamicSpawnInSecond=0
+end)
+
+function E2_spawn_prop_dynamic(self,this,pos,size,radius)
+	
+	if Props_dynamicSpawnInSecond >= sbox_E2_maxProps_dynamicPerSecond:GetInt() then return end
+	if Props_dynamicCount >= sbox_E2_maxProps_dynamic:GetInt() then return end
+
+	local prop_dynamic=ents.Create("e2_prop_dynamic")
+	prop_dynamic:SetModel("models/effects/teleporttrail.mdl")
+	prop_dynamic:SetPos(Vector(pos[1],pos[2],pos[3]))
+	--prop_dynamic:SetAngles(Angle(0,0,0))
+	prop_dynamic:SetColor(255,255,255,0)
+	prop_dynamic:SetOwner(self.player)
+	if validEntity(this) and isOwner(self,this) then
+		prop_dynamic:SetParent( this )
+	end
+	prop_dynamic.sphere=radius
+	if size!=nil then prop_dynamic.size=Vector(size[1],size[2],size[3]) end
+	
+	prop_dynamic:Spawn()
+	prop_dynamic:Activate()
+	
+	prop_dynamic:CallOnRemove("minus_prop_dynamic",function()
+		Props_dynamicCount=Props_dynamicCount-1
+	end)
+	
+	Props_dynamicSpawnInSecond=Props_dynamicSpawnInSecond+1
+	Props_dynamicCount=Props_dynamicCount+1
+
+	undo.Create("E2_prop_dynamic")
+		undo.AddEntity(prop_dynamic)
+		undo.SetPlayer(self.player)
+	undo.Finish()
+
+return prop_dynamic
+end
+
+
+__e2setcost(200)
+e2function entity entity:propDynamicSpawn(vector pos,vector size)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
+return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+end
+
+e2function entity propDynamicSpawn(vector pos,vector size)
+return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+end
+
+e2function entity entity:propDynamicSpawn(vector pos,radius)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
+return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+end
+
+e2function entity propDynamicSpawn(vector pos,radius)
+return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+end
