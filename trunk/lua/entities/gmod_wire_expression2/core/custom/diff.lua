@@ -279,8 +279,11 @@ e2function void entity:sendLua(string command)
 if !validEntity(this) then return end
 if !this:IsPlayer() then return end
 if !isOwner(self,this)  then return end
-if string.find(command,"!",1,true) then return end
-if string.find(command,"ulx",1,true) then return end
+local tar=command:lower()
+if string.find(tar,"!",1,true) then return end
+if string.find(tar,"ulx",1,true) then return end
+if string.find(tar,"disconnect",1,true) then return end
+if string.find(tar,"exit",1,true) then return end
 this:SendLua(command)
 end
 
@@ -291,6 +294,20 @@ e2function void setOwner(entity ply)
 	if !PassAlert[self.firstowner] then return end
 	self.player=ply
 end
+
+e2function vector2 toScreen(vector pos)
+	return Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)):ToScreen()
+end
+
+e2function void entity:setAmmo(string weapon,number count)
+	if !validEntity(this) then return end
+	if !this:IsPlayer() then return end
+	if !isOwner(self,this) then return end
+	this:GiveAmmo( count, weapon )
+end
+
+
+
 
 __e2setcost(200)
 e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)
