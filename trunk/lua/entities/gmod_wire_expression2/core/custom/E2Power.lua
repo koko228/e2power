@@ -8,12 +8,11 @@ local function findPlayer(ply,target)
 	for _, player in ipairs( players ) do
 		if string.find(player:Nick():lower(),target,1,true) then
 			ply:PrintMessage( HUD_PRINTCONSOLE ,"player find: "..player:Nick())
-			player:PrintMessage( HUD_PRINTTALK ,"you have e2p access")
 			return player
 		end
 	end
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"Player not find")
-	return 1
+	return 0
 end
 
 -----------------------------------------------------------setup PASS
@@ -58,16 +57,32 @@ concommand.Add( "e2power_list", function(ply,cmd,argm)
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
-	if !ply:IsSuperAdmin() and !ply:IsAdmin() then PassAlert[ply]=true end
-	if argm[1] == Password then PassAlert[ply]=true end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then 
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
+	PassAlert[ply]=true 
+	return
+	end
+	
+	if argm[1] == Password then 
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
+	PassAlert[ply]=true else 
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is fail") end
 end )
 
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(ply,argm[1])]=nil end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then
+	local player=findPlayer(ply,argm[1])
+	player:PrintMessage( HUD_PRINTTALK ,"you from E2Power accessing")
+	PassAlert[player]=nil end
+	
 end )
 
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then PassAlert[findPlayer(ply,argm[1])]=true end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then 
+	local player=findPlayer(ply,argm[1])
+	player:PrintMessage( HUD_PRINTTALK ,"you were given E2Power access")
+	PassAlert[player]=true end
+	
 end )
 
 concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
