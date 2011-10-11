@@ -148,7 +148,7 @@ timer.Create( "ResetTempQuads", 1, 0, function()
 QuadsSpawnInSecond=0
 end)
 
-function E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	
 	if QuadsSpawnInSecond >= sbox_E2_maxQuadsPerSecond:GetInt() then return end
 	if QuadsCount >= sbox_E2_maxQuads:GetInt() then return end
@@ -157,7 +157,7 @@ function E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
 	quad:SetModel("models/effects/teleporttrail.mdl")
 	quad:SetMaterial(mat)
 	quad:SetPos(Vector(pos[1],pos[2],pos[3]))
-	quad:SetAngles(Angle(0,0,0))
+	quad:SetAngles(Angle(ang[1],ang[2],ang[3]))
 	quad:SetColor(color[1],color[2],color[3],alpha)
 	quad:SetOwner(self.player)
 	if validEntity(this) and isOwner(self,this) then
@@ -187,14 +187,14 @@ end
 
 
 __e2setcost(200)
-e2function entity entity:drawQuad(string mat,vector pos,vector color,number alpha,sizex,sizey)
+e2function entity entity:drawQuad(string mat,vector pos,angle ang,vector color,number alpha,sizex,sizey)
 if !validEntity(this) then return nil end  
 if !isOwner(self,this) then return nil end  
-return E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 end
 
-e2function entity drawQuad(string mat,vector pos,vector color,number alpha,sizex,sizey)
-return E2_spawn_quad(self,this,mat,pos,color,alpha,sizex,sizey)
+e2function entity drawQuad(string mat,vector pos,angle ang,vector color,number alpha,sizex,sizey)
+return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 end
 
 __e2setcost(20)
