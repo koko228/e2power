@@ -45,7 +45,7 @@ local function createentitysfromE2(self,entity,pos,angles,freeze)
 	if not ValidEntity(ent) then return nil end
 	ent:SetPos(pos)
 	ent:SetAngles(angles)
-	--ent:SetPlayer(self.player)
+	ent:SetOwner(self.player)
 	ent:Spawn()
 	self.player:AddCleanup( "props", ent )
 	undo.Create("e2_spawned_entity")
