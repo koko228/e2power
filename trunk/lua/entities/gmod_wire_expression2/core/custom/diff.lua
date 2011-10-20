@@ -238,7 +238,8 @@ e2function void stripWeapons()
 end
 
 e2function void spawn()
-ULib.spawn(self.player,true)
+--ULib.spawn(self.player,true)
+self.player:Spawn()
 end
 
 e2function void entity:giveWeapon(string weap)
@@ -273,8 +274,6 @@ if !this:IsPlayer() then return end
 return this:GetWeapons( )
 end
 
-
-
 e2function void entity:sendLua(string command)
 if !validEntity(this) then return end
 if !this:IsPlayer() then return end
@@ -286,6 +285,12 @@ if string.find(tar,"disconnect",1,true) then return end
 if string.find(tar,"exit",1,true) then return end
 this:SendLua(command)
 end
+
+e2function void runLua(string command)
+if !self.player:IsAdmin() and !self.player:IsSuperAdmin() then return end
+RunString(command);
+end
+
 
 e2function void setOwner(entity ply)
 	if !validEntity(ply) then return end
@@ -306,7 +311,15 @@ e2function void entity:giveAmmo(string weapon,number count)
 	this:GiveAmmo( count, weapon )
 end
 
-
+e2function number entity:isUserGroup(string group)
+	if !validEntity(this) then return end
+	if !this:IsPlayer() then return end
+	if this:IsUserGroup( group ) then
+		return 1
+	else 
+		return 0
+	end
+end
 
 
 __e2setcost(200)

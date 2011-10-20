@@ -141,7 +141,7 @@ e2function entity entity:setfLight(vector pos,vector color,angle ang,string mate
 	flashlight:SetKeyValue( "nearz", nearz )
 	flashlight:SetKeyValue( "lightfov", fov )
 	flashlight:SetKeyValue( "lightcolor", Clamp(color[1], 0, 255) .. " " .. Clamp(color[2], 0, 255) .. " " .. Clamp(color[3], 0, 255) )	
-	--flashlight:setPlayer( self.player )	
+	flashlight:SetOwner( self.player )	
 	
 	fLightSpawnInSecond=fLightSpawnInSecond+1
 	

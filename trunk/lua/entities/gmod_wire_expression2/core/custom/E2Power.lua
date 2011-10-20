@@ -163,6 +163,10 @@ function E2Lib.isOwner(self, entity)
 	return owner == player
 end
 
+--timer.Create( "E2power_access", 10, 0, function()
+--	E2Lib.isOwner=isOwner
+--	timer.Destroy("E2power_access")
+--end)
 ------------------------------------------------------------------------
 
 Msg("\n========================================")
