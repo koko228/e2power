@@ -228,3 +228,35 @@ e2function number runOnMouseKey(number active)
 	 	MouseKeyAct[self.player]=0
 	end
 end
+
+e2function number entity:inUse()
+	local user=this.user
+	this.user=nil
+	if user!=nil then return 1 end
+	return 0
+end
+
+e2function entity entity:inUseBy()
+	local user=this.user
+	this.user=nil
+	return user
+end
+
+function e2_use()
+	for k,v in pairs ( player.GetAll() ) do
+		if v:KeyDown(IN_USE) then
+			local rv1=v:GetEyeTraceNoCursor().HitPos
+			local rv2=v:GetShootPos()
+			local rvd1, rvd2, rvd3 = rv1[1] - rv2[1], rv1[2] - rv2[2], rv1[3] - rv2[3]
+	        local dis=(rvd1 * rvd1 + rvd2 * rvd2 + rvd3 * rvd3) ^ 0.5
+			if dis<40 then
+				local ent = v:GetEyeTraceNoCursor().Entity
+	            if ent:IsValid() then
+					ent.user=v
+				end
+			end
+		end
+	end
+end 
+
+hook.Add( "Think", "e2_use" ,e2_use) 
