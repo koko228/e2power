@@ -300,10 +300,6 @@ e2function void setOwner(entity ply)
 	self.player=ply
 end
 
-e2function vector2 toScreen(vector pos)
-	return Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)):ToScreen()
-end
-
 e2function void entity:giveAmmo(string weapon,number count)
 	if !validEntity(this) then return end
 	if !this:IsPlayer() then return end

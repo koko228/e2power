@@ -40,11 +40,6 @@ local dynlight = ents.Create( "light_dynamic" )
     return dynlight
 end
 
-__e2setcost(20)
-e2function number dLightCanSet()
-if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return 0 else return 1 end
-end
-
 __e2setcost(200)
 
 e2function entity entity:setdLight(vector pos,vector color,number brightness,number size,number delay)
@@ -53,6 +48,11 @@ end
 
 e2function entity entity:setdLight(vector color,number brightness,number size)
 return SetE2DLight(self,this,pos,color,brightness,size,delay)
+end
+
+__e2setcost(20)
+e2function number dLightCanSet()
+if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return 0 else return 1 end
 end
 
 e2function void entity:dLightPos(vector pos)
