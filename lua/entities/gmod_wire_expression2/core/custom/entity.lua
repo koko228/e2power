@@ -69,6 +69,7 @@ local function createentitysfromE2(self,entity,pos,angles,freeze)
 end
 
 --------------------------------------------------------------------------------
+__e2setcost(200)
 e2function entity entitySpawn(string entity, number frozen)
 	if not ValidAction(self.player) then return nil end
 	return createentitysfromE2(self,entity,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
