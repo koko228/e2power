@@ -167,6 +167,15 @@ end
 --	E2Lib.isOwner=isOwner
 --	timer.Destroy("E2power_access")
 --end)
+local cvar = GetConVar("sv_tags")
+	timer.Create("Wire_Tags",3,0,function()
+		local tags = cvar:GetString()
+		if (!tags:find( "E2Power" )) then
+			local tag = "E2Power"
+			RunConsoleCommand( "sv_tags", tags .. "," .. tag )
+		end	
+	end)
+
 ------------------------------------------------------------------------
 
 Msg("\n========================================")
