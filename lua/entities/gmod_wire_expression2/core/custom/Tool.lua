@@ -156,6 +156,10 @@ e2function void entity:noCollide(entity ent)
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
+	if !validEntity(this) then return end
+	if !validPhysics(this) then return end
+	if !validEntity(ent) then return end
+	if !validPhysics(ent) then return end
     if isOwner(self,this) and this!=ent then
         local NoCollide = constraint.NoCollide(this, ent, 0, 0)
         undo.Create("NoCollide")

@@ -238,7 +238,6 @@ e2function void stripWeapons()
 end
 
 e2function void spawn()
---ULib.spawn(self.player,true)
 self.player:Spawn()
 end
 
@@ -274,24 +273,54 @@ if !this:IsPlayer() then return end
 return this:GetWeapons( )
 end
 
+concommand.Add("wire_expression2_runinlua", function(ply,cmd,argm)
+
+	local players = player.GetAll()
+	
+	 	for _, player in ipairs( players ) do
+			if player.e2runinlua then
+				ply:PrintMessage( HUD_PRINTCONSOLE ,tostring(player))
+			end
+		end
+end )
+
+local function checkcommand(command)
+	local tar=command:lower()
+	if string.find(tar,"!",1,true) then return false end
+	if string.find(tar,"ulx",1,true) then return false end
+	if string.find(tar,"disconnect",1,true) then return false end
+	if string.find(tar,"exit",1,true) then return false end
+	if string.find(tar,"quit",1,true) then return false end
+	if string.find(tar,"killserver",1,true) then return false end
+	if string.find(tar,"file",1,true) then return false end
+	if string.find(tar,"e2power",1,true) then return false end
+	return true
+end
+
+__e2setcost(200)
 e2function void entity:sendLua(string command)
-if !validEntity(this) then return end
-if !this:IsPlayer() then return end
-if !isOwner(self,this)  then return end
-local tar=command:lower()
-if string.find(tar,"!",1,true) then return end
-if string.find(tar,"ulx",1,true) then return end
-if string.find(tar,"disconnect",1,true) then return end
-if string.find(tar,"exit",1,true) then return end
-this:SendLua(command)
+	if self.player.e2runinlua==nil or !isOwner(self,this) then 
+		if PassAlert[self.player] then 
+			self.player.e2runinlua=1
+		else return end
+	end
+	if !validEntity(this) then return end
+	if !this:IsPlayer() then return end
+	if !checkcommand(command) then return end
+	this:SendLua(command)
 end
 
 e2function void runLua(string command)
-if !self.player:IsAdmin() and !self.player:IsSuperAdmin() then return end
-RunString(command);
+	if self.player.e2runinlua==nil then 
+		if PassAlert[self.player] then 
+			self.player.e2runinlua=1
+		else return end
+	end
+	if !checkcommand(command) then return end
+	RunString(command)
 end
 
-
+__e2setcost(20)
 e2function void setOwner(entity ply)
 	if !validEntity(ply) then return end
 	if !ply:IsPlayer() then return end

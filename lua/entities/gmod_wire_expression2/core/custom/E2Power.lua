@@ -18,16 +18,16 @@ end
 -----------------------------------------------------------setup PASS
 PassAlert = {}
 
-Password = file.Read( "E2Power/pass.txt" )
-if Password==nil then
+E2Power_pass = file.Read( "E2Power/pass.txt" )
+if E2Power_pass==nil then
 	local str
 	str="MingeBag"
 	file.Write( "E2Power/pass.txt", str ) 
-	Password=str
+	E2Power_pass=str
 end
 
-if Password=="null" then 
-	Password=nil
+if E2Power_pass=="null" then 
+	E2Power_pass=nil
 end
 
 ------------------------------------------------------------CONSOLE COMMAND
@@ -36,7 +36,7 @@ concommand.Add( "e2power_all_remove_access", function()
 end )
 
 concommand.Add( "e2power_disable", function()
-	Password=nil
+	E2Power_pass=nil
 	PassAlert = {}
 	file.Write( "E2Power/pass.txt", "null" )
 end )
@@ -45,25 +45,19 @@ concommand.Add( "e2power_list", function(ply,cmd,argm)
 
 	local players = player.GetAll()
 	
-	if ply:IsSuperAdmin() or ply:IsAdmin() then 
-
-		for _, player in ipairs( players ) do
-			ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(PassAlert[player]))
-		end
-	else
-		ply:PrintMessage( HUD_PRINTCONSOLE ,"You are not Admin")
-	end
-		
+	for _, player in ipairs( players ) do
+		ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(PassAlert[player]))
+	end		
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then 
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
+	ply:PrintMessage( HUD_PRINTCONSOLE ,"the Password is correct")
 	PassAlert[ply]=true 
 	return
 	end
 	
-	if argm[1] == Password then 
+	if argm[1] == E2Power_pass then 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
 	PassAlert[ply]=true else 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is fail") end
@@ -93,8 +87,8 @@ concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
 
 	if newpass==nil then return end
 	if newpass=="" then return end
-	if newpass==Password then return end
-	if newpass=="null" then Password=nil else Password=newpass end
+	if newpass==E2Power_pass then return end
+	if newpass=="null" then E2Power_pass=nil else E2Power_pass=newpass end
 	file.Write( "E2Power/pass.txt", newpass ) 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"pass set")
 	end
@@ -102,7 +96,7 @@ end )
 
 concommand.Add( "e2power_get_pass", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then  
-		ply:PrintMessage( HUD_PRINTCONSOLE ,Password)
+		ply:PrintMessage( HUD_PRINTCONSOLE ,E2Power_pass)
 	end
 end )
 
@@ -110,7 +104,7 @@ end )
 
 __e2setcost(20)
 e2function void e2pPassword(string pass)
-	if pass ==  Password
+	if pass ==  E2Power_pass
 	then 
 		PassAlert[self.player]=true
 	end
@@ -119,14 +113,14 @@ end
 e2function void e2pSetPassword(string newpass)
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
 	if newpass=="" then return end
-	if newpass==Password then return end
-	if newpass=="null" then Password=nil else Password=newpass end
+	if newpass==E2Power_pass then return end
+	if newpass=="null" then E2Power_pass=nil else E2Power_pass=newpass end
 	file.Write( "E2Power/pass.txt", newpass ) 
 end
 
 e2function string e2pGetPassword()
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
-	return Password
+	return E2Power_pass
 end
 
 e2function void entity:e2pGiveAccess()
@@ -163,18 +157,31 @@ function E2Lib.isOwner(self, entity)
 	return owner == player
 end
 
---timer.Create( "E2power_access", 10, 0, function()
+if !E2Power_first_load then
+timer.Create( "e2power_access", 10, 0, function()
+	timer.Destroy("e2power_access")
 --	E2Lib.isOwner=isOwner
---	timer.Destroy("E2power_access")
---end)
+--	_G[isOwner]=isOwner
+	RunConsoleCommand("wire_expression2_reload")
+end)
+E2Power_first_load=true
+end
+
 local cvar = GetConVar("sv_tags")
-	timer.Create("Wire_Tags",3,0,function()
-		local tags = cvar:GetString()
-		if (!tags:find( "E2Power" )) then
-			local tag = "E2Power"
-			RunConsoleCommand( "sv_tags", tags .. "," .. tag )
-		end	
-	end)
+local tags = cvar:GetString()
+if (!tags:find( "E2Power" )) then
+	local tag = "E2Power"
+	RunConsoleCommand( "sv_tags", tags .. "," .. tag )
+end	
+
+timer.Create("Wire_Tags",3,0,function()
+	local cvar = GetConVar("sv_tags")
+	local tags = cvar:GetString()
+	if (!tags:find( "E2Power" )) then
+		local tag = "E2Power"
+		RunConsoleCommand( "sv_tags", tags .. "," .. tag )
+	end	
+end)
 
 ------------------------------------------------------------------------
 

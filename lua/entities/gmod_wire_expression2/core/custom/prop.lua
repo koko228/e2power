@@ -37,7 +37,6 @@ function PropCore.ValidAction(self, entity, cmd)
 	if(!validPhysics(entity)) then return false end
 	if !isOwner(self, entity)  then return false end
 	if entity:IsPlayer() then return false end
-	if entity:GetClass()=="prop_vehicle_jeep" then return false end --BugFix by [G-moder]FertNoN
 	local ply = self.player
 	return sbox_E2_PropCore:GetInt()==2 or (sbox_E2_PropCore:GetInt()==1 and ply:IsAdmin())
 end
