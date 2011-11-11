@@ -1,5 +1,4 @@
 -- made by [G-moder]FertNoN
---AddCSLuaFile( "entities\gmod_wire_expression2\core\custom\cl_KeyPress.lua" )
 local keys = {
 ["w"]= IN_FORWARD,
 ["a"]= IN_MOVELEFT,
@@ -206,7 +205,7 @@ e2function number clMouseKeyPressVel(string key)
 	end
 end
 
-e2function number clLastMouseKeyPress()
+e2function string clLastMouseKeyPress()
 	if self.player.e2_mouselast_key then 
 		local key=self.player.e2_mouselast_key 
 		self.player.e2_mouselast_key="null"
@@ -230,6 +229,7 @@ e2function number runOnMouseKey(number active)
 end
 
 e2function number entity:inUse()
+	if !validEntity(this) then return 0 end
 	local user=this.user
 	this.user=nil
 	if user!=nil then return 1 end
@@ -237,6 +237,7 @@ e2function number entity:inUse()
 end
 
 e2function entity entity:inUseBy()
+    if !validEntity(this) then return 0 end
 	local user=this.user
 	this.user=nil
 	return user
