@@ -163,19 +163,6 @@ if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
 end
 --------------------MOUSE
 
-local mousekeys = {
-["4"]= MOUSE_4,
-["5"]= MOUSE_5,
-["count"]= MOUSE_COUNT,
-["first"]= MOUSE_FIRST,
-["last"]= MOUSE_LAST,
-["left"]= MOUSE_LEFT,
-["middle"]= MOUSE_MIDDLE,
-["right"]= MOUSE_RIGHT,
-["wheel_down"]= MOUSE_WHEEL_DOWN,
-["wheel_up"]= MOUSE_WHEEL_UP,
-}
-
 local MouseKeyAct={}
 
 concommand.Add("wire_e2_mousekeypress",function(ply, cmd, argm)
@@ -189,7 +176,7 @@ end)
 
 __e2setcost(20)
 e2function number clMouseKeyPress(string key)
-	if e2_all_MouseKeys[self.player:EntIndex()][mousekeys[key]] then
+	if e2_all_MouseKeys[self.player:EntIndex()][key] then
 		return 1
 	else
 		return 0

@@ -69,6 +69,11 @@ end
 usermessage.Hook("e2_mousekey_run",e2_mousekey_run )
 usermessage.Hook("e2_mousekey_stop",e2_mousekey_stop )
 
+hook.Add("PlayerBindPress", "E2MouseWheel", function(ply, bind, pressed)
+	if (bind == "invprev") or (bind == "invnext") then
+		RunConsoleCommand("wire_e2_mousekeypress",bind,"1")
+	else return end
+end)
 
 concommand.Add( "wire_expression2_clkeypress_run", function(ply,cmd,argm)
 	if "0"==argm[1] then 
