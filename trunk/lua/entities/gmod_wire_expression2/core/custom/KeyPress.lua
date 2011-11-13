@@ -157,7 +157,13 @@ e2function number runOnKey(number active)
 	 	KeyAct[self.player]=0
 	end
 end
+__e2setcost(2000)
+e2function void clkeyClearBuffer()
+	table.remove(e2_all_Keys[self.player:EntIndex()])
+	self.player.e2_last_key=0
+end
 
+__e2setcost(20)
 e2function number keyPress(string key)
 if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
 end
@@ -201,6 +207,14 @@ e2function string clLastMouseKeyPress()
 		return "null"
 	end
 end
+
+__e2setcost(2000)
+e2function void clMousekeyClearBuffer()
+	table.remove(e2_all_MouseKeys[self.player:EntIndex()])
+	self.player.e2_mouselast_key="null"
+end
+
+__e2setcost(20)
 
 e2function number runOnMouseKey(number active)
 	if MouseKeyAct[self.player]==active then return end
