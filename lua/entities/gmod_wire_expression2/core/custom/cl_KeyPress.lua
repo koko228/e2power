@@ -1,5 +1,5 @@
 E2KeyEvents = {}
-function searchforkey() 
+function e2searchforkey() 
 	for i = 1,130 do
 		if(input.IsKeyDown(i)) then
 			if(!E2KeyEvents[i]) then
@@ -17,7 +17,7 @@ function searchforkey()
 end
 
 function e2_key_run() 
-hook.Add( "Think", "E2_KeyPress", searchforkey )
+hook.Add( "Think", "E2_KeyPress", e2searchforkey )
 end
 
 function e2_key_stop() 
@@ -41,7 +41,7 @@ local mousekeys = {
 }
 
 E2MouseKeyEvents = {}
-function searchformousekey() 
+function e2searchformousekey() 
 	for k,v in pairs( mousekeys ) do
 		if(input.IsMouseDown(v)) then
 			if(!E2MouseKeyEvents[k]) then
@@ -59,21 +59,23 @@ function searchformousekey()
 end
 
 function e2_mousekey_run() 
-hook.Add( "Think", "E2_MouseKeyPress", searchformousekey )
-end
-
-function e2_mousekey_stop() 
-hook.Remove( "Think", "E2_MouseKeyPress")
-end
-
-usermessage.Hook("e2_mousekey_run",e2_mousekey_run )
-usermessage.Hook("e2_mousekey_stop",e2_mousekey_stop )
+hook.Add( "Think", "E2_MouseKeyPress", e2searchformousekey )
 
 hook.Add("PlayerBindPress", "E2MouseWheel", function(ply, bind, pressed)
 	if (bind == "invprev") or (bind == "invnext") then
 		RunConsoleCommand("wire_e2_mousekeypress",bind,"1")
 	else return end
 end)
+
+end
+
+function e2_mousekey_stop() 
+hook.Remove( "Think", "E2_MouseKeyPress")
+hook.Remove( "PlayerBindPress", "E2MouseWheel")
+end
+
+usermessage.Hook("e2_mousekey_run",e2_mousekey_run )
+usermessage.Hook("e2_mousekey_stop",e2_mousekey_stop )
 
 concommand.Add( "wire_expression2_clkeypress_run", function(ply,cmd,argm)
 	if "0"==argm[1] then 
