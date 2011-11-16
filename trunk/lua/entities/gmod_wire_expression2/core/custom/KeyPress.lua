@@ -145,7 +145,7 @@ e2function number clLastKeyPress()
 	end
 end
 
-e2function number runOnKey(number active)
+e2function void runOnKey(number active)
 	if KeyAct[self.player]==active then return end
 	if active==1 then
 		umsg.Start("e2_key_run", self.player) 
@@ -216,7 +216,7 @@ end
 
 __e2setcost(20)
 
-e2function number runOnMouseKey(number active)
+e2function void runOnMouseKey(number active)
 	if MouseKeyAct[self.player]==active then return end
 	if active==1 then
 		umsg.Start("e2_mousekey_run", self.player) 

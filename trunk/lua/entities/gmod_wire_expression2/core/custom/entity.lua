@@ -118,8 +118,13 @@ __e2setcost(50)
 e2function void entity:setModel(string model)
 	if not ValidAction(self.player) then return end
 	if not ValidEntity(this) then return nil end
-	if(!isOwner(self, this)) then return end
-	this:SetModel(model)
+	if !isOwner(self, this) then return end
+	if this:IsPlayer() then 
+	local modelname = player_manager.TranslatePlayerModel( model )
+	util.PrecacheModel( modelname )
+	this:SetModel( modelname )
+	else
+	this:SetModel(model)end
 end
 
 --------------------------------------------------------------------------------
