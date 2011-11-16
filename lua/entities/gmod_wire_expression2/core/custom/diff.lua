@@ -209,7 +209,8 @@ e2function void entity:setViewEntity()
 end
 
 e2function void setEyeAngles(angle rot)
-self.player:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
+	if !self.player:IsPlayer() then return end
+	self.player:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
 end
 
 local viem = {
@@ -234,11 +235,13 @@ e2function void entity:spectateEntity()
 end
 
 e2function void stripWeapons()
+	if !self.player:IsPlayer() then return end
 	self.player:StripWeapons() 
 end
 
 e2function void spawn()
-self.player:Spawn()
+	if !self.player:IsPlayer() then return end
+	self.player:Spawn()
 end
 
 e2function void entity:giveWeapon(string weap)
@@ -327,6 +330,11 @@ e2function void setOwner(entity ply)
 	if self.firstowner==nil then self.firstowner=self.player end
 	if !PassAlert[self.firstowner] then return end
 	self.player=ply
+end
+
+e2function entity realOwner()
+	if !validEntity(self.firstowner) then return self.player end
+	return self.firstowner
 end
 
 e2function void entity:giveAmmo(string weapon,number count)
