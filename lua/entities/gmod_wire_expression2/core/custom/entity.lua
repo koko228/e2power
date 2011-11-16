@@ -114,17 +114,12 @@ e2function entity entitySpawn(entity template, vector pos, angle rot, number fro
 	return createentitysfromE2(self,template:GetClass(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
-__e2setcost(50)
+__e2setcost(100)
 e2function void entity:setModel(string model)
 	if not ValidAction(self.player) then return end
 	if not ValidEntity(this) then return nil end
 	if !isOwner(self, this) then return end
-	if this:IsPlayer() then 
-	local modelname = player_manager.TranslatePlayerModel( model )
-	util.PrecacheModel( modelname )
-	this:SetModel( modelname )
-	else
-	this:SetModel(model)end
+	this:SetModel(model)
 end
 
 --------------------------------------------------------------------------------

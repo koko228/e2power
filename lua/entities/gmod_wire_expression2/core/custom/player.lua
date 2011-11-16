@@ -42,3 +42,13 @@ e2function void entity:playerNoclipOn()
 	if !this:IsPlayer() then return end
 	this:SetMoveType( MOVETYPE_NOCLIP )
 end
+
+__e2setcost(100)
+e2function void entity:playerModel(string model)
+	if !validEntity(this) then return end
+	if !isOwner(self, this) then return end
+	if !this:IsPlayer() then return end 
+	local modelname = player_manager.TranslatePlayerModel( model )
+	util.PrecacheModel( modelname )
+	this:SetModel( modelname )
+end
