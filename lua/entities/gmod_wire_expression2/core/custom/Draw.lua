@@ -87,7 +87,7 @@ if BeamSpawnInSecond >= sbox_E2_maxBeamPerSecond:GetInt() then return end
 if BeamCount >= sbox_E2_maxBeam:GetInt() then return end
 
 local beam=ents.Create("e2_beam")
-	beam:SetModel("models/effects/teleporttrail.mdl")
+	beam:SetModel("models/props_phx/huge/evildisc_corp.mdl")
 	beam:SetMaterial(mat)
 	beam:SetPos(Vector(pos[1],pos[2],pos[3]))
 	beam:SetAngles(Angle(0,0,0))
@@ -96,7 +96,8 @@ local beam=ents.Create("e2_beam")
 	if validEntity(this) and isOwner(self,this) then
 		beam:SetParent( this )
 	end
-	
+	beam.mc = true
+	beam.endpos = Vector( endpos[1],endpos[2],endpos[3] )
 	beam:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
 	beam:SetNWFloat("width",width)
 	beam:SetNWFloat("TextStart",textstart)
@@ -135,6 +136,27 @@ e2function void entity:setBeamEndPos(vector endpos)
 if !validEntity(this)  then return end
 if !isOwner(self,this)  then return end
 this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
+this.mc = true
+this.endpos=Vector( endpos[1],endpos[2],endpos[3] )
+end
+
+e2function void entity:setBeamWidth(number width)
+if !validEntity(this)  then return end
+if !isOwner(self,this)  then return end
+this:SetNWFloat("width",width)
+end
+
+e2function void entity:setBeamWidth(number width)
+if !validEntity(this)  then return end
+if !isOwner(self,this)  then return end
+this:SetNWFloat("width",width)
+end
+
+e2function void entity:setBeamText(number textstart,number textend)
+if !validEntity(this)  then return end
+if !isOwner(self,this)  then return end
+this:SetNWFloat("TextStart",textstart)
+this:SetNWFloat("TextEnd",textend)
 end
 
 -----------------------Quad
@@ -154,7 +176,7 @@ function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	if QuadsCount >= sbox_E2_maxQuads:GetInt() then return end
 
 	local quad=ents.Create("e2_quad")
-	quad:SetModel("models/effects/teleporttrail.mdl")
+	quad:SetModel("models/hunter/plates/plate32x32.mdl")
 	quad:SetMaterial(mat)
 	quad:SetPos(Vector(pos[1],pos[2],pos[3]))
 	quad:SetAngles(Angle(ang[1],ang[2],ang[3]))
@@ -163,7 +185,6 @@ function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	if validEntity(this) and isOwner(self,this) then
 		quad:SetParent( this )
 	end
-	
 	quad:SetNWFloat("x",sizex)
 	quad:SetNWFloat("y",sizey)
 

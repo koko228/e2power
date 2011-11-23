@@ -21,5 +21,5 @@ end
 
 function ENT:Draw()
 	render.SetMaterial(self.Glow)
-	render.DrawQuadEasy( self:GetPos(),self:GetForward( ), self.x, self.y,Color( self.r,self.g,self.b,self.a ),90) 
+	render.DrawQuadEasy( self:GetPos(),self:GetUp( ), self.x, self.y,Color( self.r,self.g,self.b,self.a ),90) 
 end
