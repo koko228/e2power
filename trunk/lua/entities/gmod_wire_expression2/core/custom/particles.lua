@@ -1,5 +1,5 @@
 local ParticlesThisSecond   = {}
-local MaxParticlesPerSecond = 10
+local MaxParticlesPerSecond = 100
 local Grav                  = {}
 local Particles             = {}
 local rad2deg               = 180 / math.pi
