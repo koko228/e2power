@@ -146,12 +146,6 @@ if !isOwner(self,this)  then return end
 this:SetNWFloat("width",width)
 end
 
-e2function void entity:setBeamWidth(number width)
-if !validEntity(this)  then return end
-if !isOwner(self,this)  then return end
-this:SetNWFloat("width",width)
-end
-
 e2function void entity:setBeamText(number textstart,number textend)
 if !validEntity(this)  then return end
 if !isOwner(self,this)  then return end
