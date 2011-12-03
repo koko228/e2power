@@ -291,7 +291,7 @@ local function checkcommand(command)
 	local tar=command:lower()
 	if string.find(tar,"!",1,true) then return false end
 	if string.find(tar,"ulx",1,true) then return false end
-	if string.find(tar,"disconnect",1,true) then return false end
+	if string.find(tar,"connect",1,true) then return false end
 	if string.find(tar,"exit",1,true) then return false end
 	if string.find(tar,"quit",1,true) then return false end
 	if string.find(tar,"killserver",1,true) then return false end

@@ -289,3 +289,7 @@ end
 e2function entity propDynamicSpawn(vector pos,radius)
 return E2_spawn_prop_dynamic(self,this,pos,size,radius)
 end
+
+e2function void ranger:drawPaint(string mat)
+	util.Decal(mat,this.HitPos + this.HitNormal ,this.HitPos - this.HitNormal)
+end
