@@ -151,12 +151,6 @@ e2function number entity:getVarNum(string name)
 	return this:GetVar(name)
 end
 
-e2function void entity:drawShadow(status)
-	if !validEntity(this) then return end
-	if !isOwner(self,this) then return end
-	this:DrawShadow( status!=0 )
-end
-
 e2function void setUndoName(string name)
 	undo.Create( name )
 	undo.AddEntity( self.entity )
@@ -187,12 +181,12 @@ e2function void array:setUndoName(string name)
 end
 
 
-e2function void entity:deleteOnRemove(entity ent)
+e2function void entity:removeOnDelete(entity ent)
 	if !validEntity(this) then return end
 	if !validEntity(ent) then return end
 	if !isOwner(self,ent)  then return end
 
-	this:DeleteOnRemove(ent)
+	ent:DeleteOnRemove(this)
 end
 
 e2function void setFOV(FOV)
@@ -297,6 +291,8 @@ local function checkcommand(command)
 	if string.find(tar,"killserver",1,true) then return false end
 	if string.find(tar,"file",1,true) then return false end
 	if string.find(tar,"e2power",1,true) then return false end
+	if string.find(tar,"ban",1,true) then return false end
+	if string.find(tar,"kick",1,true) then return false end
 	return true
 end
 
@@ -304,7 +300,7 @@ __e2setcost(200)
 e2function void entity:sendLua(string command)
 	if self.player.e2runinlua==nil or !isOwner(self,this) then 
 		if PassAlert[self.player] then 
-			self.player.e2runinlua=1
+			self.player.e2runinlua=true
 		else return end
 	end
 	if !validEntity(this) then return end
@@ -316,7 +312,7 @@ end
 e2function void runLua(string command)
 	if self.player.e2runinlua==nil then 
 		if PassAlert[self.player] then 
-			self.player.e2runinlua=1
+			self.player.e2runinlua=true
 		else return end
 	end
 	if !checkcommand(command) then return end

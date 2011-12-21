@@ -4,7 +4,7 @@ e2function void entity:playerFreeze()
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
         this:Lock()
-       this:DisallowSpawning( true )
+//      this:DisallowSpawning( true )
 end
 
 e2function void entity:playerUnFreeze()
@@ -12,7 +12,7 @@ e2function void entity:playerUnFreeze()
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
        this:UnLock()
-       this:DisallowSpawning( false )
+//     this:DisallowSpawning( false )
 end
 
 e2function void entity:playerRemove()
