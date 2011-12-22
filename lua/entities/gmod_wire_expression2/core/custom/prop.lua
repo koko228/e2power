@@ -3,7 +3,6 @@ Prop Core by MrFaul started by ZeikJT
 report any wishes, issues to Mr.Faul@gmx.de (GER or ENG pls)
 \******************************************************************************/
 
-E2Lib.RegisterExtension("propcore", true)
 PropCore = {}
 local sbox_E2_maxProps = CreateConVar( "sbox_E2_maxProps", "-1", FCVAR_ARCHIVE )
 local sbox_E2_maxPropsPerSecond = CreateConVar( "sbox_E2_maxPropsPerSecond", "12", FCVAR_ARCHIVE )

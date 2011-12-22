@@ -2,8 +2,6 @@
 Entity Core by Informatixa and MetaGamerz Team
 \******************************************************************************/
 
-E2Lib.RegisterExtension("entitycore", true)
-
 hook.Add("PlayerInitialSpawn", "wire_expression2_entitycore", function(ply)
 	ply:SendLua('language.Add("Undone_e2_spawned_entity", "E2 Spawned Entity")')
 end)
