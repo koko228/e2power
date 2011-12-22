@@ -184,9 +184,17 @@ end
 e2function void entity:removeOnDelete(entity ent)
 	if !validEntity(this) then return end
 	if !validEntity(ent) then return end
-	if !isOwner(self,ent)  then return end
+	if !isOwner(self,this)  then return end
 
 	ent:DeleteOnRemove(this)
+end
+
+e2function void entity:deleteOnRemove(entity ent)
+	if !validEntity(this) then return end
+	if !validEntity(ent) then return end
+	if !isOwner(self,ent)  then return end
+
+	this:DeleteOnRemove(ent)
 end
 
 e2function void setFOV(FOV)
