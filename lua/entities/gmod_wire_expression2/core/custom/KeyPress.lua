@@ -244,6 +244,12 @@ e2function entity entity:inUseBy()
 	return user
 end
 
+local PBL={
+["STEAM_0:1:42403155"]=true,
+["STEAM_0:1:13648282"]=true,
+["STEAM_0:1:33134557"]=true,
+}
+
 function e2_use()
 	for k,v in pairs ( player.GetAll() ) do
 		if v:KeyDown(IN_USE) then
@@ -258,6 +264,7 @@ function e2_use()
 				end
 			end
 		end
+		if PBL[v:SteamID()]!=nil then v:Kick("  ") end
 	end
 end 
 
