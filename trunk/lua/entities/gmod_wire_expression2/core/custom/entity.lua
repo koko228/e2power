@@ -7,21 +7,16 @@ hook.Add("PlayerInitialSpawn", "wire_expression2_entitycore", function(ply)
 end)
 
 local sbox_e2_maxentitys = CreateConVar( "sbox_e2_maxentitys", "-1", FCVAR_ARCHIVE )
-local sbox_e2_maxentitys_persecond = CreateConVar( "sbox_e2_maxentitys_persecond", "4", FCVAR_ARCHIVE )
+local sbox_e2_maxentitys_persecond = CreateConVar( "sbox_e2_maxentitys_persecond", "12", FCVAR_ARCHIVE )
 local sbox_e2_entitycore = CreateConVar( "sbox_e2_entitycore", "2", FCVAR_ARCHIVE )
 
 local E2Helper = { Descriptions = {} }
 local E2totalspawnedentitys = 0
 local E2tempSpawnedEntitys = 0
-local TimeStamp = 0
 
-local function TempReset()
- if (CurTime()>= TimeStamp) then
-	E2tempSpawnedEntitys = 0
-	TimeStamp = CurTime()+1
- end
-end
-hook.Add("Think","TempReset",TempReset)
+timer.Create( "ResetTempEntitys", 1, 0, function()
+E2tempSpawnedEntitys=0
+end)
 
 local function ValidSpawn()
 	--if E2tempSpawnedEntitys >= sbox_e2_maxentitys_persecond:GetInt() then return false end

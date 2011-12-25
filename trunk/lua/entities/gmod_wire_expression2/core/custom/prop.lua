@@ -10,15 +10,10 @@ local sbox_E2_PropCore = CreateConVar( "sbox_E2_PropCore", "2", FCVAR_ARCHIVE )
 
 local E2totalspawnedprops = 0
 local E2tempSpawnedProps = 0
-local TimeStamp = 0
 
-local function TempReset()
- if (CurTime()>= TimeStamp) then
-	E2tempSpawnedProps = 0
-	TimeStamp = CurTime()+1
- end
-end
-hook.Add("Think","TempReset",TempReset)
+timer.Create( "ResetTempProps", 1, 0, function()
+E2tempSpawnedProps=0
+end)
 
 function PropCore.ValidSpawn()
 	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return false end
