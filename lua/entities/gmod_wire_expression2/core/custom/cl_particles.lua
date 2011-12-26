@@ -31,9 +31,9 @@ function use_message(message)
         
         part:SetColor(Color[1],Color[2],Color[3],255)
         part:SetVelocity(Vel)
-        part:SetDieTime(Clamp(tonumber(Ent:GetNetworkedInt("Duration")), 0.001, 10))
-        part:SetStartSize(Clamp(tonumber(Ent:GetNetworkedInt("StartSize")),0.1,30))
-        part:SetEndSize(Clamp(tonumber(Ent:GetNetworkedInt("EndSize")),0.1,30))
+        part:SetDieTime(Clamp(tonumber(Ent:GetNetworkedInt("Duration")), 0.001, 60))
+        part:SetStartSize(Clamp(tonumber(Ent:GetNetworkedInt("StartSize")),0.1,3000))
+        part:SetEndSize(Clamp(tonumber(Ent:GetNetworkedInt("EndSize")),0.1,3000))
         part:SetAngles(Angle(Ent:GetNetworkedInt("Pitch"),0,0))
     
         if(Gravity[Ent]==nil) then Gravity[Ent] = Vector(0,0,-9.8) end
