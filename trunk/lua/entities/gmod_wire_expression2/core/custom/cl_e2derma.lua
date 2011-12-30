@@ -235,17 +235,20 @@ derma_bricks.dTextBox = function(k,e2)
     DERMA[e2][k]:SetValue( tbl.text )
 
     DERMA[e2][k].OnMousePressed  = function()
-
+		
         
         local DermaText = vgui.Create( "DTextEntry" )
         DermaText:SetTall( 20 )
         DermaText:SetEnterAllowed( true )
         DermaText:SetValue(DERMA[e2][k]:GetValue())
+		
         function DermaText:Think()
-            local x ,y  = DERMA[e2][k]:GetPos();
-            local x2,y2 = DERMA[e2][tbl.parent]:GetPos();
-            DermaText:SetPos( x2+x,y2+y )
-            DermaText:SetWide( DERMA[e2][k]:GetWide( ) )	
+--			if !DERMA[e2][k] then DermaText:Remove( ) return end
+			local tbl = catch[e2].derma[k]
+			local x ,y  = DERMA[e2][k]:GetPos();
+			local x2,y2 = DERMA[e2][tbl.parent]:GetPos();
+			DermaText:SetPos( x2+x,y2+y )
+			DermaText:SetWide( DERMA[e2][k]:GetWide( ) )	
         end
         
         DermaText.OnLoseFocus = function()

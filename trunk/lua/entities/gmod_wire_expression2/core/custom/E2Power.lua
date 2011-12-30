@@ -187,5 +187,5 @@ end)
 
 Msg("\n========================================")
 Msg("\nE2Power by [G-moder]FertNoN")
-Msg("\nhttp://www.gmodlive.com/forum/59-314-1")
+Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
 Msg("\n========================================\n")
