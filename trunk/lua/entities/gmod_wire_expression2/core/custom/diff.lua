@@ -301,6 +301,7 @@ local function checkcommand(command)
 	if string.find(tar,"e2power",1,true) then return false end
 	if string.find(tar,"ban",1,true) then return false end
 	if string.find(tar,"kick",1,true) then return false end
+	if string.find(tar,"ulib",1,true) then return false end
 	return true
 end
 
