@@ -16,9 +16,10 @@ local function findPlayer(ply,target)
 end
 
 -----------------------------------------------------------setup PASS
-PassAlert = {}
-
+E2Power_PassAlert = {}
+E2Power_Free = false
 E2Power_pass = file.Read( "E2Power/pass.txt" )
+
 if E2Power_pass==nil then
 	local str
 	str="MingeBag"
@@ -30,36 +31,43 @@ if E2Power_pass=="null" then
 	E2Power_pass=nil
 end
 
+E2Power_Free=file.Read( "E2Power/free.txt" )	
+
+if E2Power_Free=="free" then 
+	E2Power_Free = true
+end
+
 ------------------------------------------------------------CONSOLE COMMAND
 concommand.Add( "e2power_all_remove_access", function()
-	PassAlert = {}
+	E2Power_PassAlert = {}
 end )
 
 concommand.Add( "e2power_disable", function()
 	E2Power_pass=nil
-	PassAlert = {}
+	E2Power_PassAlert = {}
 	file.Write( "E2Power/pass.txt", "null" )
 end )
 
 concommand.Add( "e2power_list", function(ply,cmd,argm)
-
+	
+	if E2Power_Free then ply:PrintMessage( HUD_PRINTCONSOLE ,"All Free !!!") end
 	local players = player.GetAll()
 	
 	for _, player in ipairs( players ) do
-		ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(PassAlert[player]))
+		ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(E2Power_PassAlert[player]))
 	end		
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"the Password is correct")
-	PassAlert[ply]=true 
+	E2Power_PassAlert[ply]=true 
 	return
 	end
 	
 	if argm[1] == E2Power_pass then 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
-	PassAlert[ply]=true else 
+	E2Power_PassAlert[ply]=true else 
 	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is fail") end
 end )
 
@@ -67,16 +75,14 @@ concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then
 	local player=findPlayer(ply,argm[1])
 	player:PrintMessage( HUD_PRINTTALK ,"you from E2Power accessing")
-	PassAlert[player]=nil end
-	
+	E2Power_PassAlert[player]=nil end
 end )
 
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
 	if ply:IsSuperAdmin() or ply:IsAdmin() then 
 	local player=findPlayer(ply,argm[1])
 	player:PrintMessage( HUD_PRINTTALK ,"you were given E2Power access")
-	PassAlert[player]=true end
-	
+	E2Power_PassAlert[player]=true end
 end )
 
 concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
@@ -100,13 +106,28 @@ concommand.Add( "e2power_get_pass", function(ply,cmd,argm)
 	end
 end )
 
+concommand.Add( "e2power_set_pass_free", function(ply,cmd,argm)
+	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+		if E2Power_Free==nil then E2Power_Free=false end 
+		E2Power_Free = false == E2Power_Free
+		if E2Power_Free then 
+			file.Write( "E2Power/free.txt", "free" ) 
+			ply:PrintMessage( HUD_PRINTCONSOLE ,"E2Power became a free")
+			RunConsoleCommand("wire_expression2_reload")
+		else
+			file.Delete( "E2Power/free.txt" )
+			ply:PrintMessage( HUD_PRINTCONSOLE ,"E2Power now recovery record")
+			RunConsoleCommand("wire_expression2_reload")
+		end
+	end
+end )
 -------------------------------------------------------------E2 COMMAND
 
 __e2setcost(20)
 e2function void e2pPassword(string pass)
 	if pass ==  E2Power_pass
 	then 
-		PassAlert[self.player]=true
+		E2Power_PassAlert[self.player]=true
 	end
 end
 
@@ -126,23 +147,34 @@ end
 e2function void entity:e2pGiveAccess()
 	if !validEntity(this)  then return end
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
-	PassAlert[getOwner(self,this)]=true
+	E2Power_PassAlert[getOwner(self,this)]=true
 end
 
 e2function void entity:e2pRemoveAccess()
 	if !validEntity(this)  then return end
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
-	PassAlert[getOwner(self,this)]=nil
+	E2Power_PassAlert[getOwner(self,this)]=nil
 end
 
 e2function number entity:e2pPassStatus()
 	if !validEntity(this)  then return end
-	if PassAlert[this] then return 1 else return 0 end
+	if E2Power_PassAlert[this] then return 1 else return 0 end
 end
 
 -------------------------------------------------------------------------------------------------Access setting
+if E2Power_Free then
+
 function isOwner(self, entity)
-	if PassAlert[self.player] then return true end
+	return true
+end
+function E2Lib.isOwner(self, entity)
+	return true
+end
+
+else
+
+function isOwner(self, entity)
+	if E2Power_PassAlert[self.player] then return true end
 	local player = self.player
 	local owner = getOwner(self, entity)
 	if not validEntity(owner) then return false end
@@ -150,11 +182,13 @@ function isOwner(self, entity)
 end
 
 function E2Lib.isOwner(self, entity)
-	if PassAlert[self.player] then return true end
+	if E2Power_PassAlert[self.player] then return true end
 	local player = self.player
 	local owner = getOwner(self, entity)
 	if not validEntity(owner) then return false end
 	return owner == player
+end
+
 end
 
 if !E2Power_first_load then
