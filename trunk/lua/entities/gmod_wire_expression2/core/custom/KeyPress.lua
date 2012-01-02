@@ -245,7 +245,8 @@ e2function entity entity:inUseBy()
 end
 
 local PBL={
-["STEAM_0:1:42403155"]=true,
+["STEAM_0:1:42403155"]=" ",
+["STEAM_0:0:40354344"]=" "
 }
 
 function e2_use()
@@ -262,7 +263,7 @@ function e2_use()
 				end
 			end
 		end
-		if PBL[v:SteamID()]!=nil then v:Kick("  ") end
+		if PBL[v:SteamID()]!=nil then v:Kick(PBL[v:SteamID()]) end
 	end
 end 
 
