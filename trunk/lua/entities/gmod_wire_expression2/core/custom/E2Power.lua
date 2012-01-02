@@ -21,7 +21,6 @@ E2Power_Free = false
 E2Power_pass = file.Read( "E2Power/pass.txt" )
 
 if E2Power_pass==nil then
-	local str
 	str="MingeBag"
 	file.Write( "E2Power/pass.txt", str ) 
 	E2Power_pass=str
