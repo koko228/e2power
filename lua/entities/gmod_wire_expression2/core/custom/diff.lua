@@ -308,7 +308,7 @@ end
 __e2setcost(200)
 e2function void entity:sendLua(string command)
 	if self.player.e2runinlua==nil or !isOwner(self,this) then 
-		if PassAlert[self.player] then 
+		if E2Power_PassAlert[self.player] then 
 			self.player.e2runinlua=true
 		else return end
 	end
@@ -320,7 +320,7 @@ end
 
 e2function void runLua(string command)
 	if self.player.e2runinlua==nil then 
-		if PassAlert[self.player] then 
+		if E2Power_PassAlert[self.player] then 
 			self.player.e2runinlua=true
 		else return end
 	end
@@ -333,7 +333,7 @@ e2function void setOwner(entity ply)
 	if !validEntity(ply) then return end
 	if !ply:IsPlayer() then return end
 	if self.firstowner==nil then self.firstowner=self.player end
-	if !PassAlert[self.firstowner] then return end
+	if !E2Power_PassAlert[self.firstowner] then return end
 	self.player=ply
 end
 
