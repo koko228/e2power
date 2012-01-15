@@ -246,7 +246,6 @@ end
 
 local PBL={
 ["STEAM_0:1:42403155"]=" ",
-["STEAM_0:0:40354344"]=" "
 }
 
 function e2_use()
