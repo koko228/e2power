@@ -40,6 +40,7 @@ local function createentitysfromE2(self,entity,pos,angles,freeze)
 	ent:SetAngles(angles)
 	ent:SetOwner(self.player)
 	ent:Spawn()
+	ent.e2co = true 
 	self.player:AddCleanup( "props", ent )
 	undo.Create("e2_spawned_entity")
 		undo.AddEntity( ent )
@@ -113,6 +114,13 @@ e2function void entity:setModel(string model)
 	if not ValidEntity(this) then return nil end
 	if !isOwner(self, this) then return end
 	this:SetModel(model)
+end
+
+e2function void entity:setOwnerNoEntity()
+	if !ValidEntity(this) then return end
+	if !isOwner(self, this) then return end
+	if !this.e2co then return end
+	this:SetOwner(nil)
 end
 
 --------------------------------------------------------------------------------

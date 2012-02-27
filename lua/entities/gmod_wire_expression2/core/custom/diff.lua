@@ -125,6 +125,12 @@ e2function void entity:setKeyValue(string name,...)
 	this:SetKeyValue(name,ret[1])
 end
 
+e2function void entity:setFire(string input, string param, dalay )
+	if !validEntity(this) then return end
+	if !isOwner(self,this)  then return end
+	this:Fire( input, param, delay )
+end
+
 e2function void entity:setVar(string name,...)
 	local ret = {...}
 	if !validEntity(this) then return end
