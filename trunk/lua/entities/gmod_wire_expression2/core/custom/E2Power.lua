@@ -191,14 +191,30 @@ end
 end
 
 if !E2Power_first_load then
-timer.Create( "e2power_access", 10, 0, function()
-	timer.Destroy("e2power_access")
---	E2Lib.isOwner=isOwner
---	_G[isOwner]=isOwner
-	RunConsoleCommand("wire_expression2_reload")
-end)
-E2Power_first_load=true
+	timer.Create( "e2power_access", 10, 0, function()
+		timer.Destroy("e2power_access")	
+--		E2Lib.isOwner=isOwner
+--		_G[isOwner]=isOwner
+		RunConsoleCommand("wire_expression2_reload")
+	end)
+	
+	E2Power_first_load=true
+else 
+	Msg("\n========================================")
+	Msg("\nE2Power by [G-moder]FertNoN")
+	
+	local Version = tonumber(file.Read( "../addons/e2power/info.txt" ):match( "version\"\t\"(%d+)\"" ))
+	http.Get( "http://e2power.googlecode.com/svn/trunk/info.txt", "", function(s)
+	E2Power_Version = tonumber(s:match( "version\"\t\"(%d+)\"" ))
+	end )
+	if Version < E2P_Version then
+	Msg("\nOLD VERSION !!!")
+	end
+	
+	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
+	Msg("\n========================================\n")
 end
+
 
 local cvar = GetConVar("sv_tags")
 local tags = cvar:GetString()
@@ -217,8 +233,3 @@ timer.Create("Wire_Tags",3,0,function()
 end)
 
 ------------------------------------------------------------------------
-
-Msg("\n========================================")
-Msg("\nE2Power by [G-moder]FertNoN")
-Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
-Msg("\n========================================\n")

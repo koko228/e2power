@@ -1,7 +1,7 @@
-"AddonInfo"
+﻿"AddonInfo"
 {
 	"name"		"E2Power"
-	"version"	"SVN"
+	"version"	"80"
 	"author_name"	"[G-moder]FertNoN"
 	"author_email"	"ferting@ukr.net"
 	"author_url"	"http://www.gmodlive.com/forum/59-314-1"
