@@ -205,10 +205,16 @@ else
 	
 	local Version = tonumber(file.Read( "E2power_version.txt" ))
 	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
-	E2Power_Version = tonumber(s)
+		if s==nil then E2Power_Version=Version else E2Power_Version = tonumber(s) end
 	end )
-	if Version < E2P_Version then
-	Msg("\nOLD VERSION !!!")
+	if Version < E2Power_Version then
+		Msg("\nE2Power need update !!!")
+	
+		local players = player.GetAll()
+		for _, player in ipairs( players ) do
+			player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+		end
+	
 	end
 	
 	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
