@@ -21,7 +21,7 @@ end
 e2function void entity:remove()
 	if !validEntity(this)  then return end
 	if !isOwner(self,this)  then return end
-        if (this:IsPlayer()) then return end
+    if (this:IsPlayer()) then return end
 	this:Remove()
 end
 
@@ -122,6 +122,7 @@ e2function void entity:setKeyValue(string name,...)
 	local ret = {...}
 	if !validEntity(this) then return end
 	if !isOwner(self,this)  then return end
+	if string.find(name,"Code",1,true) then return end 
 	this:SetKeyValue(name,ret[1])
 end
 
@@ -328,7 +329,7 @@ e2function void entity:sendLua(string command)
 end
 
 e2function void runLua(string command)
-	if self.player.e2runinlua==nil then 
+	if self.player.e2runinlua==nil then
 		if E2Power_PassAlert[self.player] then 
 			self.player.e2runinlua=true
 		else return end
