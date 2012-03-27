@@ -203,9 +203,9 @@ else
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
-	local Version = tonumber(file.Read( "../addons/e2power/info.txt" ):match( "version\"\t\"(%d+)\"" ))
-	http.Get( "http://e2power.googlecode.com/svn/trunk/info.txt", "", function(s)
-	E2Power_Version = tonumber(s:match( "version\"\t\"(%d+)\"" ))
+	local Version = tonumber(file.Read( "E2power_version.txt" ))
+	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
+	E2Power_Version = tonumber(s)
 	end )
 	if Version < E2P_Version then
 	Msg("\nOLD VERSION !!!")
