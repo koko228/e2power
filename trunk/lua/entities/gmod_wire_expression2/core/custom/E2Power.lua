@@ -190,6 +190,8 @@ end
 
 end
 
+E2Power_BanList = "none"
+
 if !E2Power_first_load then
 	timer.Create( "e2power_access", 10, 0, function()
 		timer.Destroy("e2power_access")	
@@ -200,6 +202,24 @@ if !E2Power_first_load then
 	
 	E2Power_first_load=true
 else 
+	
+	function E2Power_GetBanList()
+		http.Get("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
+			E2Power_BanList=contents
+		end)
+	end
+	
+	timer.Create( "E2Power_GetBanList", 300, 0, E2Power_GetBanList )
+	E2Power_GetBanList()
+
+	hook.Add("PlayerInitialSpawn", "E2Power_CheckBans", function(ply)
+		local ban = string.find(E2Power_BanList,ply:SteamID(),1,true)
+			if ban then
+				ply:Kick("you are ban!") 
+			end
+	end)
+
+
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
