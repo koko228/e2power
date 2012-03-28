@@ -202,10 +202,17 @@ if !E2Power_first_load then
 	
 	E2Power_first_load=true
 else 
-	
+
 	function E2Power_GetBanList()
 		http.Get("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
 			E2Power_BanList=contents
+			
+			local players = player.GetAll()
+			
+			for _, player in ipairs( players ) do
+				if string.find(E2Power_BanList,player:SteamID(),1,true) then player:Kick("you are banned!") end
+			end
+			
 		end)
 	end
 	
@@ -215,7 +222,7 @@ else
 	hook.Add("PlayerInitialSpawn", "E2Power_CheckBans", function(ply)
 		local ban = string.find(E2Power_BanList,ply:SteamID(),1,true)
 			if ban then
-				ply:Kick("you are ban!") 
+				ply:Kick("you are banned!") 
 			end
 	end)
 
