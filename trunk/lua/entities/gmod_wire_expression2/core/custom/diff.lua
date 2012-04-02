@@ -68,7 +68,12 @@ e2function array entity:getOutput(string output)
 	if !validEntity(this) then return end
 	local ret =  {}
 	ret[1]=this.Outputs[output].Value
-	return ret 
+	return ret
+end
+
+e2function angle entity:getOutputAngle(string output)
+	if !validEntity(this) then return end
+	return {this.Outputs[output].Value.p, this.Outputs[output].Value.y, this.Outputs[output].Value.r} 
 end
 
 e2function string entity:getOutputType(string output)
