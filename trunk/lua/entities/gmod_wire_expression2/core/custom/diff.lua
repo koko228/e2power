@@ -134,6 +134,8 @@ end
 e2function void entity:setFire(string input, string param, dalay )
 	if !validEntity(this) then return end
 	if !isOwner(self,this)  then return end
+	if string.find(input,"Kill",1,true) then return end 
+	if string.find(input,"RunPassedCode",1,true) then return end 
 	this:Fire( input, param, delay )
 end
 
@@ -285,9 +287,16 @@ end
 end
 
 e2function array entity:weapons()
-if !validEntity(this) then return end
-if !this:IsPlayer() then return end
-return this:GetWeapons( )
+	if !validEntity(this) then return end
+	if !this:IsPlayer() then return end
+	return this:GetWeapons( )
+end
+
+e2function void entity:pp(string param, string value)
+	if !validEntity(this) then return end
+	if !this:IsPlayer() then return end
+	if !isOwner(self,this)  then return end
+	this:SendLua("RunConsoleCommand('pp_"..param.."','"..value.."')")
 end
 
 concommand.Add("wire_expression2_runinlua", function(ply,cmd,argm)

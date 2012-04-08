@@ -160,6 +160,10 @@ e2function number entity:e2pPassStatus()
 	if E2Power_PassAlert[this] then return 1 else return 0 end
 end
 
+e2function number e2pVersion()
+	return E2Power_Version
+end
+
 -------------------------------------------------------------------------------------------------Access setting
 if E2Power_Free then
 
@@ -230,12 +234,12 @@ else
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
-	local Version = tonumber(file.Read( "E2power_version.txt" ))
+	E2Power_Version = tonumber(file.Read( "E2power_version.txt" ))
 	
 	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
-		E2Power_Version = tonumber(s) 
+		local SVN_Version = tonumber(s) 
 		
-		if Version < E2Power_Version then
+		if E2Power_Version < SVN_Version then
 		Msg("\nE2Power need update !!!\n")
 			local players = player.GetAll()
 			for _, player in ipairs( players ) do
@@ -247,6 +251,12 @@ else
 	
 	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
 	Msg("\n========================================\n")
+	
+	concommand.Add( "e2power_get_version", function(ply,cmd,argm)
+			ply:PrintMessage( HUD_PRINTCONSOLE ,E2Power_Version)
+	end )
+	
+	
 end
 
 
