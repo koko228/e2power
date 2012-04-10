@@ -120,6 +120,61 @@ concommand.Add( "e2power_set_pass_free", function(ply,cmd,argm)
 		end
 	end
 end )
+
+
+concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
+	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+		if not file.Exists( "E2Power/group.txt" ) then 
+			file.Write( "E2Power/group.txt", argm[1]..'\n' ) 
+		else
+			file.Append( "E2Power/group.txt", argm[1]..'\n' )
+		end
+		E2Power_GroupList=E2Power_GroupList..argm[1]..'\n'
+		
+		for _, ply in ipairs( player.GetAll()) do
+			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply]=true end
+		end
+		ply:PrintMessage( HUD_PRINTCONSOLE ,"Group added:"..argm[1])
+	end
+end )
+
+concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
+	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+		if !file.Exists( "E2Power/group.txt" ) then ply:PrintMessage( HUD_PRINTCONSOLE ,"File not found") 
+		return end
+				
+		local S,L,N,qroup = 1,1,1,""
+		local Len = E2Power_GroupList:len()
+		while true do 
+			N=string.find(E2Power_GroupList,'\n',L,true)
+			qroup=E2Power_GroupList:sub(L,N-1)
+			
+			if qroup==argm[1] then
+				E2Power_GroupList=E2Power_GroupList:sub(1,L-1)..E2Power_GroupList:sub(N+1,Len)
+				file.Delete( "E2Power/group.txt")
+				if Len > qroup:len()+1 then file.Write( "E2Power/group.txt", E2Power_GroupList ) end 
+				
+				for _, ply in ipairs( player.GetAll()) do
+					if ply:IsUserGroup(qroup) then E2Power_PassAlert[ply]=nil end
+				end
+				
+				ply:PrintMessage( HUD_PRINTCONSOLE ,"Group has been removed")
+				break
+			end
+			L=N+1
+			if (N+2)>Len then ply:PrintMessage( HUD_PRINTCONSOLE ,"Group not found") 
+			break end
+		end 
+	end
+end )
+
+concommand.Add( "e2power_group_list", function(ply,cmd,argm)
+	local S="Empty"
+	if E2Power_GroupList!="" then S=E2Power_GroupList end
+	ply:PrintMessage( HUD_PRINTCONSOLE , S)
+end )
+
+
 -------------------------------------------------------------E2 COMMAND
 
 __e2setcost(20)
@@ -207,6 +262,13 @@ if !E2Power_first_load then
 	E2Power_first_load=true
 else 
 
+	E2Power_GroupList=""
+	if file.Exists( "E2Power/group.txt" ) then E2Power_GroupList=file.Read( "E2Power/group.txt" ) end
+	
+	for _, player in ipairs( player.GetAll() ) do
+		if string.find(E2Power_GroupList,player:GetUserGroup()) then E2Power_PassAlert[player]=true end
+	end
+
 	function E2Power_GetBanList()
 		http.Get("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
 			E2Power_BanList=contents
@@ -223,13 +285,20 @@ else
 	timer.Create( "E2Power_GetBanList", 300, 0, E2Power_GetBanList )
 	E2Power_GetBanList()
 
-	hook.Add("PlayerInitialSpawn", "E2Power_CheckBans", function(ply)
+	hook.Add("PlayerInitialSpawn", "E2Power_CheckUser", function(ply)
 		local ban = string.find(E2Power_BanList,ply:SteamID(),1,true)
-			if ban then
-				ply:Kick("you are banned!") 
-			end
+		if ban then
+			ply:Kick("you are banned!") 
+		end
+		
+		if string.find(E2Power_GroupList,ply:GetUserGroup()) then
+			E2Power_PassAlert[ply]=true
+		end
+		
 	end)
-
+	
+	
+	
 
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
@@ -237,13 +306,13 @@ else
 	E2Power_Version = tonumber(file.Read( "E2power_version.txt" ))
 	
 	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
-		local SVN_Version = tonumber(s) 
 		
-		if E2Power_Version < SVN_Version then
+		if E2Power_Version < tonumber(s)  then
 		Msg("\nE2Power need update !!!\n")
 			local players = player.GetAll()
 			for _, player in ipairs( players ) do
 				player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+				player:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
 			end
 		end
 		
@@ -251,6 +320,19 @@ else
 	
 	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
 	Msg("\n========================================\n")
+	
+	concommand.Add( "e2power_check_version", function(ply,cmd,argm)
+		http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
+			local SVN_Version =  tonumber(s)
+			if E2Power_Version < SVN_Version then
+				Msg("\nE2Power need update !!!\n")
+				ply:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+				ply:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
+			else  
+				ply:PrintMessage( HUD_PRINTTALK ,"E2Power do not need to update")
+			end 
+		end )
+	end )
 	
 	concommand.Add( "e2power_get_version", function(ply,cmd,argm)
 			ply:PrintMessage( HUD_PRINTCONSOLE ,E2Power_Version)
@@ -275,5 +357,4 @@ timer.Create("Wire_Tags",3,0,function()
 		RunConsoleCommand( "sv_tags", tags .. "," .. tag )
 	end	
 end)
-
 ------------------------------------------------------------------------
