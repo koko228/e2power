@@ -7,6 +7,12 @@ e2function number entity:isExist()
 	if !validEntity(this) then return 0 else return 1 end
 end
 
+e2function string entity:getUserGroup()
+	if !validEntity(this)  then return end
+	if !this:IsPlayer() then return end
+	return this:GetUserGroup() 
+end
+
 __e2setcost(20)
 e2function void entity:setVel(vector vel)
 	if !validEntity(this)  then return end
@@ -21,7 +27,7 @@ end
 e2function void entity:remove()
 	if !validEntity(this)  then return end
 	if !isOwner(self,this)  then return end
-    if (this:IsPlayer()) then return end
+    if this:IsPlayer() then return end
 	this:Remove()
 end
 
