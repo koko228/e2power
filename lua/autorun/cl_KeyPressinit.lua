@@ -1,6 +1,6 @@
 AddCSLuaFile( "cl_KeyPressinit.lua" )
 E2KeyEvents = {}
-function e2e2searchforkey() 
+function e2searchforkey() 
 	for i = 1,130 do
 		if(input.IsKeyDown(i)) then
 			if(!E2KeyEvents[i]) then

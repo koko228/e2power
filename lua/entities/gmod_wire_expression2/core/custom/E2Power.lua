@@ -1,5 +1,15 @@
 --E2POWER made by [G-moder]FertNoN
 
+
+local function printMsg(ply,msg)
+	if ply:IsValid() then ply:PrintMessage( HUD_PRINTCONSOLE , msg) else Msg(msg) end
+end
+
+local function checkPly(ply) 
+	if !ply:IsValid() then return true end
+	if ply:IsSuperAdmin() or ply:IsAdmin() then return true end
+end
+
 local function findPlayer(ply,target)
 	if not target then return 1 end
 	local players = player.GetAll()
@@ -7,11 +17,11 @@ local function findPlayer(ply,target)
 	
 	for _, player in ipairs( players ) do
 		if string.find(player:Nick():lower(),target,1,true) then
-			ply:PrintMessage( HUD_PRINTCONSOLE ,"player find: "..player:Nick())
+			printMsg(ply,"player: "..player:Nick())
 			return player
 		end
 	end
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"Player not find")
+	printMsg(ply,"Player not found")
 	return 0
 end
 
@@ -41,7 +51,7 @@ concommand.Add( "e2power_all_remove_access", function()
 	E2Power_PassAlert = {}
 end )
 
-concommand.Add( "e2power_disable", function()
+concommand.Add( "e2power_disable_pass", function()
 	E2Power_pass=nil
 	E2Power_PassAlert = {}
 	file.Write( "E2Power/pass.txt", "null" )
@@ -49,43 +59,43 @@ end )
 
 concommand.Add( "e2power_list", function(ply,cmd,argm)
 	
-	if E2Power_Free then ply:PrintMessage( HUD_PRINTCONSOLE ,"All Free !!!") end
+	if E2Power_Free then printMsg(ply,"All Free !!!")  end
 	local players = player.GetAll()
 	
 	for _, player in ipairs( players ) do
-		ply:PrintMessage( HUD_PRINTCONSOLE ,player:Nick().." "..tostring(E2Power_PassAlert[player]))
+		printMsg(ply,player:Nick().." "..tostring(E2Power_PassAlert[player]))
 	end		
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then 
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"the Password is correct")
+	if checkPly(ply) then 
+	printMsg(ply,"the Password is correct")
 	E2Power_PassAlert[ply]=true 
 	return
 	end
 	
 	if argm[1] == E2Power_pass then 
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is correct")
+	printMsg(ply,"the password is correct")
 	E2Power_PassAlert[ply]=true else 
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"the password is fail") end
+	printMsg(ply,"the password is fail") end
 end )
 
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then
+	if checkPly(ply) then
 	local player=findPlayer(ply,argm[1])
-	player:PrintMessage( HUD_PRINTTALK ,"you from E2Power accessing")
+	printMsg(player,"you from E2Power accessing")
 	E2Power_PassAlert[player]=nil end
 end )
 
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then 
+	if checkPly(ply) then 
 	local player=findPlayer(ply,argm[1])
-	player:PrintMessage( HUD_PRINTTALK ,"you were given E2Power access")
+	printMsg(player,"you were given E2Power access")
 	E2Power_PassAlert[player]=true end
 end )
 
 concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then 
+	if checkPly(ply) then 
 
 	local newpass
 	newpass=argm[1]
@@ -95,27 +105,27 @@ concommand.Add( "e2power_set_pass", function(ply,cmd,argm)
 	if newpass==E2Power_pass then return end
 	if newpass=="null" then E2Power_pass=nil else E2Power_pass=newpass end
 	file.Write( "E2Power/pass.txt", newpass ) 
-	ply:PrintMessage( HUD_PRINTCONSOLE ,"pass set")
+	printMsg(ply,"pass set")
 	end
 end )
 
 concommand.Add( "e2power_get_pass", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then  
-		ply:PrintMessage( HUD_PRINTCONSOLE ,E2Power_pass)
+	if checkPly(ply) then  
+		printMsg(ply,E2Power_pass)
 	end
 end )
 
 concommand.Add( "e2power_set_pass_free", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+	if checkPly(ply) then  
 		if E2Power_Free==nil then E2Power_Free=false end 
 		E2Power_Free = false == E2Power_Free
 		if E2Power_Free then 
 			file.Write( "E2Power/free.txt", "free" ) 
-			ply:PrintMessage( HUD_PRINTCONSOLE ,"E2Power became a free")
+			printMsg(ply,"E2Power became a free")
 			RunConsoleCommand("wire_expression2_reload")
 		else
 			file.Delete( "E2Power/free.txt" )
-			ply:PrintMessage( HUD_PRINTCONSOLE ,"E2Power now recovery record")
+			printMsg(ply,"E2Power now recovery record")
 			RunConsoleCommand("wire_expression2_reload")
 		end
 	end
@@ -123,7 +133,7 @@ end )
 
 
 concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then  
+	if checkPly(ply) then  
 		if not file.Exists( "E2Power/group.txt" ) then 
 			file.Write( "E2Power/group.txt", argm[1]..'\n' ) 
 		else
@@ -134,13 +144,13 @@ concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
 		for _, ply in ipairs( player.GetAll()) do
 			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply]=true end
 		end
-		ply:PrintMessage( HUD_PRINTCONSOLE ,"Group added:"..argm[1])
+		printMsg(ply,"Group added:"..argm[1])
 	end
 end )
 
 concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
-	if ply:IsSuperAdmin() or ply:IsAdmin() then  
-		if !file.Exists( "E2Power/group.txt" ) then ply:PrintMessage( HUD_PRINTCONSOLE ,"File not found") 
+	if checkPly(ply) then  
+		if !file.Exists( "E2Power/group.txt" ) then printMsg(ply,"File not found") 
 		return end
 				
 		local S,L,N,qroup = 1,1,1,""
@@ -158,11 +168,11 @@ concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
 					if ply:IsUserGroup(qroup) then E2Power_PassAlert[ply]=nil end
 				end
 				
-				ply:PrintMessage( HUD_PRINTCONSOLE ,"Group has been removed")
+				printMsg(ply,"Group has been removed")
 				break
 			end
 			L=N+1
-			if (N+2)>Len then ply:PrintMessage( HUD_PRINTCONSOLE ,"Group not found") 
+			if (N+2)>Len then printMsg(ply,"Group not found") 
 			break end
 		end 
 	end
@@ -171,7 +181,7 @@ end )
 concommand.Add( "e2power_group_list", function(ply,cmd,argm)
 	local S="Empty"
 	if E2Power_GroupList!="" then S=E2Power_GroupList end
-	ply:PrintMessage( HUD_PRINTCONSOLE , S)
+	printMsg(ply,S)
 end )
 
 
@@ -326,16 +336,16 @@ else
 			local SVN_Version =  tonumber(s)
 			if E2Power_Version < SVN_Version then
 				Msg("\nE2Power need update !!!\n")
-				ply:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
-				ply:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
+				printMsg(ply,"E2Power need update !!!")
+				printMsg(ply,"Version "..SVN_Version.." is now available")
 			else  
-				ply:PrintMessage( HUD_PRINTTALK ,"E2Power do not need to update")
+				printMsg(ply,"E2Power do not need to update")
 			end 
 		end )
 	end )
 	
 	concommand.Add( "e2power_get_version", function(ply,cmd,argm)
-			ply:PrintMessage( HUD_PRINTCONSOLE ,E2Power_Version)
+			printMsg(ply,E2Power_Version)
 	end )
 	
 	

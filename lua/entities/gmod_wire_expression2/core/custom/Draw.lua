@@ -81,7 +81,7 @@ BeamSpawnInSecond=0
 end)
 
 
-function E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
+function E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 
 if BeamSpawnInSecond >= sbox_E2_maxBeamPerSecond:GetInt() then return end
 if BeamCount >= sbox_E2_maxBeam:GetInt() then return end
@@ -93,20 +93,25 @@ local beam=ents.Create("e2_beam")
 	beam:SetAngles(Angle(0,0,0))
 	beam:SetColor(color[1],color[2],color[3],alpha)
 	beam:SetOwner(self.player)
+	
 	if validEntity(this) and isOwner(self,this) then
 		beam:SetParent( this )
 	end
+	
 	beam.mc = true
-	beam.endpos = Vector( endpos[1],endpos[2],endpos[3] )
-	beam:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
+	
+	if endpos!=nil then beam:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) ) 
+		beam.endpos=Vector( endpos[1],endpos[2],endpos[3] ) else beam.endpos=Vector(0,0,0) end
+	if ent!=nil then beam:SetNWFloat("EndEnt",ent) beam.EndEnt=ent else beam.EndEnt=nil end
+	
 	beam:SetNWFloat("width",width)
 	beam:SetNWFloat("TextStart",textstart)
 	beam:SetNWFloat("TextEnd",textend)
-
+		
 	beam:Spawn()
 	beam:Activate()
 	
-	beam:CallOnRemove("minus_sprite",function()
+	beam:CallOnRemove("minus_beam",function()
 		BeamCount=BeamCount-1
 	end)
 	
@@ -125,11 +130,27 @@ __e2setcost(200)
 e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
 if !validEntity(this) then return nil end  
 if !isOwner(self,this) then return nil end  
-return E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
+return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
+end
+
+e2function entity entity:drawBeam(string mat,vector pos,entity ent,vector color,number alpha,width,textstart,textend)
+if !validEntity(this) then return nil end  
+if !isOwner(self,this) then return nil end  
+return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
+end
+
+e2function void entity:setBeamEndEnt(entity ent)
+if !validEntity(this) then return end  
+if !validEntity(ent) then return end  
+if !isOwner(self,this) then return end  
+if this.EndEnt!=ent then
+	this:SetNWFloat("EndEnt",ent)
+	this.EndEnt=ent
+end
 end
 
 e2function entity drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
-return E2_spawn_beam(self,this,mat,pos,endpos,color,alpha,width,textstart,textend)
+return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function void entity:setBeamEndPos(vector endpos)
