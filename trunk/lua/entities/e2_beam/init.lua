@@ -8,6 +8,13 @@ function ENT:Initialize()
 end
 
 function ENT:Think()
+
+	if self.EndEnt!=nil then 
+		if !self.EndEnt:IsValid() then self.EndEnt=nil return end
+		self.endpos=self.EndEnt:GetPos() 
+		self.mc=true  
+	end
+	
 	if self.mc then
 		self.mc = false
 		local Ang = (self.endpos-self:GetPos()):Angle()
@@ -15,4 +22,5 @@ function ENT:Think()
 			self:SetAngles(Ang)
 		end
 	end
+	
 end
