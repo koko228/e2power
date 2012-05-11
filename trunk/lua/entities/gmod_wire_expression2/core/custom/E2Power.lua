@@ -11,7 +11,7 @@ local function checkPly(ply)
 end
 
 local function findPlayer(ply,target)
-	if not target then return 1 end
+	if not target then return nil end
 	local players = player.GetAll()
 	target = target:lower()
 	
@@ -22,7 +22,7 @@ local function findPlayer(ply,target)
 		end
 	end
 	printMsg(ply,"Player not found")
-	return 0
+	return nil
 end
 
 -----------------------------------------------------------setup PASS
@@ -83,6 +83,7 @@ end )
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
 	if checkPly(ply) then
 	local player=findPlayer(ply,argm[1])
+	if !validEntity(player) then return end
 	printMsg(player,"you from E2Power accessing")
 	E2Power_PassAlert[player]=nil end
 end )
@@ -90,6 +91,7 @@ end )
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
 	if checkPly(ply) then 
 	local player=findPlayer(ply,argm[1])
+	if !validEntity(player) then return end
 	printMsg(player,"you were given E2Power access")
 	E2Power_PassAlert[player]=true end
 end )
@@ -139,7 +141,7 @@ concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
 		else
 			file.Append( "E2Power/group.txt", argm[1]..'\n' )
 		end
-		E2Power_GroupList=E2Power_GroupList..argm[1]..'\n'
+		E2Power_GroupList[#E2Power_GroupList+1]=argm[1]..'\n'
 		
 		for _, ply in ipairs( player.GetAll()) do
 			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply]=true end
@@ -149,38 +151,33 @@ concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
 end )
 
 concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
-	if checkPly(ply) then  
-		if !file.Exists( "E2Power/group.txt" ) then printMsg(ply,"File not found") 
-		return end
-				
-		local S,L,N,qroup = 1,1,1,""
-		local Len = E2Power_GroupList:len()
-		while true do 
-			N=string.find(E2Power_GroupList,'\n',L,true)
-			qroup=E2Power_GroupList:sub(L,N-1)
+	if !checkPly(ply) then return end 
+	if !file.Exists( "E2Power/group.txt" ) then printMsg(ply,"File not found") return end
+		
+	for k=1, #E2Power_GroupList do
+		local qroup = E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)
+		if qroup==argm[1] then
+			table.remove(E2Power_GroupList,k)
 			
-			if qroup==argm[1] then
-				E2Power_GroupList=E2Power_GroupList:sub(1,L-1)..E2Power_GroupList:sub(N+1,Len)
-				file.Delete( "E2Power/group.txt")
-				if Len > qroup:len()+1 then file.Write( "E2Power/group.txt", E2Power_GroupList ) end 
-				
-				for _, ply in ipairs( player.GetAll()) do
-					if ply:IsUserGroup(qroup) then E2Power_PassAlert[ply]=nil end
-				end
-				
-				printMsg(ply,"Group has been removed")
-				break
+			file.Delete( "E2Power/group.txt")
+			if #E2Power_GroupList > 0 then 
+				file.Write( "E2Power/group.txt", table.concat(E2Power_GroupList) ) 
 			end
-			L=N+1
-			if (N+2)>Len then printMsg(ply,"Group not found") 
-			break end
-		end 
+				
+			for _, ply in ipairs( player.GetAll()) do
+				if ply:IsUserGroup(qroup) then E2Power_PassAlert[ply]=nil end
+			end
+			printMsg(ply,"Group has been removed")
+			return
+		end
 	end
+	printMsg(ply,"Group not found")
+	
 end )
 
 concommand.Add( "e2power_group_list", function(ply,cmd,argm)
 	local S="Empty"
-	if E2Power_GroupList!="" then S=E2Power_GroupList end
+	if #E2Power_GroupList > 0 then S=table.concat(E2Power_GroupList) end
 	printMsg(ply,S)
 end )
 
@@ -260,6 +257,7 @@ end
 end
 
 E2Power_BanList = "none"
+E2Power_GroupList = {}
 
 if !E2Power_first_load then
 	timer.Create( "e2power_access", 10, 0, function()
@@ -272,13 +270,27 @@ if !E2Power_first_load then
 	E2Power_first_load=true
 else 
 
-	E2Power_GroupList=""
-	if file.Exists( "E2Power/group.txt" ) then E2Power_GroupList=file.Read( "E2Power/group.txt" ) end
 	
-	for _, player in ipairs( player.GetAll() ) do
-		if string.find(E2Power_GroupList,player:GetUserGroup()) then E2Power_PassAlert[player]=true end
+	if file.Exists( "E2Power/group.txt" ) then 
+	
+		local GroupList = file.Read( "E2Power/group.txt" ) 
+		local L,N,qroup = 1,1,""
+		local Len = GroupList:len()
+		while true do 
+			N=string.find(GroupList,'\n',L,true)
+			E2Power_GroupList[#E2Power_GroupList+1] = GroupList:sub(L,N)
+			L=N+1
+			if (N+2)>Len then break end
+		end 
+		
+		for k=1, #E2Power_GroupList do
+			for _, player in ipairs( player.GetAll() ) do
+				if player:IsUserGroup(E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)) then E2Power_PassAlert[player]=true end
+			end
+		end
+	
 	end
-
+	
 	function E2Power_GetBanList()
 		http.Get("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
 			E2Power_BanList=contents
@@ -301,15 +313,12 @@ else
 			ply:Kick("you are banned!") 
 		end
 		
-		if string.find(E2Power_GroupList,ply:GetUserGroup()) then
-			E2Power_PassAlert[ply]=true
+		for k=1, #E2Power_GroupList do
+			if ply:IsUserGroup(E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)) then E2Power_PassAlert[ply]=true end
 		end
 		
 	end)
 	
-	
-	
-
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
