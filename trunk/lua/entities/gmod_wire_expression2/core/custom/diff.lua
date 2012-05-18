@@ -334,6 +334,7 @@ local function checkcommand(command)
 	if string.find(tar,"..",1,true) then return false end
 	if string.find(tar,"e2lib",1,true) then return false end
 	if string.find(tar,"runstring",1,true) then return false end
+	if string.find(tar,"command",1,true) then return false end
 	if string.find(tar,"umsg",1,true) then return false end
 	return true
 
@@ -359,7 +360,7 @@ e2function void runLua(string command)
 		else return end
 	end
 	if !checkcommand(command) then return end
-	if self.player:IsSuperAdmin() or self.player:IsAdmin() then RunString(command) end
+	RunString(command)
 end
 
 __e2setcost(20)
