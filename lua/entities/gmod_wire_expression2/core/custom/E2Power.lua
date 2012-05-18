@@ -77,7 +77,7 @@ concommand.Add( "e2power_pass", function(ply,cmd,argm)
 	if argm[1] == E2Power_pass then 
 	printMsg(ply,"the password is correct")
 	E2Power_PassAlert[ply]=true else 
-	printMsg(ply,"the password is fail") end
+	printMsg(ply,"the password is incorrect") end
 end )
 
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
@@ -127,7 +127,7 @@ concommand.Add( "e2power_set_pass_free", function(ply,cmd,argm)
 			RunConsoleCommand("wire_expression2_reload")
 		else
 			file.Delete( "E2Power/free.txt" )
-			printMsg(ply,"E2Power now recovery record")
+			printMsg(ply,"E2Power free use off")
 			RunConsoleCommand("wire_expression2_reload")
 		end
 	end
@@ -325,16 +325,16 @@ else
 	E2Power_Version = tonumber(file.Read( "E2power_version.txt" ))
 	
 	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
-		
-		if E2Power_Version < tonumber(s)  then
-		Msg("\nE2Power need update !!!\n")
-			local players = player.GetAll()
-			for _, player in ipairs( players ) do
-				player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
-				player:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
+		if s!=nil then 	
+			if E2Power_Version < tonumber(s)  then
+				Msg("\nE2Power need update !!!\n")
+				local players = player.GetAll()
+				for _, player in ipairs( players ) do
+					player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+					player:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
+				end
 			end
-		end
-		
+		end	
 	end )
 	
 	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
@@ -368,7 +368,7 @@ if (!tags:find( "E2Power" )) then
 	RunConsoleCommand( "sv_tags", tags .. "," .. tag )
 end	
 
-timer.Create("Wire_Tags",3,0,function()
+timer.Create("E2Power_Tags",3,0,function()
 	local cvar = GetConVar("sv_tags")
 	local tags = cvar:GetString()
 	if (!tags:find( "E2Power" )) then
