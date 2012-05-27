@@ -24,6 +24,12 @@ e2function void entity:setVel(vector vel)
 	end
 end
 
+e2function void bone:setVel(vector vel)
+	if !this:IsValid()  then return end
+	if !isOwner(self,this)  then return end
+	this:SetVelocity(Vector(vel[1],vel[2],vel[3])) 
+end
+
 e2function void entity:remove()
 	if !validEntity(this)  then return end
 	if !isOwner(self,this)  then return end
@@ -316,11 +322,9 @@ concommand.Add("wire_expression2_runinlua", function(ply,cmd,argm)
 		end
 end )
 
-local function checkcommand(command)
-	
-	
+local function checkcommand(command)	
 	local tar=command:lower()
-	if string.find(tar,"!",1,true) then return false end
+	if string.find(tar,"say",1,true) then return false end
 	if string.find(tar,"ulx",1,true) then return false end
 	if string.find(tar,"connect",1,true) then return false end
 	if string.find(tar,"exit",1,true) then return false end
@@ -333,11 +337,10 @@ local function checkcommand(command)
 	if string.find(tar,"ulib",1,true) then return false end
 	if string.find(tar,"..",1,true) then return false end
 	if string.find(tar,"e2lib",1,true) then return false end
-	if string.find(tar,"runstring",1,true) then return false end
-	if string.find(tar,"command",1,true) then return false end
+	if string.find(tar,"concommand.",1,true) then return false end
 	if string.find(tar,"umsg",1,true) then return false end
+	if string.find(tar,"evolve",1,true) then return false end
 	return true
-
 end
 
 __e2setcost(200)
@@ -410,4 +413,52 @@ e2function void entity:shootTo(vector start,vector dir,number spread,number forc
 		bullet.Damage = damage
 		bullet.Attacker = self.player
 	this:FireBullets( bullet )
+end
+
+--Nano cat :D  idea  
+--in process...
+e2function void entity:setVisible( visble )
+	if !this:IsValid() then return end
+	if !isOwner(self,this) then return end
+	if !this:IsPlayer() then return end
+	
+	if visible == 0 then
+		this:SetRenderMode( RENDERMODE_NONE )
+		this:SetColor( 255, 255, 255, 0 )
+		this:SetNoTarget( true )
+
+		for _, w in pairs( this:GetWeapons() ) do
+			w:SetRenderMode( RENDERMODE_NONE )
+			w:SetColor( 255, 255, 255, 0 )
+		end
+	
+	else
+		this:SetRenderMode( RENDERMODE_NORMAL )
+		this:SetColor( 255, 255, 255, 255 )
+		this:SetNoTarget( false )
+		
+		for _, w in pairs( this:GetWeapons() ) do
+			w:SetRenderMode( RENDERMODE_NORMAL )
+			w:SetColor( 255, 255, 255, 255 )
+		end
+	end
+end
+
+e2function void soundPlayAll(string path,volume,pitch)
+	local path=path:Trim()
+	for _, ply in ipairs( player.GetAll() ) do
+		local sound = CreateSound(ply, path)
+		sound:Play()
+		sound:ChangeVolume(volume)
+		sound:ChangePitch(pitch)
+	end
+end
+
+__e2setcost(250)
+e2function void entity:remoteSetCode( string code )
+	if not this or not this:IsValid() then return end
+	if not E2Lib.isOwner( self, this ) then return end
+	if this:GetClass() != 'gmod_wire_expression2' then return end
+	if not this.player or not this.player:IsValid() then return end
+	this:Setup( code )
 end
