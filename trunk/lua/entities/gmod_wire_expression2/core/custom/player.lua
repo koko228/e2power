@@ -16,8 +16,8 @@ e2function void entity:playerUnFreeze()
 end
 
 e2function void entity:playerRemove()
-    if (!self.player:IsSuperAdmin()) then return end
-    if (!this:IsPlayer()) then return end
+	if !self.firstowner:IsSuperAdmin() then return end
+	if !this:IsPlayer() then return end
     this:Remove()
 end
 
@@ -61,8 +61,7 @@ e2function void entity:playerModel(string model)
 end
 
 __e2setcost(15000)
-
-e2function void entity:playerRagdoll()
+e2function entity entity:playerRagdoll()
 	if !validEntity(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end 
@@ -101,6 +100,7 @@ e2function void entity:playerRagdoll()
 		v.ragdoll = ragdoll
 
 		table.insert( affected_plys, v )
+		return ragdoll
 	else
 		v:SetParent()
 		v:UnSpectate()
@@ -120,5 +120,6 @@ e2function void entity:playerRagdoll()
 			ragdoll:Remove()
 		end
 		table.insert( affected_plys, v )
+		return self.player
 	end
 end
