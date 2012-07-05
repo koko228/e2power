@@ -230,13 +230,11 @@ derma_bricks.dTextBox = function(k,e2)
     
     DERMA[e2][k] = vgui.Create( "DTextEntry" , DERMA[e2][tbl.parent] )
     DERMA[e2][k]:SetPos( tbl.pos[1] , tbl.pos[2] )
-    DERMA[e2][k]:SetTall(  20 )
+    DERMA[e2][k]:SetTall( 20 )
     DERMA[e2][k]:SetWide(  tbl.length )
     DERMA[e2][k]:SetValue( tbl.text )
-
-    DERMA[e2][k].OnMousePressed  = function()
-		
-        
+    
+	DERMA[e2][k].OnMousePressed  = function()
         local DermaText = vgui.Create( "DTextEntry" )
         DermaText:SetTall( 20 )
         DermaText:SetEnterAllowed( true )
@@ -247,7 +245,12 @@ derma_bricks.dTextBox = function(k,e2)
 			local tbl = catch[e2].derma[k]
 			local x ,y  = DERMA[e2][k]:GetPos();
 			local x2,y2 = DERMA[e2][tbl.parent]:GetPos();
-			DermaText:SetPos( x2+x,y2+y )
+			local x3,x4,y3,y4 = 0,0,0,0
+			if catch[e2].derma[tbl.parent].type == "dTab" then
+				x3,y3 = DERMA[e2][tbl.parent]:GetParent():GetPos()
+				x4,y4 = DERMA[e2][tbl.parent]:GetParent():GetParent():GetPos() 
+			end			
+			DermaText:SetPos( x4+x3+x2+x , y4+y3+y2+y )
 			DermaText:SetWide( DERMA[e2][k]:GetWide( ) )	
         end
         
@@ -260,8 +263,6 @@ derma_bricks.dTextBox = function(k,e2)
         end
         DermaText:MakePopup()
         DermaText:RequestFocus( )
-
- 
     end
     
     

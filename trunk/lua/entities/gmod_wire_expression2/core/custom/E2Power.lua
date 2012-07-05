@@ -281,7 +281,7 @@ else
 			E2Power_GroupList[#E2Power_GroupList+1] = GroupList:sub(L,N)
 			L=N+1
 			if (N+2)>Len then break end
-		end 
+		end
 		
 		for k=1, #E2Power_GroupList do
 			for _, player in ipairs( player.GetAll() ) do
@@ -325,7 +325,7 @@ else
 	E2Power_Version = tonumber(file.Read( "E2power_version.txt" ))
 	
 	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
-		if s!=nil then 	
+		if s:len()!=0 then 	
 			if E2Power_Version < tonumber(s)  then
 				Msg("\nE2Power need update !!!\n")
 				local players = player.GetAll()

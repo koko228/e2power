@@ -134,6 +134,11 @@ e2function entity propSpawn(entity template, vector pos, angle rot, number froze
 	if not validEntity(template) then return nil end
 	return PropCore.CreateProp(self,template:GetModel(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
+
+e2function number propCanSpawn()
+	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return 0 end
+	return 1
+end
 --------------------------------------------------------------------------------
 e2function void entity:propDelete()
 	if not PropCore.ValidAction(self, this, "delete") then return end

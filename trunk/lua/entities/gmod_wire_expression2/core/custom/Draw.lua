@@ -252,9 +252,3 @@ e2function void entity:drawShadow(status)
 	if !isOwner(self,this) then return end
 	this:DrawShadow( status!=0 )
 end
-
-e2function void entity:colorEffect(number effect)
-	if !validEntity(this) then return end
-	if !isOwner(self,this) then return end
-	this:setKeyValue("renderfx",effect)
-end

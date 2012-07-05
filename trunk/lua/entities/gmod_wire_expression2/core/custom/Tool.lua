@@ -89,7 +89,9 @@ e2function void entity:setPhysProp(string material,number gravity)
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
-    if this:IsPlayer() or !validEntity(this) or !this:IsValid() or !isOwner(self,this) then return end
+	if !validEntity(this) then return end
+    if this:IsPlayer() then return end
+	if !isOwner(self,this) then return end
     construct.SetPhysProp( self.player, this, 0, nil,  { GravityToggle = tobool(gravity), Material = material } )
     --DoPropSpawnedEffect( this )
 end
@@ -221,6 +223,128 @@ end
 e2function void entity:unConstrain()
 	if !validEntity(this) then return end
 	if !validPhysics(this) then return end
-	if !isOwner(self,this)  then return end
+	if !isOwner(self,this) then return end
 	constraint.RemoveAll(this)
+end
+
+local function Weldit2(self, ent1, ent2, bone1, bone2, nc, fl)
+    if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
+        if isOwner(self, ent1) and isOwner(self, ent2) then
+			if ent1==ent2 and bone1==bone2 then return end
+            local welded = constraint.Weld(ent1, ent2, bone1, bone2, fl, tobool(nc))
+                undo.Create("Weld")
+                undo.AddEntity(welded)
+                undo.SetPlayer( self.player )
+                undo.Finish()
+                self.player:AddCleanup( "constraints", welded )
+        else return end
+    else return end
+end
+
+e2function void entity:weldTo(entity ent,number bone1,number bone2,number forcelimit)
+    local ply = self.player
+    if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
+        if not ply:IsAdmin() then return end
+    end
+    Weldit2(self, this, ent, bone1, bone2, nocollide, forcelimit)
+end
+
+e2function void entity:weldTo(entity ent,number bone1,number forcelimit)
+    local ply = self.player
+    if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
+        if not ply:IsAdmin() then return end
+    end
+    Weldit2(self, this, ent, bone1, 0, nocollide, forcelimit)
+end
+
+-------------Poser
+e2function void entity:inflator(number Bone, Scale)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	if ( !Bone ) then return end
+	
+	local Bone = this:TranslatePhysBoneToBone(this:LookupBone(this:GetBoneName(Bone)))
+	local VarName = "InflateSize"..Bone
+	local NewSize = Scale
+	NewSize = math.Clamp( NewSize, -100, 500 )
+	  
+	duplicator.StoreEntityModifier( this, "inflator", { [Bone] = NewSize } )
+	this:SetNetworkedInt( VarName, NewSize )
+end
+
+e2function number entity:inflatorGetSize(number Bone)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	if ( !Bone ) then return end
+	local Bone = this:TranslatePhysBoneToBone(this:LookupBone(this:GetBoneName(Bone)))
+	return this:GetNetworkedInt( "InflateSize"..Bone, 0 ) 
+end
+
+local Clamp = math.Clamp 
+
+e2function void entity:facePoser(array Values)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	for i=0, 64 do
+		this:SetFlexWeight( i, string.format( "%.3f", Clamp(Values[i+1],0,1) ) )
+	end
+end
+
+e2function void entity:facePoser(Flex, Value)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	this:SetFlexWeight( Clamp(Flex,0,64), string.format( "%.3f", Clamp(Value,0,1) ) )
+end
+
+e2function void entity:facePoserScale(Value)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	this:SetFlexScale( Clamp(Value,-1,20) )
+end
+
+e2function number entity:getfacePoserValue(k)
+	if !validEntity(this) then return 0 end 
+	if this:GetClass() != "prop_ragdoll" then return 0 end
+	return this:GetFlexWeight(k)
+end
+
+e2function void entity:eyePoser(vector Pos)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	local eyeattachment = this:LookupAttachment( "eyes" )
+	if ( eyeattachment == 0 ) then return end
+	local attachment = this:GetAttachment( eyeattachment )
+	if ( !attachment ) then return end
+	local LocalPos, LocalAng = WorldToLocal( Pos, Angle(0,0,0), attachment.Pos, attachment.Ang )
+	if (!LocalPos) then return false end
+	
+	this:SetEyeTarget( LocalPos )
+end
+
+
+e2function void entity:fingerPoser(index,vector2 Var)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	local Ang = Angle( tonumber(Var[1]), tonumber(Var[2]) )
+		
+	if ( index < 3 ) then
+		Ang = Angle( tonumber(Var[2]), tonumber(Var[1]) )		
+	end
+	
+	this:SetNetworkedAngle( "Finger".. index, Ang )
+	duplicator.StoreEntityModifier( this, "finger", { [index] = Ang } )
+end
+
+
+e2function vector2 entity:getfingerPoserVar(index)
+	if !validEntity(this) then return end 
+	if this:GetClass() != "prop_ragdoll" then return end
+	local Ang = this:GetNetworkedAngle( "Finger".. index)
+	
+	local Vec = { tonumber(Ang[1]), tonumber(Ang[2]) }
+		
+	if ( index < 3 ) then
+		Vec = {tonumber(Ang[2]), tonumber(Ang[1]) }
+	end
+	return Vec
 end
