@@ -23,7 +23,7 @@ local e2_all_Keys={}
 local e2_all_MouseKeys={}
 local KeyAct={}
 
-for k=1, MaxPlayers() do
+for k=1, game.MaxPlayers() do
 e2_all_Keys[k]={}
 e2_all_MouseKeys[k]={}
 end
@@ -150,7 +150,7 @@ e2function void runOnMouseKey(number active)
 end
 
 e2function number entity:inUse()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	local user=this.user
 	this.user=nil
 	if user!=nil then return 1 end
@@ -158,7 +158,7 @@ e2function number entity:inUse()
 end
 
 e2function entity entity:inUseBy()
-    if !validEntity(this) then return 0 end
+    if !IsValid(this) then return 0 end
 	local user=this.user
 	this.user=nil
 	return user

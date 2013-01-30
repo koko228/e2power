@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"        "E2Power"
+	"version"     "SVN"
+	"author_name" "[G-moder]FertNoN"
+	"author_email"	"fertnon@fertnon.mail.narod.ru"
+	"author_url"  ""
+	"info"        ""
+	"override"    "0"
+}

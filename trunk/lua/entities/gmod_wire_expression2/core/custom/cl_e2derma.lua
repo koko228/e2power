@@ -26,6 +26,10 @@ yay, the client side shit, this is were all of the derma is done :D, yayyyyy!!
 
 */
 
+
+
+
+
 require("glon")
 local catch      = {}
 local DERMA      = {}
@@ -65,19 +69,20 @@ end)
 
 
 //**************back up incase mesage is to big but usermessages are faster :3
-datastream.Hook("dermaStuff_datastream_backup", 
-function( handler, id, encoded, decoded )
-    local tbl        = decoded.t
-    local e2         = decoded.e
-    local k          = decoded.name
+net.Receive("dermaStuff_datastream_backup", 
+function()
+	local e2         = net.ReadFloat()
+    local tbl        = net.ReadTable()
+    local k          = net.ReadString()
     recive(tbl,e2,k) 
 end)
 
 //*******basic receiver******\\
-usermessage.Hook("dermaStuff", function( um )
-    local e2  = um:ReadShort()
-    local k   = um:ReadString()
-    local s   = um:ReadString()
+
+net.Receive("dermaStuff", function()
+    local e2  = net.ReadFloat() 
+    local k   = net.ReadString()
+    local s   = net.ReadString()
     local tbl = glon.decode(s)
     recive(tbl,e2,k)
 end)
@@ -136,8 +141,7 @@ derma_bricks = {}
 derma_bricks.dPanel = function(k,e2)
     
     tbl = catch[e2].derma[k]
-    
-    
+       
     DERMA[e2][k] = vgui.Create( "DFrame" )
     DERMA[e2][k]:SetPos( tbl.pos[1] , tbl.pos[2] ) 
     DERMA[e2][k]:SetSize( tbl.size[1] , tbl.size[2] ) 
@@ -146,7 +150,8 @@ derma_bricks.dPanel = function(k,e2)
     if tbl.show != 0 then show = true end
     DERMA[e2][k]:SetVisible( show )
     DERMA[e2][k]:SetDraggable( true )
-    DERMA[e2][k]:ShowCloseButton( true )
+	if tbl.ClBut != 0 then show = true else show = false end
+    DERMA[e2][k]:ShowCloseButton( show )
     DERMA[e2][k]:SetDeleteOnClose(false)
 
     if tbl.cCol != false then
@@ -286,10 +291,11 @@ derma_bricks.dDropBox = function(k,e2)
     
     tbl = catch[e2].derma[k]
     
-    DERMA[e2][k] = vgui.Create( "DMultiChoice", DERMA[e2][tbl.parent] )
+    DERMA[e2][k] = vgui.Create( "DComboBox", DERMA[e2][tbl.parent] )
     DERMA[e2][k]:SetPos( tbl.pos[1] , tbl.pos[2] ) 
     DERMA[e2][k]:SetSize( tbl.length , 20 )
     DERMA[e2][k]:SetText( tbl.text )
+	--DERMA[e2][k]:SetMultiSelect(true)
     DERMA[e2][k].Choices = tbl.array
     DERMA[e2][k].OnSelect = function(index,value,data)
         RunConsoleCommand("_e2derma",e2 , k ,  DERMA[e2][k]:GetOptionText(value) )
@@ -386,6 +392,7 @@ derma_nails.text = function(k,e2)
 end
 
 derma_nails.show   = function(k,e2) end
+derma_nails.ClBut  = function(k,e2) end
 derma_nails.cCol   = function(k,e2) end
 derma_nails.val    = function(k,e2) end
 derma_nails.min    = function(k,e2) end
@@ -414,6 +421,12 @@ derma_nails.dPanel.show = function(k,e2)
     local show = false
     if catch[e2].derma[k].show != 0 then show = true end
     DERMA[e2][k]:SetVisible( show )
+end
+
+derma_nails.dPanel.ClBut = function(k,e2)    
+    local show = false
+    if catch[e2].derma[k].ClBut != 0 then show = true end
+    DERMA[e2][k]:ShowCloseButton( show )
 end
 
 
@@ -689,9 +702,6 @@ usermessage.Hook("removedermaStuff", function( um )
     gui.EnableScreenClicker(false)
     
 end)
-
-
-
 
 CreateClientConVar("e2_dHW_", "0", false, true )
 

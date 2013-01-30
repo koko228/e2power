@@ -1,6 +1,6 @@
 __e2setcost(20)
 e2function void entity:playerFreeze()
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
         this:Lock()
@@ -8,7 +8,7 @@ e2function void entity:playerFreeze()
 end
 
 e2function void entity:playerUnFreeze()
- if !validEntity(this)  then return end
+ if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
        this:UnLock()
@@ -22,7 +22,7 @@ e2function void entity:playerRemove()
 end
 
 e2function void entity:playerSetAlpha(rv2)
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end
 	local r,g,b = this:GetColor()
@@ -30,29 +30,29 @@ e2function void entity:playerSetAlpha(rv2)
 end
 
 e2function void entity:playerNoclipOff()
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end
 	this:SetMoveType( MOVETYPE_WALK )
 end
 
 e2function void entity:playerNoclipOn()
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end
 	this:SetMoveType( MOVETYPE_NOCLIP )
 end
 
 e2function number entity:playerIsRagdoll()
-	if !validEntity(this) then return 0 end
+	if !IsValid(this) then return 0 end
 	if !this:IsPlayer() then return 0 end
-	if validEntity(this.ragdoll) then return 1 else return 0 end
+	if IsValid(this.ragdoll) then return 1 else return 0 end
 end
 
 
 __e2setcost(100)
 e2function void entity:playerModel(string model)
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end 
 	local modelname = player_manager.TranslatePlayerModel( model )
@@ -62,7 +62,7 @@ end
 
 __e2setcost(15000)
 e2function entity entity:playerRagdoll()
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end 
 	if !this:Alive() then return end
@@ -70,7 +70,7 @@ e2function entity entity:playerRagdoll()
 	local v = this
 	local affected_plys = {}
 	
-	if !validEntity(v.ragdoll) then
+	if !IsValid(v.ragdoll) then
 
 		local ragdoll = ents.Create( "prop_ragdoll" )
 		ragdoll.ragdolledPly = v

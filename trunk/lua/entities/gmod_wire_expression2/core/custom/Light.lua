@@ -14,7 +14,7 @@ end)
 
 function SetE2DLight(self,this,pos,color,brightness,size,delay)
 
-if !validEntity(this)  then return end
+if !IsValid(this)  then return end
 if !isOwner(self,this)  then return end
 
 if this:GetClass()=="light_dynamic" then return end
@@ -33,7 +33,7 @@ local dynlight = ents.Create( "light_dynamic" )
 	
 	dLightSpawnInSecond=dLightSpawnInSecond+1
 		
-	if validEntity(this.e2_dlight) then this.e2_dlight:Remove() end
+	if IsValid(this.e2_dlight) then this.e2_dlight:Remove() end
     this.e2_dlight=dynlight
         
 	dynlight:Spawn()
@@ -56,43 +56,43 @@ if dLightSpawnInSecond > sbox_E2_maxdLightPerSecond:GetInt() then return 0 else 
 end
 
 e2function void entity:dLightPos(vector pos)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetPos( Vector(pos[1],pos[2],pos[3]) )
 end
 
 e2function void entity:dLightColor(vector color)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetKeyValue( "_light", Clamp(color[1], 0, 255) .. " " .. Clamp(color[2], 0, 255) .. " " .. Clamp(color[3], 0, 255) .. " " .. 255 )
 end
 
 e2function void entity:dLightBrightness(number brightness)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetKeyValue( "brightness", Clamp(brightness, 0, 15) )
 end
 
 e2function void entity:dLightSize(number size)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetKeyValue( "distance", Clamp(size, 0, 5000) )
 end
 
 e2function void entity:dLightDelay(number delay)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetKeyValue( "style", delay )
 end
 
 e2function void entity:dLightReParent(entity parent)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:SetParent( parent )
 parent.e2_dlight=this.e2_dlight
@@ -100,16 +100,16 @@ this.e2_dlight=nil
 end
 
 e2function void entity:dLightRemove()
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_dlight:Remove()
 this.e2_dlight=nil
 end
 
 e2function entity entity:dLightEntity()
-if !validEntity(this)  then return end
-if !validEntity(this.e2_dlight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_dlight)  then return end
 return this.e2_dlight
 end
 
@@ -125,7 +125,7 @@ end)
 __e2setcost(200)
 e2function entity entity:setfLight(vector pos,vector color,angle ang,string material,number fov,number farz,number nearz)
 	
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self,this)  then return end
 	
 	if this:GetClass()=="env_projectedtexture" then return end
@@ -145,7 +145,7 @@ e2function entity entity:setfLight(vector pos,vector color,angle ang,string mate
 	
 	fLightSpawnInSecond=fLightSpawnInSecond+1
 	
-	if validEntity(this.e2_flight) then this.e2_flight:Remove() end
+	if IsValid(this.e2_flight) then this.e2_flight:Remove() end
         this.e2_flight=flashlight
 
 	flashlight:Spawn()
@@ -160,57 +160,57 @@ if fLightSpawnInSecond > sbox_E2_maxfLightPerSecond:GetInt() then return 0 else 
 end
 
 e2function void entity:fLightPos(vector pos)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetPos( Vector(pos[1],pos[2],pos[3]) )
 end
 
 e2function void entity:fLightAng(angle ang)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetAngles( Angle( ang[1] , ang[2] , ang[3] ) )
 end
 
 e2function void entity:fLightColor(vector color)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetKeyValue( "lightcolor", Clamp(color[1], 0, 255) .. " " .. Clamp(color[2], 0, 255) .. " " .. Clamp(color[3], 0, 255) )
 end
 
 e2function void entity:fLightMaterial(string material)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:Input( "SpotlightTexture", NULL, NULL, material )
 end
 
 e2function void entity:fLightFOV(number fov)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetKeyValue( "lightfov", fov )
 end
 
 e2function void entity:fLightFarz(number farz)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetKeyValue( "farz", farz )
 end
 
 e2function void entity:fLightNearz(number nearz)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetKeyValue( "nearz", nearz )
 end
 
 e2function void entity:fLightReParent(entity parent)
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:SetParent( parent )
 parent.e2_flight=this.e2_flight
@@ -218,16 +218,16 @@ this.e2_flight=nil
 end
 
 e2function void entity:fLightRemove()
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 if !isOwner(self,this)  then return end
 this.e2_flight:Remove()
 this.e2_flight=nil
 end
 
 e2function entity entity:fLightEntity()
-if !validEntity(this)  then return end
-if !validEntity(this.e2_flight)  then return end
+if !IsValid(this)  then return end
+if !IsValid(this.e2_flight)  then return end
 return this.e2_flight
 end
 

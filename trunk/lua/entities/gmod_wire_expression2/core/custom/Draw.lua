@@ -23,14 +23,14 @@ function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 	sprite:SetMaterial(mat)
 	sprite:SetPos(Vector(pos[1],pos[2],pos[3]))
 	sprite:SetAngles(Angle(0,0,0))
-	sprite:SetColor(color[1],color[2],color[3],alpha)
+	sprite:SetColor(Color(color[1],color[2],color[3],alpha))
 	sprite:SetOwner(self.player)
-	if validEntity(this) and isOwner(self,this) then
+	if IsValid(this) and isOwner(self,this) then
 		sprite:SetParent( this )
 	end
 	
-	sprite:SetNWFloat("x",sizex)
-	sprite:SetNWFloat("y",sizey)
+	sprite:SetNWFloat("sizex",sizex)
+	sprite:SetNWFloat("sizey",sizey)
 
 	sprite:Spawn()
 	sprite:Activate()
@@ -53,7 +53,7 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
-if !validEntity(this) then return nil end  
+if !IsValid(this) then return nil end  
 if !isOwner(self,this) then return nil end  
 return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 end
@@ -64,11 +64,11 @@ end
 
 __e2setcost(20)
 e2function void entity:spriteSize(sizex,sizey)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self,this)  then return end
 	
-	this:SetNWFloat("x",sizex)
-	this:SetNWFloat("y",sizey)
+	this:SetNWFloat("sizex",sizex)
+	this:SetNWFloat("sizey",sizey)
 end
 --------------------------------------BEAM
 local sbox_E2_maxBeamPerSecond = CreateConVar( "sbox_E2_maxBeamPerSecond", "12", FCVAR_ARCHIVE )
@@ -91,10 +91,10 @@ local beam=ents.Create("e2_beam")
 	beam:SetMaterial(mat)
 	beam:SetPos(Vector(pos[1],pos[2],pos[3]))
 	beam:SetAngles(Angle(0,0,0))
-	beam:SetColor(color[1],color[2],color[3],alpha)
+	beam:SetColor(Color(color[1],color[2],color[3],alpha))
 	beam:SetOwner(self.player)
 	
-	if validEntity(this) and isOwner(self,this) then
+	if IsValid(this) and isOwner(self,this) then
 		beam:SetParent( this )
 	end
 	
@@ -128,20 +128,20 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
-if !validEntity(this) then return nil end  
+if !IsValid(this) then return nil end  
 if !isOwner(self,this) then return nil end  
 return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function entity entity:drawBeam(string mat,vector pos,entity ent,vector color,number alpha,width,textstart,textend)
-if !validEntity(this) then return nil end  
+if !IsValid(this) then return nil end  
 if !isOwner(self,this) then return nil end  
 return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function void entity:setBeamEndEnt(entity ent)
-if !validEntity(this) then return end  
-if !validEntity(ent) then return end  
+if !IsValid(this) then return end  
+if !IsValid(ent) then return end  
 if !isOwner(self,this) then return end  
 if this.EndEnt!=ent then
 	this:SetNWFloat("EndEnt",ent)
@@ -154,7 +154,7 @@ return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,te
 end
 
 e2function void entity:setBeamEndPos(vector endpos)
-if !validEntity(this)  then return end
+if !IsValid(this)  then return end
 if !isOwner(self,this)  then return end
 this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
 this.mc = true
@@ -162,13 +162,13 @@ this.endpos=Vector( endpos[1],endpos[2],endpos[3] )
 end
 
 e2function void entity:setBeamWidth(number width)
-if !validEntity(this)  then return end
+if !IsValid(this)  then return end
 if !isOwner(self,this)  then return end
 this:SetNWFloat("width",width)
 end
 
 e2function void entity:setBeamText(number textstart,number textend)
-if !validEntity(this)  then return end
+if !IsValid(this)  then return end
 if !isOwner(self,this)  then return end
 this:SetNWFloat("TextStart",textstart)
 this:SetNWFloat("TextEnd",textend)
@@ -195,13 +195,13 @@ function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	quad:SetMaterial(mat)
 	quad:SetPos(Vector(pos[1],pos[2],pos[3]))
 	quad:SetAngles(Angle(ang[1],ang[2],ang[3]))
-	quad:SetColor(color[1],color[2],color[3],alpha)
+	quad:SetColor(Color(color[1],color[2],color[3],alpha))
 	quad:SetOwner(self.player)
-	if validEntity(this) and isOwner(self,this) then
+	if IsValid(this) and isOwner(self,this) then
 		quad:SetParent( this )
 	end
-	quad:SetNWFloat("x",sizex)
-	quad:SetNWFloat("y",sizey)
+	quad:SetNWFloat("sizex",sizex)
+	quad:SetNWFloat("sizey",sizey)
 
 	quad:Spawn()
 	quad:Activate()
@@ -224,7 +224,7 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawQuad(string mat,vector pos,angle ang,vector color,number alpha,sizex,sizey)
-if !validEntity(this) then return nil end  
+if !IsValid(this) then return nil end  
 if !isOwner(self,this) then return nil end  
 return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 end
@@ -235,11 +235,11 @@ end
 
 __e2setcost(20)
 e2function void entity:quadSize(sizex,sizey)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self,this)  then return end
 	
-	this:SetNWFloat("x",sizex)
-	this:SetNWFloat("y",sizey)
+	this:SetNWFloat("sizex",sizex)
+	this:SetNWFloat("sizey",sizey)
 end
 
 
@@ -248,7 +248,7 @@ e2function void ranger:drawPaint(string mat)
 end
 
 e2function void entity:drawShadow(status)
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self,this) then return end
 	this:DrawShadow( status!=0 )
 end
