@@ -81,51 +81,43 @@ if old == nil then old = {} end
     for k,v in pairs(new) do
         if v.type != "dTab" && v.type != "dPanel" && v.type != "dTabHolder" && diff(v,old[k]) then user_msg(v,k,pl,e2) end
     end
-
-
-
-
-
-catch[e2].old = table.Copy(  tbl )
-                                  
-end                                  
-
-
-
-function diff(v1,v2)
-    if v2 == nil then return true end
-    if type(v1) != type(v2) then return true end
-    if type(v1) == "table" then 
-        for k,v in pairs(v1) do
-            if diff(v , v2[k]) then return true end
-        end
-    end
-    if v1 != v2 then return true end
-    return false
+	
+	catch[e2].old = table.Copy( tbl )
 end
 
-
-
+function diff(v1,v2)
+   if v2 == nil then return true end
+   if type(v1) != type(v2) then return true end
+   if type(v1) == "table" then 
+       for k,v in pairs(v1) do
+           if diff(v , v2[k]) then return true end
+       end
+   end
+   if v1 != v2 then return true end
+   return false
+end
 
 require("glon")
+util.AddNetworkString("dermaStuff")
+util.AddNetworkString("dermaStuff_datastream_backup")
 function user_msg(tbl,k,pl,e2)
     local s      = glon.encode(tbl)
     
     if(string.len(s)+ string.len(k)+2>255) then//usermsg haz a 256 byte limit :<
-        datastream.StreamToClients( pl,  
-        "dermaStuff_datastream_backup",                    
-        {                                
-        e = e2,                          
-        t = tbl,                         
-        name = k,                        
-        });
-        
+        net.Start("dermaStuff_datastream_backup")                             
+			net.WriteFloat( e2 )
+			net.WriteTable( tbl )			           
+			net.WriteString( k )                        
+        net.Send( pl )   
     else
-    umsg.Start("dermaStuff", pl )
-        umsg.Short( e2 )
-        umsg.String( k )
-        umsg.String( s )
-    umsg.End()
+
+	
+	net.Start("dermaStuff")
+		net.WriteFloat( e2 ) 
+        net.WriteString( k )
+        net.WriteString( s )
+    net.Send( pl )
+
     end
 end
 
@@ -353,7 +345,8 @@ hook.Add("PlayerLeaveVehicle", "derma_V_Exit", VehicleExit)
 __e2setcost(20)
 //***********************panel*****************************\\
 e2function void dPanel(string name, vector2 pos, vector2 size)
-    local e2  = self.entity:EntIndex()
+    
+	local e2  = self.entity:EntIndex()
     local tbl = {}
     tbl.type  = "dPanel"
     tbl.text  = name
@@ -366,6 +359,7 @@ e2function void dPanel(string name, vector2 pos, vector2 size)
     catch[e2].derma[name]  = tbl 
     catch[e2].panels[name] = false 
     catch[e2].update       = true 
+	
 end
 
 //***********************button*****************************\\
@@ -582,6 +576,13 @@ e2function void dShow(string name, number show )
     local e2  = self.entity:EntIndex()
     if catch[e2].derma[name] == nil then return end
     catch[e2].derma[name].show = show
+    catch[e2].update       = true 
+end
+
+e2function void dShowCloseButton(string name, number show )
+    local e2  = self.entity:EntIndex()
+    if catch[e2].derma[name] == nil then return end
+    catch[e2].derma[name].ClBut = show
     catch[e2].update       = true 
 end
 

@@ -3,7 +3,7 @@ __e2setcost(20)
 CreateConVar("sbox_e2_constraints","0")
 
 local function Weldit(self, ent1, ent2, nc, fl)
-    if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
+    if IsValid(ent1) and IsValid(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
         if ent1==ent2 then return end
         if isOwner(self, ent1) and isOwner(self, ent2) then
             local welded = constraint.Weld(ent1, ent2, 0, 0, fl, tobool(nc))
@@ -33,7 +33,7 @@ e2function void entity:weldTo(entity ent,number forcelimit,number nocollide)
 end
 
 local function AxisIt(self, ent1, ent2, lpos1, lpos2, fl, tl, fric, nc, laxis)
-    if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
+    if IsValid(ent1) and IsValid(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
         if isOwner(self, ent1) and isOwner(self, ent2) then
             local axis = constraint.Axis(ent1, ent2, 0, 0, lpos1, lpos2, fl, tl, fric, nc, laxis)
                 undo.Create("Axis")
@@ -71,7 +71,7 @@ e2function void entity:ropeTo(entity ent2,vector localposition1,vector localposi
     local wpos2 = ent2:LocalToWorld(lpos2)
     if material==""    then material = "cable/cable2" end
     
-    if validEntity(this) and validEntity(ent2) and type(this)!="Player" and type(ent2)!="Player" then
+    if IsValid(this) and IsValid(ent2) and type(this)!="Player" and type(ent2)!="Player" then
         if isOwner(self, this) and isOwner(self, ent2) then
             local length = (wpos1-wpos2):Length()
             local rope = constraint.Rope( this, ent2, 0, 0, lpos1, lpos2, length, addlength, forcelimit, width, material, tobool(rigid) )
@@ -89,7 +89,7 @@ e2function void entity:setPhysProp(string material,number gravity)
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
     if this:IsPlayer() then return end
 	if !isOwner(self,this) then return end
     construct.SetPhysProp( self.player, this, 0, nil,  { GravityToggle = tobool(gravity), Material = material } )
@@ -97,7 +97,7 @@ e2function void entity:setPhysProp(string material,number gravity)
 end
 
 local function BallsocketIt(self, ent1, ent2, LPos, forcelimit, torquelimit, nocollide )
-    if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
+    if IsValid(ent1) and IsValid(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
         if isOwner(self, ent1) and isOwner(self, ent2) and ent1!=ent2 then
             local Ballsocket = constraint.Ballsocket(ent1,ent2,0,0,LPos,forcelimit,torquelimit,nocollide)
                 undo.Create("ballsocket")
@@ -128,13 +128,13 @@ e2function void entity:ballsocketTo(entity ent,number nocollide)
 end
 
 e2function void entity:removeAllConstraints()
-    if isOwner(self,this) and validEntity(this) then
+    if isOwner(self,this) and IsValid(this) then
         constraint.RemoveAll(this)
     else return end
 end
 
 e2function void entity:removeConstraint(string constraintname)
-    if isOwner(self,this) and validEntity(this) then
+    if isOwner(self,this) and IsValid(this) then
         constraint.RemoveConstraints( this, constraintname )
     else return end
 end
@@ -144,7 +144,7 @@ e2function void entity:noCollideAll(number)
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
-    if isOwner(self,this) and validEntity(this) then
+    if isOwner(self,this) and IsValid(this) then
         if number!=1 then
             this:SetCollisionGroup( COLLISION_GROUP_NONE )    
         else
@@ -158,9 +158,9 @@ e2function void entity:noCollide(entity ent)
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !validPhysics(this) then return end
-	if !validEntity(ent) then return end
+	if !IsValid(ent) then return end
 	if !validPhysics(ent) then return end
     if isOwner(self,this) and this!=ent then
         local NoCollide = constraint.NoCollide(this, ent, 0, 0)
@@ -221,14 +221,14 @@ e2function void entity:elasticTo(entity ent, vector localpos1, vector localpos2,
 end
 
 e2function void entity:unConstrain()
-	if !validEntity(this) then return end
+	if !IsValid(this) then return end
 	if !validPhysics(this) then return end
 	if !isOwner(self,this) then return end
 	constraint.RemoveAll(this)
 end
 
 local function Weldit2(self, ent1, ent2, bone1, bone2, nc, fl)
-    if validEntity(ent1) and validEntity(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
+    if IsValid(ent1) and IsValid(ent2) and type(ent1)!="Player" and type(ent2)!="Player" then
         if isOwner(self, ent1) and isOwner(self, ent2) then
 			if ent1==ent2 and bone1==bone2 then return end
             local welded = constraint.Weld(ent1, ent2, bone1, bone2, fl, tobool(nc))
@@ -259,31 +259,27 @@ end
 
 -------------Poser
 e2function void entity:inflator(number Bone, Scale)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	if ( !Bone ) then return end
 	
 	local Bone = this:TranslatePhysBoneToBone(this:LookupBone(this:GetBoneName(Bone)))
-	local VarName = "InflateSize"..Bone
-	local NewSize = Scale
-	NewSize = math.Clamp( NewSize, -100, 500 )
-	  
-	duplicator.StoreEntityModifier( this, "inflator", { [Bone] = NewSize } )
-	this:SetNetworkedInt( VarName, NewSize )
+	Scale = math.Clamp( Scale, -50, 500 )
+	this:ManipulateBoneScale(Bone, Vector(Scale,Scale,Scale) )
 end
-
-e2function number entity:inflatorGetSize(number Bone)
-	if !validEntity(this) then return end 
+/*
+e2function vector entity:inflatorGetSize(number Bone)
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	if ( !Bone ) then return end
 	local Bone = this:TranslatePhysBoneToBone(this:LookupBone(this:GetBoneName(Bone)))
-	return this:GetNetworkedInt( "InflateSize"..Bone, 0 ) 
+	return this:GetBoneScale( Bone ) 
 end
-
+*/
 local Clamp = math.Clamp 
 
 e2function void entity:facePoser(array Values)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	for i=0, 64 do
 		this:SetFlexWeight( i, string.format( "%.3f", Clamp(Values[i+1],0,1) ) )
@@ -291,25 +287,25 @@ e2function void entity:facePoser(array Values)
 end
 
 e2function void entity:facePoser(Flex, Value)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	this:SetFlexWeight( Clamp(Flex,0,64), string.format( "%.3f", Clamp(Value,0,1) ) )
 end
 
 e2function void entity:facePoserScale(Value)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	this:SetFlexScale( Clamp(Value,-1,20) )
 end
 
 e2function number entity:getfacePoserValue(k)
-	if !validEntity(this) then return 0 end 
+	if !IsValid(this) then return 0 end 
 	if this:GetClass() != "prop_ragdoll" then return 0 end
 	return this:GetFlexWeight(k)
 end
 
 e2function void entity:eyePoser(vector Pos)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	local eyeattachment = this:LookupAttachment( "eyes" )
 	if ( eyeattachment == 0 ) then return end
@@ -323,7 +319,7 @@ end
 
 
 e2function void entity:fingerPoser(index,vector2 Var)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	local Ang = Angle( tonumber(Var[1]), tonumber(Var[2]) )
 		
@@ -337,7 +333,7 @@ end
 
 
 e2function vector2 entity:getfingerPoserVar(index)
-	if !validEntity(this) then return end 
+	if !IsValid(this) then return end 
 	if this:GetClass() != "prop_ragdoll" then return end
 	local Ang = this:GetNetworkedAngle( "Finger".. index)
 	

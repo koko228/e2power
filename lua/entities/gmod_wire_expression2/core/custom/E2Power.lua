@@ -1,6 +1,4 @@
 --E2POWER made by [G-moder]FertNoN
-
-
 local function printMsg(ply,msg)
 	if ply:IsValid() then ply:PrintMessage( HUD_PRINTCONSOLE , msg) else Msg(msg) end
 end
@@ -28,7 +26,7 @@ end
 -----------------------------------------------------------setup PASS
 E2Power_PassAlert = {}
 E2Power_Free = false
-E2Power_pass = file.Read( "E2Power/pass.txt" )
+E2Power_pass = file.Read( "E2Power/pass.txt", "DATA")
 
 if E2Power_pass==nil then
 	str="MingeBag"
@@ -83,7 +81,7 @@ end )
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
 	if checkPly(ply) then
 	local player=findPlayer(ply,argm[1])
-	if !validEntity(player) then return end
+	if !IsValid(player) then return end
 	printMsg(player,"you from E2Power accessing")
 	E2Power_PassAlert[player]=nil end
 end )
@@ -91,7 +89,7 @@ end )
 concommand.Add( "e2power_give_access", function(ply,cmd,argm)
 	if checkPly(ply) then 
 	local player=findPlayer(ply,argm[1])
-	if !validEntity(player) then return end
+	if !IsValid(player) then return end
 	printMsg(player,"you were given E2Power access")
 	E2Power_PassAlert[player]=true end
 end )
@@ -136,12 +134,12 @@ end )
 
 concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
 	if checkPly(ply) then  
-		if not file.Exists( "E2Power/group.txt" ) then 
-			file.Write( "E2Power/group.txt", argm[1]..'\n' ) 
+		if not file.Exists( "E2Power/group.txt", "DATA" ) then 
+			file.Write( "E2Power/group.txt", argm[1] ) 
 		else
-			file.Append( "E2Power/group.txt", argm[1]..'\n' )
+			file.Append( "E2Power/group.txt", '\n'..argm[1] )
 		end
-		E2Power_GroupList[#E2Power_GroupList+1]=argm[1]..'\n'
+		E2Power_GroupList[#E2Power_GroupList+1]=argm[1]
 		
 		for _, ply in ipairs( player.GetAll()) do
 			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply]=true end
@@ -152,16 +150,16 @@ end )
 
 concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
 	if !checkPly(ply) then return end 
-	if !file.Exists( "E2Power/group.txt" ) then printMsg(ply,"File not found") return end
+	if !file.Exists( "E2Power/group.txt", "DATA" ) then printMsg(ply,"File not found") return end
 		
 	for k=1, #E2Power_GroupList do
-		local qroup = E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)
+		local qroup = E2Power_GroupList[k]--:Left(E2Power_GroupList[k]:len()-1)
 		if qroup==argm[1] then
 			table.remove(E2Power_GroupList,k)
 			
 			file.Delete( "E2Power/group.txt")
 			if #E2Power_GroupList > 0 then 
-				file.Write( "E2Power/group.txt", table.concat(E2Power_GroupList) ) 
+				file.Write( "E2Power/group.txt", table.concat(E2Power_GroupList,'\n') ) 
 			end
 				
 			for _, ply in ipairs( player.GetAll()) do
@@ -176,9 +174,9 @@ concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
 end )
 
 concommand.Add( "e2power_group_list", function(ply,cmd,argm)
-	local S="Empty"
-	if #E2Power_GroupList > 0 then S=table.concat(E2Power_GroupList) end
-	printMsg(ply,S)
+	for k=1,#E2Power_GroupList do 
+		printMsg(ply,E2Power_GroupList[k]..'\n')
+	end
 end )
 
 
@@ -206,19 +204,19 @@ e2function string e2pGetPassword()
 end
 
 e2function void entity:e2pGiveAccess()
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
 	E2Power_PassAlert[getOwner(self,this)]=true
 end
 
 e2function void entity:e2pRemoveAccess()
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
 	E2Power_PassAlert[getOwner(self,this)]=nil
 end
 
 e2function number entity:e2pPassStatus()
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if E2Power_PassAlert[this] then return 1 else return 0 end
 end
 
@@ -242,7 +240,7 @@ function isOwner(self, entity)
 	if E2Power_PassAlert[self.player] then return true end
 	local player = self.player
 	local owner = getOwner(self, entity)
-	if not validEntity(owner) then return false end
+	if not IsValid(owner) then return false end
 	return owner == player
 end
 
@@ -250,7 +248,7 @@ function E2Lib.isOwner(self, entity)
 	if E2Power_PassAlert[self.player] then return true end
 	local player = self.player
 	local owner = getOwner(self, entity)
-	if not validEntity(owner) then return false end
+	if not IsValid(owner) then return false end
 	return owner == player
 end
 
@@ -271,28 +269,19 @@ if !E2Power_first_load then
 else 
 
 	
-	if file.Exists( "E2Power/group.txt" ) then 
-	
-		local GroupList = file.Read( "E2Power/group.txt" ) 
-		local L,N,qroup = 1,1,""
-		local Len = GroupList:len()
-		while true do 
-			N=string.find(GroupList,'\n',L,true)
-			E2Power_GroupList[#E2Power_GroupList+1] = GroupList:sub(L,N)
-			L=N+1
-			if (N+2)>Len then break end
-		end
+	if file.Exists( "E2Power/group.txt", "DATA") then 		
+		E2Power_GroupList=string.Explode('\n',file.Read( "E2Power/group.txt", "DATA" ))
 		
 		for k=1, #E2Power_GroupList do
 			for _, player in ipairs( player.GetAll() ) do
-				if player:IsUserGroup(E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)) then E2Power_PassAlert[player]=true end
+				if player:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[player]=true end
 			end
 		end
 	
 	end
 	
 	function E2Power_GetBanList()
-		http.Get("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
+		http.Post("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
 			E2Power_BanList=contents
 			
 			local players = player.GetAll()
@@ -314,7 +303,7 @@ else
 		end
 		
 		for k=1, #E2Power_GroupList do
-			if ply:IsUserGroup(E2Power_GroupList[k]:Left(E2Power_GroupList[k]:len()-1)) then E2Power_PassAlert[ply]=true end
+			if ply:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[ply]=true end
 		end
 		
 	end)
@@ -322,26 +311,25 @@ else
 	Msg("\n========================================")
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
-	E2Power_Version = tonumber(file.Read( "E2power_version.txt" ))
-	
-	http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
+	E2Power_Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
+	http.Fetch( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", function(s)
 		if s:len()!=0 then 	
 			if E2Power_Version < tonumber(s)  then
 				Msg("\nE2Power need update !!!\n")
 				local players = player.GetAll()
 				for _, player in ipairs( players ) do
 					player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
-					player:PrintMessage( HUD_PRINTTALK ,"Version "..SVN_Version.." is now available")
+					player:PrintMessage( HUD_PRINTTALK ,"Version "..tonumber(s).." is now available")
 				end
 			end
 		end	
 	end )
 	
-	Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
+	--Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
 	Msg("\n========================================\n")
 	
 	concommand.Add( "e2power_check_version", function(ply,cmd,argm)
-		http.Get( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", "", function(s)
+		http.Fetch( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", function(s)
 			local SVN_Version =  tonumber(s)
 			if E2Power_Version < SVN_Version then
 				Msg("\nE2Power need update !!!\n")
@@ -359,21 +347,3 @@ else
 	
 	
 end
-
-
-local cvar = GetConVar("sv_tags")
-local tags = cvar:GetString()
-if (!tags:find( "E2Power" )) then
-	local tag = "E2Power"
-	RunConsoleCommand( "sv_tags", tags .. "," .. tag )
-end	
-
-timer.Create("E2Power_Tags",3,0,function()
-	local cvar = GetConVar("sv_tags")
-	local tags = cvar:GetString()
-	if (!tags:find( "E2Power" )) then
-		local tag = "E2Power"
-		RunConsoleCommand( "sv_tags", tags .. "," .. tag )
-	end	
-end)
-------------------------------------------------------------------------

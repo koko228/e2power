@@ -1,7 +1,7 @@
 __e2setcost(20)
 
 e2function void entity:plyRunSpeed(number speed)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
 	speed=math.Clamp(speed, 0, 90000)
@@ -13,7 +13,7 @@ e2function void entity:plyRunSpeed(number speed)
 end
 
 e2function void entity:plyWalkSpeed(number speed)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
 	speed=math.Clamp(speed, 0, 90000)
@@ -25,7 +25,7 @@ e2function void entity:plyWalkSpeed(number speed)
 end
 
 e2function void entity:plyJumpPower(number power)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
 	power=math.Clamp(power, 0, 90000)
@@ -37,7 +37,7 @@ e2function void entity:plyJumpPower(number power)
 end
 
 e2function void entity:plyCrouchWalkSpeed(number speed)
-	if !validEntity(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
 	speed=math.Clamp(speed, 0.01, 10)
@@ -45,13 +45,13 @@ e2function void entity:plyCrouchWalkSpeed(number speed)
 end
 
 e2function number entity:plyGetMaxSpeed()
-	if not validEntity(this) then return end
+	if not IsValid(this) then return end
 	if (!this:IsPlayer()) then return end
 	return this:GetMaxSpeed()
 end
 
 e2function number entity:plyGetJumpPower()
-	if not validEntity(this) then return end
+	if not IsValid(this) then return end
 	if (!this:IsPlayer()) then return end
 	return this:GetJumpPower()
 end

@@ -35,7 +35,7 @@ end
 local function createentitysfromE2(self,entity,pos,angles,freeze)
 	if not ValidSpawn() then return nil end
 	local ent = ents.Create(entity)
-	if not ValidEntity(ent) then return nil end
+	if not IsValid(ent) then return nil end
 	ent:SetPos(pos)
 	ent:SetAngles(angles)
 	ent:SetOwner(self.player)
@@ -71,7 +71,7 @@ end
 
 e2function entity entitySpawn(entity template, number frozen)
 	if not ValidAction(self.player) then return nil end
-	if not validEntity(template) then return nil end
+	if not IsValid(template) then return nil end
 	return createentitysfromE2(self,template:GetClass(),self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
 end
 
@@ -82,7 +82,7 @@ end
 
 e2function entity entitySpawn(entity template, vector pos, number frozen)
 	if not ValidAction(self.player) then return nil end
-	if not validEntity(template) then return nil end
+	if not IsValid(template) then return nil end
 	return createentitysfromE2(self,template:GetClass(),Vector(pos[1],pos[2],pos[3]),self.entity:GetAngles(),frozen)
 end
 
@@ -93,7 +93,7 @@ end
 
 e2function entity entitySpawn(entity template, angle rot, number frozen)
 	if not ValidAction(self.player) then return nil end
-	if not validEntity(template) then return nil end
+	if not IsValid(template) then return nil end
 	return createentitysfromE2(self,template:GetClass(),self.entity:GetPos()+self.entity:GetUp()*25,Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
@@ -104,20 +104,20 @@ end
 
 e2function entity entitySpawn(entity template, vector pos, angle rot, number frozen)
 	if not ValidAction(self.player) then return nil end
-	if not validEntity(template) then return nil end
+	if not IsValid(template) then return nil end
 	return createentitysfromE2(self,template:GetClass(),Vector(pos[1],pos[2],pos[3]),Angle(rot[1],rot[2],rot[3]),frozen)
 end
 
 __e2setcost(100)
 e2function void entity:setModel(string model)
 	if not ValidAction(self.player) then return end
-	if not ValidEntity(this) then return nil end
+	if not IsValid(this) then return nil end
 	if !isOwner(self, this) then return end
 	this:SetModel(model)
 end
 
 e2function void entity:setOwnerNoEntity()
-	if !ValidEntity(this) then return end
+	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this.e2co then return end
 	this:SetOwner(nil)

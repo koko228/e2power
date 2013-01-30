@@ -128,7 +128,7 @@ local function message(Duration, StartSize, EndSize, RGB, Position, Velocity, St
     if(AlwaysRender==0) then
         for k, v in pairs(player.GetAll()) do
             local ply = v
-            if(validEntity(ply)) then 
+            if(IsValid(ply)) then 
                 if(Grav[nom]==nil) then Grav[nom] = Vector(0,0,-9.8) end
                 Gravi = Vector(Grav[nom][1],Grav[nom][2],Grav[nom][3])
                 local Posi = Vector(Position[1],Position[2],Position[3])
@@ -174,6 +174,11 @@ local function SetAlwaysRenderParticles( player, command, arguments)
         end
 end
 
+local function ParticlesTimer(timerName,PlyID)
+		timer.Destroy(timerName)
+        ParticlesThisSecond[PlyID] = 0
+end
+
 concommand.Add("wire_e2_SetAlwaysRenderParticles",SetAlwaysRenderParticles)
 concommand.Add("wire_e2_maxParticlesPerSecond",SetMaxE2Particles)
 
@@ -187,11 +192,8 @@ e2function void particle(Duration, StartSize, EndSize, string String, vector RGB
         if ( ParticlesThisSecond[PlyID] <= MaxParticlesPerSecond or Ply:IsAdmin() == true) then
                 message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, self.entity, 0)
                 ParticlesThisSecond[PlyID] = ParticlesThisSecond[PlyID] + 1
-                if(timer.IsTimer(timerName) == false) then
-                        timer.Create(timerName, 1, 0, function()
-                                timer.Destroy(timerName)
-                                ParticlesThisSecond[PlyID] = 0
-                        end)
+                if(timer.Exists(timerName) == false) then
+                        timer.Create(timerName, 1, 0, function() ParticlesTimer(timerName,PlyID) end)
                 end
         end
 end
@@ -204,11 +206,8 @@ e2function void particle(Duration, StartSize, EndSize, string String, vector RGB
         if ( ParticlesThisSecond[PlyID] <= MaxParticlesPerSecond or Ply:IsAdmin() == true) then
                 message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, self.entity, Pitch)
                 ParticlesThisSecond[PlyID] = ParticlesThisSecond[PlyID] + 1
-                if(timer.IsTimer(timerName) == false) then
-                        timer.Create(timerName, 1, 0, function()
-                                timer.Destroy(timerName)
-                                ParticlesThisSecond[PlyID] = 0
-                        end)
+                if(timer.Exists(timerName) == false) then
+                        timer.Create(timerName, 1, 0, function() ParticlesTimer(timerName,PlyID) end)
                 end
         end
 end
