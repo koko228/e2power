@@ -312,7 +312,7 @@ else
 	Msg("\nE2Power by [G-moder]FertNoN")
 	
 	E2Power_Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
-	http.Fetch( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", function(s)
+	http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
 		if s:len()!=0 then 	
 			if E2Power_Version < tonumber(s)  then
 				Msg("\nE2Power need update !!!\n")
@@ -329,7 +329,7 @@ else
 	Msg("\n========================================\n")
 	
 	concommand.Add( "e2power_check_version", function(ply,cmd,argm)
-		http.Fetch( "http://e2power.googlecode.com/svn/trunk/data/E2power_version.txt", function(s)
+		http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
 			local SVN_Version =  tonumber(s)
 			if E2Power_Version < SVN_Version then
 				Msg("\nE2Power need update !!!\n")
