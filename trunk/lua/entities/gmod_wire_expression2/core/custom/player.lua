@@ -68,7 +68,7 @@ e2function entity entity:playerRagdoll()
 	if !this:Alive() then return end
 	if this:InVehicle() then this:ExitVehicle()	end
 	local v = this
-	local affected_plys = {}
+	--local affected_plys = {}
 	
 	if !IsValid(v.ragdoll) then
 
@@ -99,7 +99,7 @@ e2function entity entity:playerRagdoll()
 
 		v.ragdoll = ragdoll
 
-		table.insert( affected_plys, v )
+		--table.insert( affected_plys, v )
 		return ragdoll
 	else
 		v:SetParent()
