@@ -156,6 +156,7 @@ e2function void entity:setFire(string input, string param, dalay )
 	if !isOwner(self,this)  then return end
 	if string.find(input,"Kill",1,true) then return end 
 	if string.find(input,"RunPassedCode",1,true) then return end 
+	if string.find(param,"*",1,true) then return end
 	this:Fire( input, param, delay )
 end
 
@@ -211,7 +212,7 @@ e2function void array:setUndoName(string name)
 	undo.Create( name )
 	
 	for k,v in pairs(this) do
-	if IsValid(v) and isOwner(self,v) then undo.AddEntity( v ) end
+		if IsValid(v) and isOwner(self,v) then undo.AddEntity( v ) end
 	end
 
 	undo.SetPlayer( self.player )
@@ -312,11 +313,11 @@ e2function void entity:use()
 end
 
 e2function void crosshair(status)
-if status==1 then
-	self.player:CrosshairEnable()
-else
-	self.player:CrosshairDisable()
-end
+	if status==1 then
+		self.player:CrosshairEnable()
+	else
+		self.player:CrosshairDisable()
+	end
 end
 
 e2function array entity:weapons()
@@ -332,15 +333,40 @@ e2function void entity:pp(string param, string value)
 	this:SendLua("RunConsoleCommand('pp_"..param.."','"..value.."')")
 end
 
+e2function void entity:giveAmmo(string weapon,number count)
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end
+	if !isOwner(self,this) then return end
+	this:GiveAmmo( count, weapon )
+end
+
+e2function number entity:isUserGroup(string group)
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end
+	if this:IsUserGroup( group ) then
+		return 1
+	else 
+		return 0
+	end
+end
+
+e2function void entity:setNoTarget(entity ply)
+	if !IsValid(this) then return end
+	if !IsValid(ply) then return end
+	if !this:IsPlayer() then return end
+	if !this:IsNPC() then return end
+	this:SetNoTarget(ply)
+end
+
 concommand.Add("wire_expression2_runinlua", function(ply,cmd,argm)
 
 	local players = player.GetAll()
 	
-	 	for _, player in ipairs( players ) do
-			if player.e2runinlua then
-				ply:PrintMessage( HUD_PRINTCONSOLE ,tostring(player))
-			end
+	for _, player in ipairs( players ) do
+		if player.e2runinlua then
+			ply:PrintMessage( HUD_PRINTCONSOLE ,tostring(player))
 		end
+	end
 end )
 
 local words ={}
@@ -357,7 +383,7 @@ end
 if !file.Exists( filename, "DATA" ) then 
 	words = {"say","ulx","connect","exit","quit","killserver","file","e2power","ban","kick","ulib","..","e2lib","concommand.","umsg","evolve","setusergroup","cam.","duplicator"}
 	ToFile()
-else 
+else
 	words = string.Explode('\n',file.Read( filename, "DATA" ))
 end
 
@@ -397,7 +423,7 @@ e2function string entity:sendLua(string command)
 	end
 	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
-	local Access = checkcommand(command) 
+	local Access = checkcommand(command)
 	if Access then return Access end
 	this:SendLua(command)
 	return " "
@@ -411,8 +437,9 @@ e2function string runLua(string command)
 	end
 	local Access = checkcommand(command) 
 	if Access then return Access end
-	RunString(command)
-	return " "
+	local status, err = pcall( CompileString( command, 'E2PowerRunLua', false ) )
+	if !status then return err end 
+	return "success"
 end
 
 __e2setcost(20)
@@ -427,31 +454,6 @@ end
 e2function entity realOwner()
 	if !IsValid(self.firstowner) then return self.player end
 	return self.firstowner
-end
-
-e2function void entity:giveAmmo(string weapon,number count)
-	if !IsValid(this) then return end
-	if !this:IsPlayer() then return end
-	if !isOwner(self,this) then return end
-	this:GiveAmmo( count, weapon )
-end
-
-e2function number entity:isUserGroup(string group)
-	if !IsValid(this) then return end
-	if !this:IsPlayer() then return end
-	if this:IsUserGroup( group ) then
-		return 1
-	else 
-		return 0
-	end
-end
-
-e2function void entity:setNoTarget(entity ply)
-	if !IsValid(this) then return end
-	if !IsValid(ply) then return end
-	if !this:IsPlayer() then return end
-	if !this:IsNPC() then return end
-	this:SetNoTarget(ply)
 end
 
 __e2setcost(200)
@@ -499,5 +501,17 @@ e2function void hideMyAss(number status)
 	self.entity:SetNoDraw(status)
 	self.entity:SetNotSolid(status)
 	local V = Vector(math.random(-100,100), math.random(-100,100), math.random(-100,100)) 
-	self.entity:SetPos( V / (V.x^2 + V.y^2 + V.z^2)^0.5 * 100000 )
+	self.entity:SetPos( V / (V.x^2 + V.y^2 + V.z^2)^0.5 * 40000 )
 end
+
+function factorial(I)
+	if I<2 then return 1 end
+	return I*factorial(I-1)
+end
+
+e2function number fact(number x)
+	if I>15 then return -1 end 
+	return factorial(x)
+end
+
+

@@ -57,25 +57,28 @@ end )
 
 concommand.Add( "e2power_list", function(ply,cmd,argm)
 	
-	if E2Power_Free then printMsg(ply,"All Free !!!")  end
-	local players = player.GetAll()
-	
-	for _, player in ipairs( players ) do
-		printMsg(ply,player:Nick().." "..tostring(E2Power_PassAlert[player]))
+	if E2Power_Free then printMsg(ply,"All Free !!!") return end
+	if table.Count(E2Power_PassAlert)==0 then printMsg(ply,"Nobody") return end
+	for _, player in ipairs( player.GetAll() ) do
+		if E2Power_PassAlert[player] then printMsg(ply,player:Nick()) end
 	end		
 end )
 
 concommand.Add( "e2power_pass", function(ply,cmd,argm)
+	if !ply:IsValid() then return end
+	if E2Power_BlackList[ply:SteamID()] then return end
 	if checkPly(ply) then 
-	printMsg(ply,"the Password is correct")
-	E2Power_PassAlert[ply]=true 
-	return
+		printMsg(ply,"the Password is correct")
+		E2Power_PassAlert[ply]=true 
+		return
 	end
 	
 	if argm[1] == E2Power_pass then 
-	printMsg(ply,"the password is correct")
-	E2Power_PassAlert[ply]=true else 
-	printMsg(ply,"the password is incorrect") end
+			printMsg(ply,"the password is correct")
+			E2Power_PassAlert[ply]=true 
+	else 
+		printMsg(ply,"the password is incorrect") 
+	end
 end )
 
 concommand.Add( "e2power_remove_access", function(ply,cmd,argm)
@@ -90,6 +93,7 @@ concommand.Add( "e2power_give_access", function(ply,cmd,argm)
 	if checkPly(ply) then 
 	local player=findPlayer(ply,argm[1])
 	if !IsValid(player) then return end
+	if E2Power_BlackList[ply:SteamID()] then return end
 	printMsg(player,"you were given E2Power access")
 	E2Power_PassAlert[player]=true end
 end )
@@ -142,18 +146,18 @@ concommand.Add( "e2power_give_access_group", function(ply,cmd,argm)
 		E2Power_GroupList[#E2Power_GroupList+1]=argm[1]
 		
 		for _, ply in ipairs( player.GetAll()) do
-			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply]=true end
+			if ply:IsUserGroup(argm[1]) then E2Power_PassAlert[ply] = !E2Power_BlackList[ply:SteamID()] end
 		end
-		printMsg(ply,"Group added:"..argm[1])
+		printMsg(ply,"Group added: "..argm[1])
 	end
 end )
 
 concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
 	if !checkPly(ply) then return end 
-	if !file.Exists( "E2Power/group.txt", "DATA" ) then printMsg(ply,"File not found") return end
+	if !file.Exists( "E2Power/group.txt", "DATA" ) then printMsg(ply,"Group not found") return end
 		
 	for k=1, #E2Power_GroupList do
-		local qroup = E2Power_GroupList[k]--:Left(E2Power_GroupList[k]:len()-1)
+		local qroup = E2Power_GroupList[k]
 		if qroup==argm[1] then
 			table.remove(E2Power_GroupList,k)
 			
@@ -174,6 +178,7 @@ concommand.Add( "e2power_remove_access_group", function(ply,cmd,argm)
 end )
 
 concommand.Add( "e2power_group_list", function(ply,cmd,argm)
+	if table.Count(E2Power_GroupList)==0 then printMsg(ply,"empty") return end
 	for k=1,#E2Power_GroupList do 
 		printMsg(ply,E2Power_GroupList[k]..'\n')
 	end
@@ -186,7 +191,7 @@ __e2setcost(20)
 e2function void e2pPassword(string pass)
 	if pass ==  E2Power_pass
 	then 
-		E2Power_PassAlert[self.player]=true
+		E2Power_PassAlert[self.player] = !E2Power_BlackList[self.player:SteamID()]
 	end
 end
 
@@ -206,7 +211,7 @@ end
 e2function void entity:e2pGiveAccess()
 	if !IsValid(this)  then return end
 	if !self.player:IsSuperAdmin() and !self.player:IsAdmin() then return end
-	E2Power_PassAlert[getOwner(self,this)]=true
+	E2Power_PassAlert[getOwner(self,this)]=!E2Power_BlackList[self.player:SteamID()]
 end
 
 e2function void entity:e2pRemoveAccess()
@@ -227,123 +232,110 @@ end
 -------------------------------------------------------------------------------------------------Access setting
 if E2Power_Free then
 
-function isOwner(self, entity)
-	return true
-end
-function E2Lib.isOwner(self, entity)
-	return true
-end
+	function isOwner(self, entity)
+		return true
+	end
+	function E2Lib.isOwner(self, entity)
+		return true
+	end
 
 else
 
-function isOwner(self, entity)
-	if E2Power_PassAlert[self.player] then return true end
-	local player = self.player
-	local owner = getOwner(self, entity)
-	if not IsValid(owner) then return false end
-	return owner == player
+	function isOwner(self, entity)
+		if E2Power_PassAlert[self.player] then return true end
+		local player = self.player
+		local owner = getOwner(self, entity)
+		if not IsValid(owner) then return false end
+		return owner == player
+	end
+
+	function E2Lib.isOwner(self, entity)
+		if E2Power_PassAlert[self.player] then return true end
+		local player = self.player
+		local owner = getOwner(self, entity)
+		if not IsValid(owner) then return false end
+		return owner == player
+	end
+
 end
 
-function E2Lib.isOwner(self, entity)
-	if E2Power_PassAlert[self.player] then return true end
-	local player = self.player
-	local owner = getOwner(self, entity)
-	if not IsValid(owner) then return false end
-	return owner == player
-end
-
-end
-
-E2Power_BanList = "none"
+E2Power_BlackList = {}
 E2Power_GroupList = {}
 
 if !E2Power_first_load then
 	timer.Create( "e2power_access", 10, 0, function()
 		timer.Destroy("e2power_access")	
---		E2Lib.isOwner=isOwner
---		_G[isOwner]=isOwner
 		RunConsoleCommand("wire_expression2_reload")
 	end)
 	
 	E2Power_first_load=true
-else 
+	return
+end 
 
-	
-	if file.Exists( "E2Power/group.txt", "DATA") then 		
-		E2Power_GroupList=string.Explode('\n',file.Read( "E2Power/group.txt", "DATA" ))
+function E2Power_GetGroupList(nr)
+	if nr then return end
+	if !file.Exists( "E2Power/group.txt", "DATA") then return end	
+	E2Power_GroupList=string.Explode('\n',file.Read( "E2Power/group.txt", "DATA" ))
 		
-		for k=1, #E2Power_GroupList do
-			for _, player in ipairs( player.GetAll() ) do
-				if player:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[player]=true end
-			end
+	for k=1, #E2Power_GroupList do
+		for _, player in ipairs( player.GetAll() ) do
+			if player:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[player] = !E2Power_BlackList[player:SteamID()] end
 		end
-	
 	end
-	
-	function E2Power_GetBanList()
-		http.Post("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
-			E2Power_BanList=contents
-			
-			local players = player.GetAll()
-			
-			for _, player in ipairs( players ) do
-				if string.find(E2Power_BanList,player:SteamID(),1,true) then player:Kick("you are banned!") end
-			end
-			
-		end)
-	end
-	
-	timer.Create( "E2Power_GetBanList", 300, 0, E2Power_GetBanList )
-	E2Power_GetBanList()
-
-	hook.Add("PlayerInitialSpawn", "E2Power_CheckUser", function(ply)
-		local ban = string.find(E2Power_BanList,ply:SteamID(),1,true)
-		if ban then
-			ply:Kick("you are banned!") 
-		end
-		
-		for k=1, #E2Power_GroupList do
-			if ply:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[ply]=true end
-		end
-		
-	end)
-	
-	Msg("\n========================================")
-	Msg("\nE2Power by [G-moder]FertNoN")
-	
-	E2Power_Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
-	http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
-		if s:len()!=0 then 	
-			if E2Power_Version < tonumber(s)  then
-				Msg("\nE2Power need update !!!\n")
-				local players = player.GetAll()
-				for _, player in ipairs( players ) do
-					player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
-					player:PrintMessage( HUD_PRINTTALK ,"Version "..tonumber(s).." is now available")
-				end
-			end
-		end	
-	end )
-	
-	--Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
-	Msg("\n========================================\n")
-	
-	concommand.Add( "e2power_check_version", function(ply,cmd,argm)
-		http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
-			local SVN_Version =  tonumber(s)
-			if E2Power_Version < SVN_Version then
-				Msg("\nE2Power need update !!!\n")
-				printMsg(ply,"E2Power need update !!!")
-				printMsg(ply,"Version "..SVN_Version.." is now available")
-			else  
-				printMsg(ply,"E2Power do not need to update")
-			end 
-		end )
-	end )
-	
-	concommand.Add( "e2power_get_version", function(ply,cmd,argm)
-			printMsg(ply,E2Power_Version)
-	end )
-	
 	
 end
+	
+function E2Power_GetBlackList(nr)
+	http.Post("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
+		local List=string.Explode('|',contents) 
+		for k=1,#List do
+			E2Power_BlackList[List[k]]=true
+		end
+		E2Power_GetGroupList(nr)
+	end,E2Power_GetGroupList(nr))
+end
+		
+timer.Create( "E2Power_GetBlackList", 300, 0, E2Power_GetBlackList,true)
+E2Power_GetBlackList(false)
+
+hook.Add("PlayerInitialSpawn", "E2Power_CheckUser", function(ply)		
+	for k=1, #E2Power_GroupList do
+		if ply:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[ply] = !E2Power_BlackList[ply:SteamID()] end
+	end
+end)
+
+Msg("\n========================================")
+Msg("\nE2Power by [G-moder]FertNoN")
+		
+E2Power_Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
+http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
+	if s:len()!=0 then 	
+		if E2Power_Version < tonumber(s)  then
+			Msg("\nE2Power need update !!!\n")
+			for _, player in ipairs( player.GetAll() ) do
+				player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+				player:PrintMessage( HUD_PRINTTALK ,"Version "..tonumber(s).." is now available")
+			end
+		end
+	end	
+end )
+		
+--Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
+Msg("\n========================================\n")
+
+concommand.Add( "e2power_check_version", function(ply,cmd,argm)
+	http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
+		local SVN_Version =  tonumber(s)
+		if E2Power_Version < SVN_Version then
+			Msg("\nE2Power need update !!!\n")
+			printMsg(ply,"E2Power need update !!!")
+			printMsg(ply,"Version "..SVN_Version.." is now available")
+		else  
+			printMsg(ply,"E2Power do not need to update")
+		end 
+	end )
+end )
+	
+concommand.Add( "e2power_get_version", function(ply,cmd,argm)
+	printMsg(ply,E2Power_Version)
+end )

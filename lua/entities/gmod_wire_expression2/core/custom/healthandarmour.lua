@@ -30,22 +30,21 @@ e2function void entity:heal(number Health)
 end
 
 e2function void entity:extinguish()
-if !IsValid(this) then return end
-if !isOwner(self,this)  then return end
-this:Extinguish()
+	if !IsValid(this) then return end
+	if !isOwner(self,this)  then return end
+	this:Extinguish()
 end
 
 e2function void entity:ignite(number l)
-if !IsValid(this) then return end
-if !isOwner(self,this)  then return end
-local _length	= math.Max( l , 2 )
-this:Ignite( _length, 0 )
+	if !IsValid(this) then return end
+	if !isOwner(self,this)  then return end
+	local _length	= math.Max( l , 2 )
+	this:Ignite( _length, 0 )
 end
 
 e2function void entity:setMaxHealth(number Health)
-if !IsValid(this) then return end
---if !validPhysics(this) then return end
-if !isOwner(self,this)  then return end
-this:SetMaxHealth(Health)
-this:SetHealth(Health)
+	if !IsValid(this) then return end
+	if !isOwner(self,this)  then return end
+	this:SetMaxHealth(Health)
+	this:SetHealth(Health)
 end
