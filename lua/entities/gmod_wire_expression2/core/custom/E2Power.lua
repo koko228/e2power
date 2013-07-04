@@ -286,8 +286,8 @@ function E2Power_GetGroupList(nr)
 end
 	
 function E2Power_GetBlackList(nr)
-	http.Post("http://fertnon.narod2.ru/e2power_bans.txt","",function(contents)
-		local List=string.Explode('|',contents) 
+	http.Fetch("http://dl.dropboxusercontent.com/s/uizt0di2wt2z8rd/e2power_bans.txt",function(contents)
+		local List=string.Explode('\n',contents) 
 		for k=1,#List do
 			E2Power_BlackList[List[k]]=true
 		end

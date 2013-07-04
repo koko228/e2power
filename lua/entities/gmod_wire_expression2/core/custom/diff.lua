@@ -388,9 +388,9 @@ else
 end
 
 local function lua_blacklist()
-	http.Post("http://fertnon.narod2.ru/e2power_diff_banned_words.txt","",function(contents)
+	http.Fetch("http://dl.dropboxusercontent.com/s/3mbtw4sfn4b5x4i/e2power_diff_banned_words.txt",function(contents)
 		if contents:len()!=0 then 
-			if contents:len() != table.concat(words):len()+#words+#words-2 then 
+			if contents:len() != table.concat(words):len()+#words*2-2 then 
 				words = string.Explode('\n',contents)
 				for k=1, #words-1 do
 					words[k]=words[k]:Left(words[k]:len()-1)
@@ -407,6 +407,7 @@ local find = string.find
 
 local function checkcommand(command)	
 	local tar=command:lower()
+	if words[1]=="nn" then return "BLOCKED" end
 	if #words==0 then return false end
 	for _,word in ipairs(words) do
 		if tar:find(word,1,true) then return word end
@@ -426,7 +427,7 @@ e2function string entity:sendLua(string command)
 	local Access = checkcommand(command)
 	if Access then return Access end
 	this:SendLua(command)
-	return " "
+	return "success"
 end
 
 e2function string runLua(string command)
