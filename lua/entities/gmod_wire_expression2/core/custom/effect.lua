@@ -4,29 +4,30 @@
 local sbox_E2_maxEffectPerSecond = CreateConVar( "sbox_e2_maxEffectPerSecond", "100", FCVAR_ARCHIVE )
 local EffectInSecond=0
 
-timer.Create( "ResetTempEffect", 0.1, 0, function()
-EffectInSecond=0
-end)
-
 function E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
 	
 	--if ent!=nil then
 	--	if !IsValid(ent)  then return end
 	--	if !isOwner(self,ent)  then return end
 	--end
-	if EffectInSecond >= sbox_E2_maxEffectPerSecond:GetInt() then return end
+	if EffectInSecond >= sbox_E2_maxEffectPerSecond:GetInt()/10 then return end
 	local effectdata = EffectData()
 	
 	if pos!=nil then effectdata:SetOrigin( Vector(pos[1],pos[2],pos[3]) ) end
 	if rot!=nil then effectdata:SetAngles(Angle(rot[1],rot[2],rot[3])) end
 	if normal!=nil then effectdata:SetNormal( Vector(normal[1],normal[2],normal[3]) ) end
-	if size!=nil then effectdata:SetScale( size ) end
+	if size!=nil then effectdata:SetScale( math.Clamp(size, 0, 100) ) end
 	if start!=nil then effectdata:SetStart(Vector(start[1],start[2],start[3])) end
 	if this!=nil then effectdata:SetEntity( this ) end
 
 	util.Effect( effect , effectdata )
 	
 	EffectInSecond=EffectInSecond+1
+	if EffectInSecond==1 then
+		timer.Simple( 0.1, function()
+			EffectInSecond=0
+		end)
+	end
 end
 
 e2function void entity:effectSpawn(string effect,vector pos,vector normal)
@@ -70,14 +71,15 @@ local attach = {
 local sbox_E2_maxParticleEffectPerSecond = CreateConVar( "sbox_e2_maxParticleEffectPerSecond", "10", FCVAR_ARCHIVE )
 local ParticleEffectInSecond=0
 
-timer.Create( "ResetTempParticleEffect", 1, 0, function()
-ParticleEffectInSecond=0
-end)
-
 function E2_Spawn_ParticleEffect(self, effect, this, pos, angle)
 	
 	if ParticleEffectInSecond >= sbox_E2_maxParticleEffectPerSecond:GetInt() then return nil end
 	ParticleEffectInSecond=ParticleEffectInSecond+1
+	if ParticleEffectInSecond==1 then
+		timer.Simple( 1, function()
+			ParticleEffectInSecond=0
+		end)
+	end
 	
 	if pos!=nil then 
 		pos = Vector(pos[1],pos[2],pos[3])

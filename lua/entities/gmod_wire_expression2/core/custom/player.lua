@@ -8,7 +8,7 @@ e2function void entity:playerFreeze()
 end
 
 e2function void entity:playerUnFreeze()
- if !IsValid(this)  then return end
+	if !IsValid(this)  then return end
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
        this:UnLock()
@@ -68,8 +68,7 @@ e2function entity entity:playerRagdoll()
 	if !this:Alive() then return end
 	if this:InVehicle() then this:ExitVehicle()	end
 	local v = this
-	--local affected_plys = {}
-	
+
 	if !IsValid(v.ragdoll) then
 
 		local ragdoll = ents.Create( "prop_ragdoll" )
@@ -98,8 +97,7 @@ e2function entity entity:playerRagdoll()
 		v:StripWeapons() 
 
 		v.ragdoll = ragdoll
-
-		--table.insert( affected_plys, v )
+		
 		return ragdoll
 	else
 		v:SetParent()
@@ -119,7 +117,7 @@ e2function entity entity:playerRagdoll()
 			v:SetAngles( Angle( 0, yaw, 0 ) )
 			ragdoll:Remove()
 		end
-		table.insert( affected_plys, v )
+	
 		return self.player
 	end
 end

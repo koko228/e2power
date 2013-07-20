@@ -19,22 +19,31 @@ local function get_gravity(message)
 end
 
 function use_message(message)
-    local Ent      = message:ReadEntity()
-    local PartType = Ent:GetNetworkedString("Type")
-    local Color    = Ent:GetNetworkedVector("RGB")
-    local Vel      = Ent:GetNetworkedVector("Vel")
-    local centr    = Ent:GetNetworkedVector("Position")
+	
+	local Ent       = message:ReadEntity()
+	local Duration  = message:ReadLong()
+	local StartSize = message:ReadLong()
+	local EndSize   = message:ReadLong()
+	
+	local centr    = message:ReadVector()
+	local Color    = message:ReadVector()
+    local Vel      = message:ReadVector()
+    
+	local PartType = message:ReadString()
+	
+	local Pitch    = message:ReadLong()
+    
     local em       = ParticleEmitter(centr)
     local part     = em:Add(PartType,centr)
-    
+	
     if(em!=nil) then
-        
+	
         part:SetColor(Color[1],Color[2],Color[3],255)
         part:SetVelocity(Vel)
-        part:SetDieTime(Clamp(tonumber(Ent:GetNetworkedInt("Duration")), 0.001, 60))
-        part:SetStartSize(Clamp(tonumber(Ent:GetNetworkedInt("StartSize")),0.1,3000))
-        part:SetEndSize(Clamp(tonumber(Ent:GetNetworkedInt("EndSize")),0.1,3000))
-        part:SetAngles(Angle(Ent:GetNetworkedInt("Pitch"),0,0))
+        part:SetDieTime(Clamp(Duration, 0.001, 60))
+        part:SetStartSize(Clamp(StartSize,0.1,3000))
+        part:SetEndSize(Clamp(EndSize,0.1,3000))
+        part:SetAngles(Angle(Pitch,0,0))
     
         if(Gravity[Ent]==nil) then Gravity[Ent] = Vector(0,0,-9.8) end
         if(Collision[Ent]==nil) then Collision[Ent] = true end
@@ -43,7 +52,6 @@ function use_message(message)
         part:SetGravity(Gravity[Ent])
         part:SetCollide(Collision[Ent])
         part:SetBounce(Bounce[Ent])   
-    
     end
     
     em:Finish() 
