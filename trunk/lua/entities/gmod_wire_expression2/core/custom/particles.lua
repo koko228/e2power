@@ -148,17 +148,18 @@ local function message(Duration, StartSize, EndSize, RGB, Position, Velocity, St
     else
         eplayers:AddAllPlayers()
     end
-    nom:SetNetworkedInt("Duration", Duration)
-    nom:SetNetworkedInt("StartSize", StartSize)
-    nom:SetNetworkedInt("EndSize", EndSize)
-    nom:SetNetworkedVector("Position", Vector(Position[1],Position[2],Position[3]))
-    nom:SetNetworkedVector("RGB", Vector(RGB[1],RGB[2],RGB[3]))
-    nom:SetNetworkedVector("Vel", Vector(Velocity[1],Velocity[2],Velocity[3]))
-    nom:SetNetworkedString("Type", String) 
-    nom:SetNetworkedInt("Pitch", Pitch)
+	
     umsg.Start("e2p_pm",eplayers)
-    umsg.Entity(nom)
-    umsg.End()
+		umsg.Entity(nom)
+		umsg.Long(Duration)
+		umsg.Long(StartSize)
+		umsg.Long(EndSize)
+		umsg.Vector(Vector(Position[1],Position[2],Position[3]))
+		umsg.Vector(Vector(RGB[1],RGB[2],RGB[3]))
+		umsg.Vector(Vector(Velocity[1],Velocity[2],Velocity[3]))
+		umsg.String(String)
+		umsg.Long(Pitch) 
+	umsg.End()
     eplayers:RemoveAllPlayers()
 end
  

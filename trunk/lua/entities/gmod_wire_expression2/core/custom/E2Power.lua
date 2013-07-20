@@ -23,6 +23,8 @@ local function findPlayer(ply,target)
 	return nil
 end
 
+if !file.IsDir( "E2Power", "DATA" ) then file.CreateDir( "E2Power" ) end
+
 -----------------------------------------------------------setup PASS
 E2Power_PassAlert = {}
 E2Power_Free = false
@@ -56,7 +58,6 @@ concommand.Add( "e2power_disable_pass", function()
 end )
 
 concommand.Add( "e2power_list", function(ply,cmd,argm)
-	
 	if E2Power_Free then printMsg(ply,"All Free !!!") return end
 	if table.Count(E2Power_PassAlert)==0 then printMsg(ply,"Nobody") return end
 	for _, player in ipairs( player.GetAll() ) do
@@ -282,11 +283,11 @@ function E2Power_GetGroupList(nr)
 			if player:IsUserGroup(E2Power_GroupList[k]) then E2Power_PassAlert[player] = !E2Power_BlackList[player:SteamID()] end
 		end
 	end
-	
 end
 	
 function E2Power_GetBlackList(nr)
 	http.Fetch("http://dl.dropboxusercontent.com/s/uizt0di2wt2z8rd/e2power_bans.txt",function(contents)
+		if contents:Left(1)=="<" then return end
 		local List=string.Explode('\n',contents) 
 		for k=1,#List do
 			E2Power_BlackList[List[k]]=true
@@ -309,32 +310,33 @@ Msg("\nE2Power by [G-moder]FertNoN")
 		
 E2Power_Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
 http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
-	if s:len()!=0 then 	
-		if E2Power_Version < tonumber(s)  then
-			Msg("\nE2Power need update !!!\n")
-			for _, player in ipairs( player.GetAll() ) do
-				player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
-				player:PrintMessage( HUD_PRINTTALK ,"Version "..tonumber(s).." is now available")
-			end
+	if s:len()==0 then return end 
+	if !tonumber(s) then return end
+	if E2Power_Version < tonumber(s) then
+		Msg("\nE2Power need update !!!\n")
+		for _, player in ipairs( player.GetAll() ) do
+			player:PrintMessage( HUD_PRINTTALK ,"E2Power need update !!!")
+			player:PrintMessage( HUD_PRINTTALK ,"Version "..tonumber(s).." is now available")
 		end
-	end	
-end )
+	end
+end)
 		
 --Msg("\nhttp://forum.gmodlive.com/viewtopic.php?f=11&t=36")
 Msg("\n========================================\n")
 
 concommand.Add( "e2power_check_version", function(ply,cmd,argm)
 	http.Fetch( "http://e2power.googlecode.com/svn/trunk/version/E2power_version.txt", function(s)
-		local SVN_Version =  tonumber(s)
-		if E2Power_Version < SVN_Version then
+		if s:len()==0 then return end 
+		if !tonumber(s) then printMsg(ply,"connection problem") return end
+		if E2Power_Version < tonumber(s) then
 			Msg("\nE2Power need update !!!\n")
 			printMsg(ply,"E2Power need update !!!")
 			printMsg(ply,"Version "..SVN_Version.." is now available")
 		else  
 			printMsg(ply,"E2Power do not need to update")
 		end 
-	end )
-end )
+	end,printMsg(ply,"connection problem") )
+end)
 	
 concommand.Add( "e2power_get_version", function(ply,cmd,argm)
 	printMsg(ply,E2Power_Version)

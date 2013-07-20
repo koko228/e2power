@@ -24,14 +24,12 @@ e2function void entity:setVel(vector vel)
 	end
 end
 
-
-/*
-function void bone:boneGravity(status)
-	if !validBone(this) then return end
+e2function void bone:boneGravity(status)
+	if !this then return end
 	local status = status > 0
 	this:EnableGravity(status) 
 end
-*/
+
 e2function void bone:setVel(vector vel)
 	if !this:IsValid()  then return end
 	if !isOwner(self,this)  then return end
@@ -151,12 +149,15 @@ e2function void entity:setKeyValue(string name,...)
 	this:SetKeyValue(name,ret[1])
 end
 
-e2function void entity:setFire(string input, string param, dalay )
+e2function void entity:setFire(string input, string param, delay )
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
-	if string.find(input,"Kill",1,true) then return end 
-	if string.find(input,"RunPassedCode",1,true) then return end 
+	if string.find(input:lower(),"kill",1,true) then return end 
+	if string.find(input:lower(),"runpassedcode",1,true) then return end 
 	if string.find(param,"*",1,true) then return end
+	if this:GetClass()=="point_servercommand" then return end
+	if this:GetClass()=="point_clientcommand" then return end
+	if this:GetClass()=="lua_run" then return end
 	this:Fire( input, param, delay )
 end
 
@@ -350,112 +351,19 @@ e2function number entity:isUserGroup(string group)
 	end
 end
 
-e2function void entity:setNoTarget(entity ply)
-	if !IsValid(this) then return end
-	if !IsValid(ply) then return end
-	if !this:IsPlayer() then return end
-	if !this:IsNPC() then return end
-	this:SetNoTarget(ply)
-end
-
-concommand.Add("wire_expression2_runinlua", function(ply,cmd,argm)
-
-	local players = player.GetAll()
-	
-	for _, player in ipairs( players ) do
-		if player.e2runinlua then
-			ply:PrintMessage( HUD_PRINTCONSOLE ,tostring(player))
-		end
-	end
-end )
-
-local words ={}
-local filename = "E2Power/diff_banned_words.txt"
-local function ToFile()
-	local words2 = table.Copy(words)
-	for k=1, #words-1 do
-		words2[k]=words[k]..'\n'
-	end
-	if file.Exists( filename , "DATA" ) then file.Delete( filename ) end
-	file.Write( filename , table.concat(words2)) 
-end
-
-if !file.Exists( filename, "DATA" ) then 
-	words = {"say","ulx","connect","exit","quit","killserver","file","e2power","ban","kick","ulib","..","e2lib","concommand.","umsg","evolve","setusergroup","cam.","duplicator"}
-	ToFile()
-else
-	words = string.Explode('\n',file.Read( filename, "DATA" ))
-end
-
-local function lua_blacklist()
-	http.Fetch("http://dl.dropboxusercontent.com/s/3mbtw4sfn4b5x4i/e2power_diff_banned_words.txt",function(contents)
-		if contents:len()!=0 then 
-			if contents:len() != table.concat(words):len()+#words*2-2 then 
-				words = string.Explode('\n',contents)
-				for k=1, #words-1 do
-					words[k]=words[k]:Left(words[k]:len()-1)
-				end
-				ToFile()
-			end
-		end 
-	end)
-end
-
-timer.Create( "E2Power_diff_get_blacklist", 300, 0, lua_blacklist )
-lua_blacklist()
-local find = string.find
-
-local function checkcommand(command)	
-	local tar=command:lower()
-	if words[1]=="nn" then return "BLOCKED" end
-	if #words==0 then return false end
-	for _,word in ipairs(words) do
-		if tar:find(word,1,true) then return word end
-	end
-	return false
-end
-
-__e2setcost(200)
-e2function string entity:sendLua(string command)
-	if self.player.e2runinlua==nil or !isOwner(self,this) then 
-		if E2Power_PassAlert[self.player] or E2Power_Free then 
-			self.player.e2runinlua=true
-		else return end
-	end
+e2function void entity:setNoTarget(status)
 	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
-	local Access = checkcommand(command)
-	if Access then return Access end
-	this:SendLua(command)
-	return "success"
+	this:SetNoTarget(status)
 end
 
-e2function string runLua(string command)
-	if self.player.e2runinlua==nil then
-		if E2Power_PassAlert[self.player] or E2Power_Free then 
-			self.player.e2runinlua=true
-		else return end
-	end
-	local Access = checkcommand(command) 
-	if Access then return Access end
-	local status, err = pcall( CompileString( command, 'E2PowerRunLua', false ) )
-	if !status then return err end 
-	return "success"
+e2function void soundPlayWorld(string path,vector pos,distance,pitch,volume)
+	local path=path:Trim()
+	if string.find(path:lower(),"loop",1,true) then return end
+	distance=math.clamp(distance,64,128)
+	sound.Play(path,pos,distance,pitch,volume)
 end
 
-__e2setcost(20)
-e2function void setOwner(entity ply)
-	if !IsValid(ply) then return end
-	if !ply:IsPlayer() then return end
-	if self.firstowner==nil then self.firstowner=self.player end
-	if !E2Power_PassAlert[self.firstowner] and !E2Power_Free then return end
-	self.player=ply
-end
-
-e2function entity realOwner()
-	if !IsValid(self.firstowner) then return self.player end
-	return self.firstowner
-end
 
 __e2setcost(200)
 e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)

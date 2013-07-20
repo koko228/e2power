@@ -24,8 +24,8 @@ local e2_all_MouseKeys={}
 local KeyAct={}
 
 for k=1, game.MaxPlayers() do
-e2_all_Keys[k]={}
-e2_all_MouseKeys[k]={}
+	e2_all_Keys[k]={}
+	e2_all_MouseKeys[k]={}
 end
 
 concommand.Add("wire_e2_keypress",function(ply, cmd, argm)
@@ -85,7 +85,7 @@ end
 
 __e2setcost(20)
 e2function number keyPress(string key)
-if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
+	if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
 end
 --------------------MOUSE
 

@@ -1,4 +1,3 @@
-
 if SERVER then 
 	AddCSLuaFile("entities/gmod_wire_expression2/core/custom/cl_e2derma.lua")
 	AddCSLuaFile("entities/gmod_wire_expression2/core/custom/cl_huddraw.lua")

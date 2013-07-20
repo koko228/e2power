@@ -7,11 +7,6 @@ local sbox_E2_maxSprites = CreateConVar( "sbox_E2_maxSprites", "300", FCVAR_ARCH
 local SpritesSpawnInSecond=0
 local SpritesCount=0
 
-timer.Create( "ResetTempSprites", 1, 0, function()
-SpritesSpawnInSecond=0
-end)
-
-
 
 function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 	
@@ -41,6 +36,11 @@ function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 	
 	SpritesSpawnInSecond=SpritesSpawnInSecond+1
 	SpritesCount=SpritesCount+1
+	if SpritesSpawnInSecond==1 then
+		timer.Simple( 1, function()
+			SpritesSpawnInSecond=0
+		end)
+	end
 
 	undo.Create("E2_sprite")
 		undo.AddEntity(sprite)
@@ -53,13 +53,13 @@ end
 
 __e2setcost(200)
 e2function entity entity:drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 end
 
 e2function entity drawSprite(string mat,vector pos,vector color,number alpha,sizex,sizey)
-return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
+	return E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 end
 
 __e2setcost(20)
@@ -70,23 +70,18 @@ e2function void entity:spriteSize(sizex,sizey)
 	this:SetNWFloat("sizex",sizex)
 	this:SetNWFloat("sizey",sizey)
 end
---------------------------------------BEAM
+--------------------------------------BEAMS
 local sbox_E2_maxBeamPerSecond = CreateConVar( "sbox_E2_maxBeamPerSecond", "12", FCVAR_ARCHIVE )
 local sbox_E2_maxBeam = CreateConVar( "sbox_E2_maxBeam", "300", FCVAR_ARCHIVE )
 local BeamSpawnInSecond=0
 local BeamCount=0
 
-timer.Create( "ResetTempBeam", 1, 0, function()
-BeamSpawnInSecond=0
-end)
-
-
 function E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 
-if BeamSpawnInSecond >= sbox_E2_maxBeamPerSecond:GetInt() then return end
-if BeamCount >= sbox_E2_maxBeam:GetInt() then return end
+	if BeamSpawnInSecond >= sbox_E2_maxBeamPerSecond:GetInt() then return end
+	if BeamCount >= sbox_E2_maxBeam:GetInt() then return end
 
-local beam=ents.Create("e2_beam")
+	local beam=ents.Create("e2_beam")
 	beam:SetModel("models/props_phx/huge/evildisc_corp.mdl")
 	beam:SetMaterial(mat)
 	beam:SetPos(Vector(pos[1],pos[2],pos[3]))
@@ -117,73 +112,73 @@ local beam=ents.Create("e2_beam")
 	
 	BeamSpawnInSecond=BeamSpawnInSecond+1
 	BeamCount=BeamCount+1
-
-undo.Create("E2_beam")
-    undo.AddEntity(beam)
-    undo.SetPlayer(self.player)
-undo.Finish()
+	if BeamSpawnInSecond==1 then
+		timer.Simple( 1, function()
+			BeamSpawnInSecond=0
+		end)
+	end
+	undo.Create("E2_beam")
+		undo.AddEntity(beam)
+		undo.SetPlayer(self.player)
+	undo.Finish()
 
 return beam
 end
 
 __e2setcost(200)
 e2function entity entity:drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function entity entity:drawBeam(string mat,vector pos,entity ent,vector color,number alpha,width,textstart,textend)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function void entity:setBeamEndEnt(entity ent)
-if !IsValid(this) then return end  
-if !IsValid(ent) then return end  
-if !isOwner(self,this) then return end  
-if this.EndEnt!=ent then
-	this:SetNWFloat("EndEnt",ent)
-	this.EndEnt=ent
-end
+	if !IsValid(this) then return end  
+	if !IsValid(ent) then return end  
+	if !isOwner(self,this) then return end  
+	if this.EndEnt!=ent then
+		this:SetNWFloat("EndEnt",ent)
+		this.EndEnt=ent
+	end
 end
 
 e2function entity drawBeam(string mat,vector pos,vector endpos,vector color,number alpha,width,textstart,textend)
-return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
+	return E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,textend)
 end
 
 e2function void entity:setBeamEndPos(vector endpos)
-if !IsValid(this)  then return end
-if !isOwner(self,this)  then return end
-this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
-this.mc = true
-this.endpos=Vector( endpos[1],endpos[2],endpos[3] )
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	this:SetNWVector("endpos",Vector( endpos[1],endpos[2],endpos[3] ) )
+	this.mc = true
+	this.endpos=Vector( endpos[1],endpos[2],endpos[3] )
 end
 
 e2function void entity:setBeamWidth(number width)
-if !IsValid(this)  then return end
-if !isOwner(self,this)  then return end
-this:SetNWFloat("width",width)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	this:SetNWFloat("width",width)
 end
 
 e2function void entity:setBeamText(number textstart,number textend)
-if !IsValid(this)  then return end
-if !isOwner(self,this)  then return end
-this:SetNWFloat("TextStart",textstart)
-this:SetNWFloat("TextEnd",textend)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	this:SetNWFloat("TextStart",textstart)
+	this:SetNWFloat("TextEnd",textend)
 end
 
------------------------Quad
+-----------------------QUADS
 
 local sbox_E2_maxQuadsPerSecond = CreateConVar( "sbox_E2_maxQuadsPerSecond", "12", FCVAR_ARCHIVE )
 local sbox_E2_maxQuads = CreateConVar( "sbox_E2_maxQuads", "300", FCVAR_ARCHIVE )
 local QuadsSpawnInSecond=0
 local QuadsCount=0
-
-timer.Create( "ResetTempQuads", 1, 0, function()
-QuadsSpawnInSecond=0
-end)
 
 function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	
@@ -212,25 +207,30 @@ function E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 	
 	QuadsSpawnInSecond=QuadsSpawnInSecond+1
 	QuadsCount=QuadsCount+1
-
+	if QuadsSpawnInSecond==1 then
+		timer.Simple( 1, function()
+			QuadsSpawnInSecond=0
+		end)
+	end
+	
 	undo.Create("E2_quad")
 		undo.AddEntity(quad)
 		undo.SetPlayer(self.player)
 	undo.Finish()
 
-return quad
+	return quad
 end
 
 
 __e2setcost(200)
 e2function entity entity:drawQuad(string mat,vector pos,angle ang,vector color,number alpha,sizex,sizey)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 end
 
 e2function entity drawQuad(string mat,vector pos,angle ang,vector color,number alpha,sizex,sizey)
-return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
+	return E2_spawn_quad(self,this,mat,pos,ang,color,alpha,sizex,sizey)
 end
 
 __e2setcost(20)

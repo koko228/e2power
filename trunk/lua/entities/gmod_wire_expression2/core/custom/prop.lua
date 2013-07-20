@@ -11,10 +11,6 @@ local sbox_E2_PropCore = CreateConVar( "sbox_E2_PropCore", "2", FCVAR_ARCHIVE )
 local E2totalspawnedprops = 0
 local E2tempSpawnedProps = 0
 
-timer.Create( "ResetTempProps", 1, 0, function()
-E2tempSpawnedProps=0
-end)
-
 function PropCore.ValidSpawn()
 	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return false end
 	if sbox_E2_maxProps:GetInt() <= -1 then
@@ -73,6 +69,12 @@ function PropCore.CreateProp(self,model,pos,angles,freeze)
 	end
 	E2totalspawnedprops = E2totalspawnedprops+1
 	E2tempSpawnedProps = E2tempSpawnedProps+1
+	if E2tempSpawnedProps==1 then
+		timer.Simple( 1, function()
+			E2tempSpawnedProps=0
+		end)
+	end
+	
 	return prop
 end
 
@@ -252,10 +254,6 @@ local sbox_E2_maxProps_dynamic = CreateConVar( "sbox_E2_maxProps_dynamic", "300"
 local Props_dynamicSpawnInSecond=0
 local Props_dynamicCount=0
 
-timer.Create( "ResetTempProps_dynamic", 1, 0, function()
-Props_dynamicSpawnInSecond=0
-end)
-
 function E2_spawn_prop_dynamic(self,this,pos,size,radius)
 	
 	if Props_dynamicSpawnInSecond >= sbox_E2_maxProps_dynamicPerSecond:GetInt() then return end
@@ -283,6 +281,10 @@ function E2_spawn_prop_dynamic(self,this,pos,size,radius)
 	
 	Props_dynamicSpawnInSecond=Props_dynamicSpawnInSecond+1
 	Props_dynamicCount=Props_dynamicCount+1
+	
+	timer.Simple( 1, function()
+		Props_dynamicSpawnInSecond=0
+	end)
 
 	undo.Create("E2_prop_dynamic")
 		undo.AddEntity(prop_dynamic)

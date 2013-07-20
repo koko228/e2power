@@ -14,10 +14,6 @@ local E2Helper = { Descriptions = {} }
 local E2totalspawnedentitys = 0
 local E2tempSpawnedEntitys = 0
 
-timer.Create( "ResetTempEntitys", 1, 0, function()
-E2tempSpawnedEntitys=0
-end)
-
 local function ValidSpawn()
 	--if E2tempSpawnedEntitys >= sbox_e2_maxentitys_persecond:GetInt() then return false end
 	if sbox_e2_maxentitys:GetInt() <= -1 then
@@ -59,7 +55,12 @@ local function createentitysfromE2(self,entity,pos,angles,freeze)
 	--end
 	E2totalspawnedentitys = E2totalspawnedentitys+1
 	E2tempSpawnedEntitys = E2tempSpawnedEntitys+1
-	return ent.Entity
+	if E2tempSpawnedEntitys==1 then
+		timer.Simple( 1, function()
+			E2tempSpawnedEntitys=0
+		end)
+	end
+	return ent
 end
 
 --------------------------------------------------------------------------------
