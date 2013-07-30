@@ -1,5 +1,4 @@
 --Light mod made by [G-moder]FertNoN
---http://www.gmodlive.com/forum/44-338-1
 
 local Clamp = math.Clamp
 

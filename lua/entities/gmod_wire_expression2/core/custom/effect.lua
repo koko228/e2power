@@ -3,13 +3,10 @@
 
 local sbox_E2_maxEffectPerSecond = CreateConVar( "sbox_e2_maxEffectPerSecond", "100", FCVAR_ARCHIVE )
 local EffectInSecond=0
+local bannedEffect = {["dof_node"]=true,["smoke"]=true}
 
 function E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
-	
-	--if ent!=nil then
-	--	if !IsValid(ent)  then return end
-	--	if !isOwner(self,ent)  then return end
-	--end
+	if bannedEffect[effect:lower()] then return end
 	if EffectInSecond >= sbox_E2_maxEffectPerSecond:GetInt()/10 then return end
 	local effectdata = EffectData()
 	
@@ -71,7 +68,7 @@ local attach = {
 local sbox_E2_maxParticleEffectPerSecond = CreateConVar( "sbox_e2_maxParticleEffectPerSecond", "10", FCVAR_ARCHIVE )
 local ParticleEffectInSecond=0
 
-function E2_Spawn_ParticleEffect(self, effect, this, pos, angle)
+function E2_Spawn_ParticleEffect(self, effect, this, pos, angle, endpos)
 	
 	if ParticleEffectInSecond >= sbox_E2_maxParticleEffectPerSecond:GetInt() then return nil end
 	ParticleEffectInSecond=ParticleEffectInSecond+1
@@ -80,10 +77,10 @@ function E2_Spawn_ParticleEffect(self, effect, this, pos, angle)
 			ParticleEffectInSecond=0
 		end)
 	end
-	
+
 	if pos!=nil then 
 		pos = Vector(pos[1],pos[2],pos[3])
-		angle = Angle(angle[1],angle[2],angle[3])
+		if angle!=nil then angle = Angle(angle[1],angle[2],angle[3]) else angle = Angle(0,0,0) end 
 	else
 		if !this:IsValid() then return end
 		ParticleEffectAttach( effect, PATTACH_ABSORIGIN_FOLLOW, this, 0 )
@@ -102,7 +99,11 @@ function E2_Spawn_ParticleEffect(self, effect, this, pos, angle)
 			undo.SetPlayer( self.player )
 		undo.Finish()
 	end
-	ParticleEffect( effect, pos, angle, this )
+	if endpos==nil then
+		ParticleEffect( effect, pos, angle, this )
+	else
+		util.ParticleTracerEx(effect, pos, endpos, this, 1, 0)
+	end
 	return this
 end
 
@@ -114,6 +115,14 @@ end
 
 e2function entity particleEffect(string effect,vector pos,angle angle)
 	return E2_Spawn_ParticleEffect(self, effect, this, pos, angle)
+end
+
+e2function entity particleEffect(string effect, vector pos, vector endpos)
+	return E2_Spawn_ParticleEffect(self, effect, this, pos, nil, endpos)
+end
+
+e2function entity entity:particleEffect(string effect, vector pos, vector endpos)
+	return E2_Spawn_ParticleEffect(self, effect, this, pos, nil, endpos)
 end
 
 e2function void entity:particleEffect(string effect)

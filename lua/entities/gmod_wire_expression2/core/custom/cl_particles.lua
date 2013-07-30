@@ -21,17 +21,19 @@ end
 function use_message(message)
 	
 	local Ent       = message:ReadEntity()
-	local Duration  = message:ReadLong()
-	local StartSize = message:ReadLong()
-	local EndSize   = message:ReadLong()
+	local RollDelta = message:ReadChar()
+	local StartAlpha= message:ReadChar()
+	local EndAlpha  = message:ReadChar()
+	local StartSize = message:ReadShort()
+	local Duration  = message:ReadFloat()
+	local EndSize   = message:ReadFloat()
+	local Pitch     = message:ReadFloat()
 	
 	local centr    = message:ReadVector()
 	local Color    = message:ReadVector()
     local Vel      = message:ReadVector()
     
-	local PartType = message:ReadString()
-	
-	local Pitch    = message:ReadLong()
+	local PartType = message:ReadString()	
     
     local em       = ParticleEmitter(centr)
     local part     = em:Add(PartType,centr)
@@ -40,15 +42,18 @@ function use_message(message)
 	
         part:SetColor(Color[1],Color[2],Color[3],255)
         part:SetVelocity(Vel)
-        part:SetDieTime(Clamp(Duration, 0.001, 60))
-        part:SetStartSize(Clamp(StartSize,0.1,3000))
+        part:SetDieTime(Clamp(Duration, 0.01, 60))
+        part:SetStartSize(Clamp(StartSize,1,3000))
         part:SetEndSize(Clamp(EndSize,0.1,3000))
-        part:SetAngles(Angle(Pitch,0,0))
-    
+        part:SetAngles(Angle(Pitch,0,0)) 
+		part:SetRollDelta(RollDelta)
+		part:SetStartAlpha(StartAlpha+128) 
+		part:SetEndAlpha(EndAlpha+128)
+
         if(Gravity[Ent]==nil) then Gravity[Ent] = Vector(0,0,-9.8) end
         if(Collision[Ent]==nil) then Collision[Ent] = true end
         if(Bounce[Ent]==nil) then Bounce[Ent] = 0.3 end
-      
+
         part:SetGravity(Gravity[Ent])
         part:SetCollide(Collision[Ent])
         part:SetBounce(Bounce[Ent])   

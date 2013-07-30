@@ -1,11 +1,157 @@
 local ParticlesThisSecond   = {}
-local MaxParticlesPerSecond = 100
 local Grav                  = {}
 local Particles             = {}
 local rad2deg               = 180 / math.pi
 local asin                  = math.asin
 local atan2                 = math.atan2
-local AlwaysRender          = 0
+local AlwaysRender          = 1
+local MaxParticlesPerSecond = CreateConVar( "sbox_e2_maxParticlesPerSecond", "100", FCVAR_ARCHIVE )
+
+local function bearing(pos, plyer)
+    pos = plyer:WorldToLocal(Vector(pos[1],pos[2],pos[3]))
+    return rad2deg*-atan2(pos.y, pos.x)
+end
+
+local function elevation(pos, plyer)
+    pos = plyer:WorldToLocal(Vector(pos[1],pos[2],pos[3]))
+    local len = pos:Length()
+    if len < delta then return 0 end
+    return rad2deg*asin(pos.z / len)
+end
+
+local function message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, nom, Pitch, RollDelta, StartAlpha, EndAlpha)
+    local eplayers = RecipientFilter()
+    if(AlwaysRender==0) then
+        for k, v in pairs(player.GetAll()) do
+            local ply = v
+            if(IsValid(ply)) then 
+                if(Grav[nom]==nil) then Grav[nom] = Vector(0,0,-9.8) end
+                Gravi = Vector(Grav[nom][1],Grav[nom][2],Grav[nom][3])
+                local Posi = Vector(Position[1],Position[2],Position[3])
+                for i=1,5 do
+                    local Velo = Vector(Velocity[1],Velocity[2],Velocity[3])-(Gravi*i)
+                    local P = bearing(Posi+(Velo*i),ply)
+                    local Y = elevation(Posi+(Velo*i),ply)
+                    if (math.abs(Y) < 100) then
+                        if (math.abs(P) < 100) then
+                            eplayers:AddPlayer(ply)
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    else
+        eplayers:AddAllPlayers()
+    end
+	
+    umsg.Start("e2p_pm",eplayers)
+		umsg.Entity(nom)
+		umsg.Char(RollDelta)
+		umsg.Char(StartAlpha)
+		umsg.Char(EndAlpha)
+		umsg.Short(StartSize)
+		umsg.Float(Duration)
+		umsg.Float(EndSize)
+		umsg.Float(Pitch)
+		umsg.Vector(Vector(Position[1],Position[2],Position[3]))
+		umsg.Vector(Vector(RGB[1],RGB[2],RGB[3]))
+		umsg.Vector(Vector(Velocity[1],Velocity[2],Velocity[3]))
+		umsg.String(String)
+	umsg.End()
+    eplayers:RemoveAllPlayers()
+end
+ 
+local function SetMaxE2Particles( player, command, arguments)
+        if(player:IsAdmin()) then
+                MaxParticlesPerSecond = tonumber(arguments[1])
+        end
+end
+
+local function SetAlwaysRenderParticles( player, command, arguments)
+        if(player:IsAdmin()) then
+                AlwaysRender = tonumber(arguments[1])
+        end
+end
+
+local function ParticlesTimer(timerName,PlyID)
+		timer.Destroy(timerName)
+        ParticlesThisSecond[PlyID] = 0
+end
+
+concommand.Add("wire_e2_SetAlwaysRenderParticles",SetAlwaysRenderParticles)
+concommand.Add("wire_e2_maxParticlesPerSecond",SetMaxE2Particles)
+
+for k=1, game.MaxPlayers() do ParticlesThisSecond[k]=0 end
+
+local function SpawnParticle(self, Duration, StartSize, EndSize, Mat, RGB, Position, Velocity, Pitch, RollDelta, StartAlpha, EndAlpha)
+        local PlyID     = self.player:EntIndex()
+        local timerName = "e2p_"..PlyID
+        if  ParticlesThisSecond[PlyID] <= MaxParticlesPerSecond:GetInt() then
+				if Pitch==nil then Pitch=0 end
+				if RollDelta==nil then RollDelta=0 end
+				if StartAlpha==nil then StartAlpha=255 end
+				if EndAlpha==nil then EndAlpha=StartAlpha end
+                message(Duration, StartSize, EndSize, RGB, Position, Velocity, Mat, self.entity, Pitch, RollDelta, StartAlpha-128, EndAlpha-128)
+                ParticlesThisSecond[PlyID] = ParticlesThisSecond[PlyID] + 1
+                if !timer.Exists(timerName) then
+                       timer.Create(timerName, 1, 0, function() ParticlesTimer(timerName,PlyID) end)
+                end
+        end
+end
+
+__e2setcost(20)
+
+e2function void particle(Duration, StartSize, EndSize, string Mat, vector RGB, vector Position, vector Velocity, Pitch, RollDelta, StartAlpha, EndAlpha)
+    SpawnParticle(self, Duration, StartSize, EndSize, Mat, RGB, Position, Velocity, Pitch, RollDelta, StartAlpha, EndAlpha)
+end
+
+e2function void particle(Duration, StartSize, EndSize, string Mat, vector RGB, vector Position, vector Velocity, Pitch, RollDelta)
+    SpawnParticle(self, Duration, StartSize, EndSize, Mat, RGB, Position, Velocity, Pitch, RollDelta)
+end
+
+e2function void particle(Duration, StartSize, EndSize, string Mat, vector RGB, vector Position, vector Velocity, Pitch)
+    SpawnParticle(self, Duration, StartSize, EndSize, Mat, RGB, Position, Velocity, Pitch)
+end
+
+e2function void particle(Duration, StartSize, EndSize, string Mat, vector RGB, vector Position, vector Velocity)
+    SpawnParticle(self, Duration, StartSize, EndSize, Mat, RGB, Position, Velocity)
+end
+
+
+
+
+
+__e2setcost(5)
+
+e2function void particleBounce(Bounce)
+    umsg.Start("e2p_bounce")
+    umsg.Entity(self.entity)
+    umsg.Long(math.Round(Bounce))
+    umsg.End()
+end
+
+e2function void particleGravity(vector Gravity)
+    umsg.Start("e2p_gravity")
+    umsg.Entity(self.entity)
+    umsg.Vector(Vector(Gravity[1],Gravity[2],Gravity[3]))
+    umsg.End()
+    Grav[self.entity] = Gravity
+end
+
+e2function void particleCollision(Number)
+    umsg.Start("e2p_collide")
+    umsg.Entity(self.entity)
+    umsg.Long(Number)
+    umsg.End()
+end
+
+e2function array particlesList()
+    return Particles
+end
+
+__e2setcost(nil)
+
 Particles[0]="effects/blooddrop"
 Particles[1]="effects/bloodstream"
 Particles[2]="effects/laser_tracer"
@@ -111,133 +257,4 @@ Particles[101]="sprites/yellowflare"
 Particles[102]="sprites/frostbreath"
 Particles[103]="sprites/sent_ball"
 
-local function bearing(pos, plyer)
-    pos = plyer:WorldToLocal(Vector(pos[1],pos[2],pos[3]))
-    return rad2deg*-atan2(pos.y, pos.x)
-end
 
-local function elevation(pos, plyer)
-    pos = plyer:WorldToLocal(Vector(pos[1],pos[2],pos[3]))
-    local len = pos:Length()
-    if len < delta then return 0 end
-    return rad2deg*asin(pos.z / len)
-end
-
-local function message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, nom, Pitch)
-    local eplayers = RecipientFilter()
-    if(AlwaysRender==0) then
-        for k, v in pairs(player.GetAll()) do
-            local ply = v
-            if(IsValid(ply)) then 
-                if(Grav[nom]==nil) then Grav[nom] = Vector(0,0,-9.8) end
-                Gravi = Vector(Grav[nom][1],Grav[nom][2],Grav[nom][3])
-                local Posi = Vector(Position[1],Position[2],Position[3])
-                for i=1,5 do
-                    local Velo = Vector(Velocity[1],Velocity[2],Velocity[3])-(Gravi*i)
-                    local P = bearing(Posi+(Velo*i),ply)
-                    local Y = elevation(Posi+(Velo*i),ply)
-                    if (math.abs(Y) < 100) then
-                        if (math.abs(P) < 100) then
-                            eplayers:AddPlayer(ply)
-                            break
-                        end
-                    end
-                end
-            end
-        end
-    else
-        eplayers:AddAllPlayers()
-    end
-	
-    umsg.Start("e2p_pm",eplayers)
-		umsg.Entity(nom)
-		umsg.Long(Duration)
-		umsg.Long(StartSize)
-		umsg.Long(EndSize)
-		umsg.Vector(Vector(Position[1],Position[2],Position[3]))
-		umsg.Vector(Vector(RGB[1],RGB[2],RGB[3]))
-		umsg.Vector(Vector(Velocity[1],Velocity[2],Velocity[3]))
-		umsg.String(String)
-		umsg.Long(Pitch) 
-	umsg.End()
-    eplayers:RemoveAllPlayers()
-end
- 
-local function SetMaxE2Particles( player, command, arguments)
-        if(player:IsAdmin()) then
-                MaxParticlesPerSecond = tonumber(arguments[1])
-        end
-end
-
-local function SetAlwaysRenderParticles( player, command, arguments)
-        if(player:IsAdmin()) then
-                AlwaysRender = tonumber(arguments[1])
-        end
-end
-
-local function ParticlesTimer(timerName,PlyID)
-		timer.Destroy(timerName)
-        ParticlesThisSecond[PlyID] = 0
-end
-
-concommand.Add("wire_e2_SetAlwaysRenderParticles",SetAlwaysRenderParticles)
-concommand.Add("wire_e2_maxParticlesPerSecond",SetMaxE2Particles)
-
-__e2setcost(20)
-
-e2function void particle(Duration, StartSize, EndSize, string String, vector RGB, vector Position, vector Velocity)
-        local Ply       = self.player
-        local PlyID     = Ply:EntIndex()
-        local timerName = "e2p_"..PlyID
-        if(ParticlesThisSecond[PlyID] == nil) then ParticlesThisSecond[PlyID] = 0 end
-        if ( ParticlesThisSecond[PlyID] <= MaxParticlesPerSecond or Ply:IsAdmin() == true) then
-                message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, self.entity, 0)
-                ParticlesThisSecond[PlyID] = ParticlesThisSecond[PlyID] + 1
-                if(timer.Exists(timerName) == false) then
-                        timer.Create(timerName, 1, 0, function() ParticlesTimer(timerName,PlyID) end)
-                end
-        end
-end
-
-e2function void particle(Duration, StartSize, EndSize, string String, vector RGB, vector Position, vector Velocity, Pitch)
-        local Ply       = self.player
-        local PlyID     = Ply:EntIndex()
-        local timerName = "e2p_"..PlyID
-        if(ParticlesThisSecond[PlyID] == nil) then ParticlesThisSecond[PlyID] = 0 end
-        if ( ParticlesThisSecond[PlyID] <= MaxParticlesPerSecond or Ply:IsAdmin() == true) then
-                message(Duration, StartSize, EndSize, RGB, Position, Velocity, String, self.entity, Pitch)
-                ParticlesThisSecond[PlyID] = ParticlesThisSecond[PlyID] + 1
-                if(timer.Exists(timerName) == false) then
-                        timer.Create(timerName, 1, 0, function() ParticlesTimer(timerName,PlyID) end)
-                end
-        end
-end
-
-__e2setcost(5)
-
-e2function void particleBounce(Bounce)
-    umsg.Start("e2p_bounce")
-    umsg.Entity(self.entity)
-    umsg.Long(math.Round(Bounce))
-    umsg.End()
-end
-
-e2function void particleGravity(vector Gravity)
-    umsg.Start("e2p_gravity")
-    umsg.Entity(self.entity)
-    umsg.Vector(Vector(Gravity[1],Gravity[2],Gravity[3]))
-    umsg.End()
-    Grav[self.entity] = Gravity
-end
-
-e2function void particleCollision(Number)
-    umsg.Start("e2p_collide")
-    umsg.Entity(self.entity)
-    umsg.Long(Number)
-    umsg.End()
-end
-e2function array particlesList()
-    return Particles
-end
-
-__e2setcost(nil)

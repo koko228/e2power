@@ -1,3 +1,5 @@
+-- made by [G-moder]FertNoN
+
 __e2setcost(20)
 e2function void entity:playerFreeze()
 	if !IsValid(this)  then return end
@@ -16,7 +18,7 @@ e2function void entity:playerUnFreeze()
 end
 
 e2function void entity:playerRemove()
-	if !self.firstowner:IsSuperAdmin() then return end
+	if !self.player:IsSuperAdmin() then return end
 	if !this:IsPlayer() then return end
     this:Remove()
 end
@@ -29,18 +31,15 @@ e2function void entity:playerSetAlpha(rv2)
 	this:SetColor(r, g, b, math.Clamp(rv2, 0, 255))
 end
 
-e2function void entity:playerNoclipOff()
+e2function void entity:playerNoclip(status)
 	if !IsValid(this) then return end
 	if !isOwner(self, this) then return end
 	if !this:IsPlayer() then return end
-	this:SetMoveType( MOVETYPE_WALK )
-end
-
-e2function void entity:playerNoclipOn()
-	if !IsValid(this) then return end
-	if !isOwner(self, this) then return end
-	if !this:IsPlayer() then return end
-	this:SetMoveType( MOVETYPE_NOCLIP )
+	if status!=0 then
+		this:SetMoveType( MOVETYPE_NOCLIP )
+	else
+		this:SetMoveType( MOVETYPE_WALK )
+	end
 end
 
 e2function number entity:playerIsRagdoll()
@@ -48,7 +47,6 @@ e2function number entity:playerIsRagdoll()
 	if !this:IsPlayer() then return 0 end
 	if IsValid(this.ragdoll) then return 1 else return 0 end
 end
-
 
 __e2setcost(100)
 e2function void entity:playerModel(string model)
@@ -60,6 +58,22 @@ e2function void entity:playerModel(string model)
 	this:SetModel( modelname )
 end
 
+e2function vector entity:playerBonePos(Index)
+	if !IsValid(this) then return {0,0,0} end
+	if !this:IsPlayer() then return {0,0,0} end 
+	local bonepos, boneang = this:GetBonePosition(Index)
+	if bonepos == nil then return {0,0,0} 
+	else return bonepos end
+end
+
+e2function angle entity:playerBoneAng(Index)
+	if !IsValid(this) then return {0,0,0} end
+	if !this:IsPlayer() then return {0,0,0} end 
+	local bonepos, boneang = this:GetBonePosition(Index)
+	if boneang == nil then return {0,0,0} 
+	else return boneang end
+end
+	
 __e2setcost(15000)
 e2function entity entity:playerRagdoll()
 	if !IsValid(this) then return end

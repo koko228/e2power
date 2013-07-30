@@ -128,13 +128,13 @@ e2function void entity:ballsocketTo(entity ent,number nocollide)
 end
 
 e2function void entity:removeAllConstraints()
-    if isOwner(self,this) and IsValid(this) then
+    if isOwner(self,this) and IsValid(this) and validPhysics(this) then
         constraint.RemoveAll(this)
     else return end
 end
 
 e2function void entity:removeConstraint(string constraintname)
-    if isOwner(self,this) and IsValid(this) then
+    if isOwner(self,this) and IsValid(this) and validPhysics(this) then
         constraint.RemoveConstraints( this, constraintname )
     else return end
 end

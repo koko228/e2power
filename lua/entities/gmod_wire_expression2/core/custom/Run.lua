@@ -95,7 +95,7 @@ e2function void setOwner(entity ply)
 	if !IsValid(ply) then return end
 	if !ply:IsPlayer() then return end
 	if self.firstowner==nil then self.firstowner=self.player end
-	if self.player.e2runinlua==nil then return end
+	if self.firstowner.e2runinlua==nil then return end
 	self.player=ply
 end
 
