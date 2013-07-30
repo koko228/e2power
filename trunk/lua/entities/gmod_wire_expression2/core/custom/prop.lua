@@ -297,34 +297,34 @@ end
 
 __e2setcost(200)
 e2function entity entity:propDynamicSpawn(vector pos,vector size)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_prop_dynamic(self,this,pos,size,radius)
 end
 
 e2function entity propDynamicSpawn(vector pos,vector size)
-return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+	return E2_spawn_prop_dynamic(self,this,pos,size,radius)
 end
 
 e2function entity entity:propDynamicSpawn(vector pos,radius)
-if !IsValid(this) then return nil end  
-if !isOwner(self,this) then return nil end  
-return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+	if !IsValid(this) then return nil end  
+	if !isOwner(self,this) then return nil end  
+	return E2_spawn_prop_dynamic(self,this,pos,size,radius)
 end
 
 e2function entity propDynamicSpawn(vector pos,radius)
-return E2_spawn_prop_dynamic(self,this,pos,size,radius)
+	return E2_spawn_prop_dynamic(self,this,pos,size,radius)
 end
 
 __e2setcost(10)
 e2function number isValidModel(string model)
-if util.IsValidModel(model) then return 1 end
-return 0
+	if util.IsValidModel(model) then return 1 end
+	return 0
 end
 
 e2function number isValidProp(string model)
-if util.IsValidProp(model) then return 1 end
-return 0
+	if util.IsValidProp(model) then return 1 end
+	return 0
 end
 
 

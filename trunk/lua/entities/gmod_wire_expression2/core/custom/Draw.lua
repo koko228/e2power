@@ -1,4 +1,4 @@
---Draw mod made by [G-moder]FertNoN
+--Draw core by [G-moder]FertNoN
 
 -----------------------SPRITIES
 
@@ -6,7 +6,6 @@ local sbox_E2_maxSpritesPerSecond = CreateConVar( "sbox_E2_maxSpritesPerSecond",
 local sbox_E2_maxSprites = CreateConVar( "sbox_E2_maxSprites", "300", FCVAR_ARCHIVE )
 local SpritesSpawnInSecond=0
 local SpritesCount=0
-
 
 function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 	
@@ -47,7 +46,7 @@ function E2_spawn_sprite(self,this,mat,pos,color,alpha,sizex,sizey)
 		undo.SetPlayer(self.player)
 	undo.Finish()
 
-return sprite
+	return sprite
 end
 
 
@@ -117,12 +116,13 @@ function E2_spawn_beam(self,this,ent,mat,pos,endpos,color,alpha,width,textstart,
 			BeamSpawnInSecond=0
 		end)
 	end
+	
 	undo.Create("E2_beam")
 		undo.AddEntity(beam)
 		undo.SetPlayer(self.player)
 	undo.Finish()
 
-return beam
+	return beam
 end
 
 __e2setcost(200)

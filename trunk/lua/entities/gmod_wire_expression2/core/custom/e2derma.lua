@@ -97,28 +97,36 @@ function diff(v1,v2)
    return false
 end
 
-require("glon")
-util.AddNetworkString("dermaStuff")
+--require("glon")
+--util.AddNetworkString("dermaStuff")
 util.AddNetworkString("dermaStuff_datastream_backup")
 function user_msg(tbl,k,pl,e2)
-    local s      = glon.encode(tbl)
+--	local s = util.TableToJSON(tbl)
+--	local s = glon.encode(s)
     
-    if(string.len(s)+ string.len(k)+2>255) then//usermsg haz a 256 byte limit :<
+--	if(string.len(s)+ string.len(k)+5>255) then//usermsg haz a 256 byte limit :<
         net.Start("dermaStuff_datastream_backup")                             
 			net.WriteFloat( e2 )
 			net.WriteTable( tbl )			           
 			net.WriteString( k )                        
         net.Send( pl )   
+--[[		
     else
 
+		net.Start("dermaStuff")                             
+			net.WriteFloat( e2 )         
+			net.WriteString( k ) 
+			net.WriteString( s )
+        net.Send( pl )  
 	
-	net.Start("dermaStuff")
-		net.WriteFloat( e2 ) 
-        net.WriteString( k )
-        net.WriteString( s )
-    net.Send( pl )
-
+		umsg.Start("dermaStuff", pl)
+			umsg.Float( e2 ) 
+			umsg.String( k )
+			umsg.String( s )
+		umsg.End()
+	
     end
+]]--	
 end
 
 

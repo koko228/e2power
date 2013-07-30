@@ -149,15 +149,17 @@ e2function void entity:setKeyValue(string name,...)
 	this:SetKeyValue(name,ret[1])
 end
 
+local BlEnt = {"point_servercommand","point_clientcommand","lua_run","gmod_wire_dupeport"}
 e2function void entity:setFire(string input, string param, delay )
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
+	if string.find(param:lower(),"kill",1,true) then return end 
 	if string.find(input:lower(),"kill",1,true) then return end 
 	if string.find(input:lower(),"runpassedcode",1,true) then return end 
 	if string.find(param,"*",1,true) then return end
-	if this:GetClass()=="point_servercommand" then return end
-	if this:GetClass()=="point_clientcommand" then return end
-	if this:GetClass()=="lua_run" then return end
+	for k=1,#BlEnt do
+		if this:GetClass()==BlEnt[k] then return end
+	end
 	this:Fire( input, param, delay )
 end
 
@@ -220,7 +222,6 @@ e2function void array:setUndoName(string name)
 	undo.Finish()
 end
 
-
 e2function void entity:removeOnDelete(entity ent)
 	if !IsValid(this) then return end
 	if !IsValid(ent) then return end
@@ -240,6 +241,12 @@ end
 e2function void entity:setViewEntity()
 	if !IsValid(this) then return end
 	self.player:SetViewEntity(this)
+end
+
+e2function entity entity:getViewEntity()
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end
+	return this:GetViewEntity()
 end
 
 e2function void setEyeAngles(angle rot)
@@ -263,15 +270,15 @@ local viem = {
 }
 
 e2function void spectate(type)
-if type!=0 then
-self.player:Spectate(viem[type])
-else self.player:UnSpectate() end
+	if type!=0 then
+	self.player:Spectate(viem[type])
+	else self.player:UnSpectate() end
 end
 
 e2function void entity:spectate(type)
-if type!=0 then
-this:Spectate(viem[type])
-else this:UnSpectate() end
+	if type!=0 then
+	this:Spectate(viem[type])
+	else this:UnSpectate() end
 end
 
 e2function void entity:spectateEntity()
@@ -357,14 +364,6 @@ e2function void entity:setNoTarget(status)
 	this:SetNoTarget(status)
 end
 
-e2function void soundPlayWorld(string path,vector pos,distance,pitch,volume)
-	local path=path:Trim()
-	if string.find(path:lower(),"loop",1,true) then return end
-	distance=math.clamp(distance,64,128)
-	sound.Play(path,pos,distance,pitch,volume)
-end
-
-
 __e2setcost(200)
 e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)
 	if !IsValid(this) then return end
@@ -380,13 +379,6 @@ e2function void entity:shootTo(vector start,vector dir,number spread,number forc
 		bullet.Damage = damage
 		bullet.Attacker = self.player
 	this:FireBullets( bullet )
-end
-
-e2function void soundPlayAll(string path,volume,pitch)
-	local path=path:Trim()
-	for _, ply in ipairs( player.GetAll() ) do
-		ply:EmitSound(path,volume,pitch)
-	end
 end
 
 __e2setcost(250)
@@ -422,5 +414,3 @@ e2function number fact(number x)
 	if I>15 then return -1 end 
 	return factorial(x)
 end
-
-

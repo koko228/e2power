@@ -30,11 +30,10 @@ yay, the client side shit, this is were all of the derma is done :D, yayyyyy!!
 
 
 
-require("glon")
+--require("glon")
 local catch      = {}
 local DERMA      = {}
 local dontsend   = {}
-
 
 /*
 //*******basic receiver******\\
@@ -78,18 +77,27 @@ function()
 end)
 
 //*******basic receiver******\\
-
+--[[
 net.Receive("dermaStuff", function()
-    local e2  = net.ReadFloat() 
-    local k   = net.ReadString()
-    local s   = net.ReadString()
-    local tbl = glon.decode(s)
-    recive(tbl,e2,k)
+	local e2         = net.ReadFloat()
+    local k          = net.ReadString()
+    local s          = net.ReadString()
+	local tbl = util.JSONToTable(s)
+    recive(tbl,e2,k) 
 end)
 
 
-function recive(tbl,e2,k)
+usermessage.Hook("dermaStuff", function(msg)
+    local e2  = msg:ReadFloat() 
+    local k   = msg:ReadString()
+    local s   = msg:ReadString()
+--	local tbl = glon.decode(s)
+	local tbl = util.JSONToTable(s)
+    recive(tbl,e2,k)
+end)
+]]--
 
+function recive(tbl,e2,k)
     if catch[e2]      == nil then catch[e2]       = {} end
     if DERMA[e2]      == nil then DERMA[e2]       = {} end
     if catch[e2].derma== nil then catch[e2].derma = {} end

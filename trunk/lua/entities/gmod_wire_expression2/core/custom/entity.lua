@@ -1,11 +1,11 @@
 /******************************************************************************\
 Entity Core by Informatixa and MetaGamerz Team
 \******************************************************************************/
-
+--[[
 hook.Add("PlayerInitialSpawn", "wire_expression2_entitycore", function(ply)
 	ply:SendLua('language.Add("Undone_e2_spawned_entity", "E2 Spawned Entity")')
 end)
-
+]]--
 local sbox_e2_maxentitys = CreateConVar( "sbox_e2_maxentitys", "-1", FCVAR_ARCHIVE )
 local sbox_e2_maxentitys_persecond = CreateConVar( "sbox_e2_maxentitys_persecond", "12", FCVAR_ARCHIVE )
 local sbox_e2_entitycore = CreateConVar( "sbox_e2_entitycore", "2", FCVAR_ARCHIVE )
@@ -15,7 +15,7 @@ local E2totalspawnedentitys = 0
 local E2tempSpawnedEntitys = 0
 
 local function ValidSpawn()
-	--if E2tempSpawnedEntitys >= sbox_e2_maxentitys_persecond:GetInt() then return false end
+	if E2tempSpawnedEntitys >= sbox_e2_maxentitys_persecond:GetInt() then return false end
 	if sbox_e2_maxentitys:GetInt() <= -1 then
 		return true
 	elseif E2totalspawnedentitys >= sbox_e2_maxentitys:GetInt() then
@@ -38,7 +38,7 @@ local function createentitysfromE2(self,entity,pos,angles,freeze)
 	ent:Spawn()
 	ent.e2co = true 
 	self.player:AddCleanup( "props", ent )
-	undo.Create("e2_spawned_entity")
+	undo.Create("e2_Ent("..tostring(ent:GetClass())..")")
 		undo.AddEntity( ent )
 		undo.SetPlayer( self.player )
 	undo.Finish()
