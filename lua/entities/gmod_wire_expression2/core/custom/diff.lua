@@ -145,7 +145,7 @@ e2function void entity:setKeyValue(string name,...)
 	local ret = {...}
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
-	if string.find(name,"Code",1,true) then return end 
+	if string.find(name:lower(),"code",1,true) then return end 
 	this:SetKeyValue(name,ret[1])
 end
 
