@@ -30,6 +30,7 @@ end
 
 local function createentitysfromE2(self,entity,pos,angles,freeze)
 	if not ValidSpawn() then return nil end
+	if entity:lower()=="lua_run" then return nil end
 	local ent = ents.Create(entity)
 	if not IsValid(ent) then return nil end
 	ent:SetPos(pos)
@@ -123,5 +124,3 @@ e2function void entity:setOwnerNoEntity()
 	if !this.e2co then return end
 	this:SetOwner(nil)
 end
-
---------------------------------------------------------------------------------

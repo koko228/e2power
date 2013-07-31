@@ -115,13 +115,12 @@ end
 concommand.Add("wire_e2mkp",function(ply, cmd, argm)
 	if tonumber(argm[2])==1 then
 		ply.e2mKeys[argm[1]] = 1
-		ply.e2LastmKeyPress=argm[1]
+		ply.e2mLastKeyPress=argm[1]
 		ply.e2mKeyAsk[argm[1]] = {}
 		ply.e2mKeyAsk["last"] = nil
 		for k,v in pairs(MKeyAct) do
-			if k:IsValid() then 
-				k:Execute()
-			end
+			if !k:IsValid() then MKeyAct[k]=nil continue end
+			k:Execute()
 		end
 	else
 		ply.e2mKeys[argm[1]] = nil

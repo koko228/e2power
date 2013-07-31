@@ -36,10 +36,9 @@ function use_message(message)
 	local PartType = message:ReadString()	
     
     local em       = ParticleEmitter(centr)
-    local part     = em:Add(PartType,centr)
 	
     if(em!=nil) then
-	
+		local part     = em:Add(PartType,centr)
         part:SetColor(Color[1],Color[2],Color[3],255)
         part:SetVelocity(Vel)
         part:SetDieTime(Clamp(Duration, 0.01, 60))
@@ -57,10 +56,8 @@ function use_message(message)
         part:SetGravity(Gravity[Ent])
         part:SetCollide(Collision[Ent])
         part:SetBounce(Bounce[Ent])   
+		em:Finish()
     end
-    
-    em:Finish() 
-    
 end
 
 usermessage.Hook("e2p_bounce", get_bounce)
