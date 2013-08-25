@@ -13,7 +13,7 @@ local E2tempSpawnedProps = 0
 
 function PropCore.ValidSpawn()
 	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return false end
-	if sbox_E2_maxProps:GetInt() <= -1 then
+	if sbox_E2_maxProps:GetInt() < 0 then
 		return true
 	elseif E2totalspawnedprops>=sbox_E2_maxProps:GetInt() then
 		return false
@@ -43,6 +43,7 @@ function PropCore.CreateProp(self,model,pos,angles,freeze)
 	if(!util.IsValidModel(model) || !util.IsValidProp(model) || not PropCore.ValidSpawn() )then
 		return nil
 	end
+	if self.player:GetCount( "props" ) >= (GetConVarNumber("sbox_maxprops") > 0 and GetConVarNumber("sbox_maxprops") or self.player:GetCount( "props" )+1) then return nil end
 	local prop
 	if self.data.propSpawnEffect then
 		prop = MakeProp( self.player, pos, angles, model, {}, {} )
@@ -138,7 +139,9 @@ e2function entity propSpawn(entity template, vector pos, angle rot, number froze
 end
 
 e2function number propCanSpawn()
+	if self.player:GetCount( "props" ) >= (GetConVarNumber("sbox_maxprops") > 0 and GetConVarNumber("sbox_maxprops") or self.player:GetCount( "props" )+1) then return 0 end
 	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return 0 end
+	if E2totalspawnedprops >= (sbox_E2_maxProps:GetInt() > 0 and sbox_E2_maxProps:GetInt() or E2totalspawnedprops+1) then return 0 end
 	return 1
 end
 --------------------------------------------------------------------------------
@@ -206,10 +209,9 @@ e2function void entity:propGravity(number gravity)
 end
 
 e2function void entity:propSleep()
-	if not PropCore.ValidAction(self, this, "gravity") then return end
+	if not PropCore.ValidAction(self, this, "sleep") then return end
 	this:GetPhysicsObject():Sleep()
 end
---------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 
@@ -246,9 +248,7 @@ registerCallback("construct", function(self)
 end)
 
 
--------------------------------PROP_DYN
---Props_dynamic
---prop_dynamic
+-------------------------------PROP_DYNDMIC by [G-moder]FertNoN
 local sbox_E2_maxProps_dynamicPerSecond = CreateConVar( "sbox_E2_maxProps_dynamicPerSecond", "12", FCVAR_ARCHIVE )
 local sbox_E2_maxProps_dynamic = CreateConVar( "sbox_E2_maxProps_dynamic", "300", FCVAR_ARCHIVE )
 local Props_dynamicSpawnInSecond=0

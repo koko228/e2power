@@ -1,5 +1,4 @@
 -- made by [G-moder]FertNoN
-
 CreateClientConVar( "wire_expression2_soundurl_enable", "1", true, false )  
 CreateClientConVar( "wire_expression2_soundurl_maxPerSecond", "3", true, false )  
 CreateClientConVar( "wire_expression2_soundurl_maxSoundCount", "5", true, false )  
@@ -11,6 +10,7 @@ local function ClearSoundURL(ent)
 	table.foreach(ent.E2PAudStreams, function(k) 
 		if E2SoundParToEnt!=nil then E2SoundParToEnt[ent.E2PAudStreams[k]]=nil end
 		ent.E2PAudStreams[k]:Stop()
+		ent.E2PAudStreams[k] = nil
 	end) 
 	ent.E2PAudStreams = {}
 end 
@@ -99,7 +99,9 @@ local function SoundURL(msg)
 	end
 	
 	if cmd==0 then
-		ClearSoundURL(ent) return
+		if ent.E2PAudStreams!=nil then  
+			ClearSoundURL(ent) return
+		end
 	end
 	
 	if ent.E2PAudStreams==nil then return end
@@ -123,7 +125,7 @@ local function SoundURL(msg)
 	end
 	
 	if cmd==6 then
-		E2SoundParToEnt[ent.E2PAudStreams[id]]=nil
+		if E2SoundParToEnt!=nil then E2SoundParToEnt[ent.E2PAudStreams[id]]=nil end
 		ent.E2PAudStreams[id]:Stop()
 		ent.E2PAudStreams[id]=nil
 		return

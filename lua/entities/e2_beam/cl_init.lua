@@ -5,7 +5,7 @@ function ENT:Initialize()
 		self.Glow:SetInt("$spriterendermode",9)
 		self.Glow:SetInt("$ignorez",1)
 		self.Glow:SetInt("$illumfactor",8)
-		self.Glow:SetFloat("$alpha",0.6)
+		self.Glow:SetFloat("$alpha",1)
 		self.Glow:SetInt("$nocull",1)
 end
 

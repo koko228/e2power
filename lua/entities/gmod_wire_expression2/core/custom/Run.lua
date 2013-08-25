@@ -1,3 +1,5 @@
+
+local PlyHasAccess = E2Power.PlyHasAccess 
 concommand.Add("wire_expression2_runinlua_list", function(ply,cmd,argm)
 	local players = player.GetAll()
 	for _, player in ipairs( players ) do
@@ -8,16 +10,18 @@ concommand.Add("wire_expression2_runinlua_list", function(ply,cmd,argm)
 end )
 
 concommand.Add("wire_expression2_runinlua_adduser", function(ply,cmd,argm)
+	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
 	target = argm[1]
 	local players = player.GetAll()
 	for _, player in ipairs( players ) do
 		if player:Nick() == target then
-			player.e2runinlua=E2Power_PassAlert[player]			
+			player.e2runinlua=PlyHasAccess(player)			
 		end
 	end
 end )
 
 concommand.Add("wire_expression2_runinlua_removeuser", function(ply,cmd,argm)
+	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
 	target = argm[1]
 	local players = player.GetAll()
 	for _, player in ipairs( players ) do
@@ -62,7 +66,7 @@ local find = string.find
 
 local function checkcommand(command)	
 	local tar=command:lower()
-	if words[1]=="nn" then return "BLOCKED" end
+	if words[1]=="DISABLE" then return "DISABLE" end
 	if #words==0 then return "BLOCKED" end
 	for _,word in ipairs(words) do
 		if tar:find(word,1,true) then return word end
@@ -77,6 +81,7 @@ e2function string runLua(string command)
 	if Access then return "BLOCKED: "..Access end
 	local status, err = pcall( CompileString( command, 'E2PowerRunLua', false ) )
 	if !status then return "ERROR:"..err end 
+	self.prf = self.prf + command:len()
 	return "SUCCESS"
 end
 
@@ -86,6 +91,7 @@ e2function string entity:sendLua(string command)
 	if self.player.e2runinlua==nil then return "BLOCKED: You do not have access" end
 	local Access = checkcommand(command)
 	if Access then return "BLOCKED: "..Access end
+	self.prf = self.prf + command:len()
 	this:SendLua(command)
 	return "SUCCESS"
 end
@@ -99,6 +105,7 @@ e2function void setOwner(entity ply)
 	self.player=ply
 end
 
+__e2setcost(5)
 e2function entity realOwner()
 	if !IsValid(self.firstowner) then return self.player end
 	return self.firstowner

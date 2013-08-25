@@ -1,5 +1,6 @@
 if SERVER then 
 	AddCSLuaFile("autorun/autoloade2p.lua")
+	AddCSLuaFile("autorun/cl_E2PowerControl.lua")
 	AddCSLuaFile("entities/gmod_wire_expression2/core/custom/cl_e2derma.lua")
 	AddCSLuaFile("entities/gmod_wire_expression2/core/custom/cl_huddraw.lua")
 	AddCSLuaFile("entities/gmod_wire_expression2/core/custom/cl_KeyPress.lua")
