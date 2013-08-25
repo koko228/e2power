@@ -254,7 +254,7 @@ derma_bricks.dTextBox = function(k,e2)
         DermaText:SetValue(DERMA[e2][k]:GetValue())
 		
         function DermaText:Think()
---			if !DERMA[e2][k] then DermaText:Remove( ) return end
+			if catch[e2].derma==nil then DermaText:Remove( ) return end
 			local tbl = catch[e2].derma[k]
 			local x ,y  = DERMA[e2][k]:GetPos();
 			local x2,y2 = DERMA[e2][tbl.parent]:GetPos();
@@ -711,5 +711,4 @@ usermessage.Hook("removedermaStuff", function( um )
     
 end)
 
-CreateClientConVar("e2_dHW_", "0", false, true )
-RunConsoleCommand("e2_dHW_",tostring(surface.ScreenHeight( )..","..surface.ScreenWidth( )))
+CreateClientConVar("e2_dHW_", tostring( surface.ScreenHeight( )..","..surface.ScreenWidth( ) ) , false, true )

@@ -24,16 +24,27 @@ e2function void entity:setVel(vector vel)
 	end
 end
 
+local isValidBone = E2Lib.isValidBone
 e2function void bone:boneGravity(status)
-	if !this then return end
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
 	local status = status > 0
 	this:EnableGravity(status) 
 end
 
 e2function void bone:setVel(vector vel)
-	if !this:IsValid()  then return end
-	if !isOwner(self,this)  then return end
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
 	this:SetVelocity(Vector(vel[1],vel[2],vel[3])) 
+end
+
+e2function void bone:boneFreeze(number freeze)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	this:EnableMotion(freeze == 0)
 end
 
 e2function void entity:remove()
@@ -43,7 +54,37 @@ e2function void entity:remove()
 	this:Remove()
 end
 
+e2function void entity:remove(number second)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+    if this:IsPlayer() then return end
+	this:Fire("Kill","1",second)
+end
 
+e2function void runOnLast(status,entity ent)
+	if tobool(status) then 
+		ent:CallOnRemove("e2ExL"..tostring(ent:EntIndex()), function()
+			if(IsValid(self.entity)) then
+				self.lastClkEnt=ent
+				self.entity:Execute() 
+				self.lastClkEnt=nil
+			end
+		end)
+	else
+		ent:RemoveCallOnRemove("e2ExL"..tostring(ent:EntIndex()))
+	end
+end
+
+__e2setcost(5)
+e2function number last(entity ent)
+	return self.lastClkEnt==ent and 1 or 0
+end
+
+e2function entity lastEnt()
+	return self.lastClkEnt
+end
+
+__e2setcost(20)
 e2function void entity:tele(vector pos)
 	if !IsValid(this)  then return end
 	if !isOwner(self,this)  then return end
@@ -60,6 +101,14 @@ e2function void entity:setPos(vector pos)
 	else
 		this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
 	end
+end
+
+e2function void bone:setPos(vector pos)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
+	this:Wake()
 end
 
 e2function void entity:setAng(angle rot)
@@ -141,15 +190,21 @@ e2function void entity:unParent()
 	this:SetParent()
 end
 
+__e2setcost(100)
+local BlEnt = {"point_servercommand","point_clientcommand","lua_run","gmod_wire_dupeport"}
 e2function void entity:setKeyValue(string name,...)
 	local ret = {...}
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
-	if string.find(name:lower(),"code",1,true) then return end 
+	if string.find(name:lower(),"code",1,true) then return end
+	if type(ret[1]) == "string" then 
+		for k=1,#BlEnt do
+			if string.find(ret[1]:lower(),BlEnt[k],1,true) then return end 
+		end
+	end
 	this:SetKeyValue(name,ret[1])
 end
 
-local BlEnt = {"point_servercommand","point_clientcommand","lua_run","gmod_wire_dupeport"}
 e2function void entity:setFire(string input, string param, delay )
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
@@ -163,6 +218,7 @@ e2function void entity:setFire(string input, string param, delay )
 	this:Fire( input, param, delay )
 end
 
+__e2setcost(20)
 e2function void entity:setVar(string name,...)
 	local ret = {...}
 	if !IsValid(this) then return end
@@ -216,6 +272,7 @@ e2function void array:setUndoName(string name)
 	
 	for k,v in pairs(this) do
 		if IsValid(v) and isOwner(self,v) then undo.AddEntity( v ) end
+		self.prf = self.prf + 20
 	end
 
 	undo.SetPlayer( self.player )
@@ -362,23 +419,6 @@ e2function void entity:setNoTarget(status)
 	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
 	this:SetNoTarget(status)
-end
-
-__e2setcost(200)
-e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)
-	if !IsValid(this) then return end
-	if !isOwner(self,this)  then return end
-	local bullet = {}
-		bullet.Num = 1
-		bullet.Src = Vector(start[1],start[2],start[3])
-		bullet.Dir = Vector(dir[1],dir[2],dir[3])
-		bullet.Spread = Vector( spread, spread, 0 )
-		bullet.Tracer = 1
-		bullet.TracerName = effect
-		bullet.Force = math.Clamp(force, 0 , 2000 ) 
-		bullet.Damage = damage
-		bullet.Attacker = self.player
-	this:FireBullets( bullet )
 end
 
 __e2setcost(250)

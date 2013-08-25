@@ -1,11 +1,11 @@
 /******************************************************************************\
 Entity Core by Informatixa and MetaGamerz Team
 \******************************************************************************/
---[[
+
 hook.Add("PlayerInitialSpawn", "wire_expression2_entitycore", function(ply)
 	ply:SendLua('language.Add("Undone_e2_spawned_entity", "E2 Spawned Entity")')
 end)
-]]--
+
 local sbox_e2_maxentitys = CreateConVar( "sbox_e2_maxentitys", "-1", FCVAR_ARCHIVE )
 local sbox_e2_maxentitys_persecond = CreateConVar( "sbox_e2_maxentitys_persecond", "12", FCVAR_ARCHIVE )
 local sbox_e2_entitycore = CreateConVar( "sbox_e2_entitycore", "2", FCVAR_ARCHIVE )

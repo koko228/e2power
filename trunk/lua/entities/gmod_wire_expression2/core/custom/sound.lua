@@ -151,5 +151,5 @@ e2function void soundPlayWorld(string path,vector pos,distance,pitch,volume)
 	local path=path:Trim()
 	if string.find(path:lower(),"loop",1,true) then return end
 	distance=math.Clamp(distance,20,140)
-	sound.Play(path,pos,distance,pitch,volume)
+	sound.Play(path,Vector(pos[1],pos[2],pos[3]),distance,pitch,volume)
 end

@@ -1,4 +1,4 @@
-__e2setcost(20)
+__e2setcost(200)
 
 CreateConVar("sbox_e2_constraints","0")
 
@@ -61,7 +61,8 @@ e2function void entity:axisTo(entity ent2,vector localposition1,vector localposi
 end
 
 e2function void entity:ropeTo(entity ent2,vector localposition1,vector localposition2,number addlength,number forcelimit,number width,string material,number rigid)
-    local ply = self.player
+    if !IsValid(this) or !IsValid(ent2) then return end
+	local ply = self.player
     if GetConVar("sbox_e2_constraints"):GetInt() == 1 then
         if not ply:IsAdmin() then return end
     end
@@ -128,15 +129,19 @@ e2function void entity:ballsocketTo(entity ent,number nocollide)
 end
 
 e2function void entity:removeAllConstraints()
-    if isOwner(self,this) and IsValid(this) and validPhysics(this) then
-        constraint.RemoveAll(this)
-    else return end
+	if IsValid(this) then 
+		if isOwner(self,this) and validPhysics(this) then
+			pcall( function() constraint.RemoveAll(this) end )
+		else return end
+	end
 end
 
 e2function void entity:removeConstraint(string constraintname)
-    if isOwner(self,this) and IsValid(this) and validPhysics(this) then
-        constraint.RemoveConstraints( this, constraintname )
-    else return end
+    if IsValid(this) then 
+		if isOwner(self,this) and validPhysics(this) then
+			constraint.RemoveConstraints( this, constraintname )
+		else return end
+	end
 end
 
 e2function void entity:noCollideAll(number)
@@ -222,9 +227,9 @@ end
 
 e2function void entity:unConstrain()
 	if !IsValid(this) then return end
-	if !validPhysics(this) then return end
+    if !validPhysics(this) then return end
 	if !isOwner(self,this) then return end
-	constraint.RemoveAll(this)
+	pcall( function() constraint.RemoveAll(this) end )
 end
 
 local function Weldit2(self, ent1, ent2, bone1, bone2, nc, fl)
