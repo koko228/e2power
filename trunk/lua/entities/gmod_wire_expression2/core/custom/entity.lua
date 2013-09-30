@@ -27,10 +27,12 @@ end
 local function ValidAction(ply)
 	return sbox_e2_entitycore:GetInt()==2 or (sbox_e2_entitycore:GetInt()==1 and ply:IsAdmin())
 end
-
+local Blent = {"game_end","lua_run"}
 local function createentitysfromE2(self,entity,pos,angles,freeze)
 	if not ValidSpawn() then return nil end
-	if entity:lower()=="lua_run" then return nil end
+	for k=1,#Blent do 
+		if entity:lower()==Blent[k] then return end 
+	end 
 	local ent = ents.Create(entity)
 	if not IsValid(ent) then return nil end
 	ent:SetPos(pos)

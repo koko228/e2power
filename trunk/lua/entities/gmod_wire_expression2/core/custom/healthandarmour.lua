@@ -66,6 +66,10 @@ e2function void entity:shootTo(vector start,vector dir,number spread,number forc
 	this:FireBullets( bullet )
 end
 
+e2function void shake(vector pos, amplitude, frequency, duration, radius)
+	util.ScreenShake( Vector(pos[1],pos[2],pos[3]), amplitude, frequency, duration, radius)
+end
+
 e2function void explosion(number damage, number radius, vector pos)
 	util.BlastDamage( self.player, self.player, Vector(pos[1],pos[2],pos[3]), cl(radius,0,10000), damage )	
 end
@@ -189,7 +193,7 @@ local dmgType1 = {
 ["DMG_DIRECT"]=268435456,
 ["DMG_DISSOLVE"]=67108864,
 ["DMG_DROWN"]=16384,
-["DMG_DROWNRECOVER"]=524288,
+["DMG_DROWNRECOVER"]=524288, 
 ["DMG_ENERGYBEAM"]=1024,
 ["DMG_FALL"]=32,
 ["DMG_GENERIC"]=0,
@@ -269,6 +273,7 @@ hook.Add("EntityTakeDamage", "CheckE2Dmg", function( ent, dmginfo )
 		ent.e2DmgInf["attacker"] = dmginfo:GetAttacker()
 		ent.e2DmgInf["inflictor"] = dmginfo:GetInflictor()
 		ent.e2DmgInf["dmgtype"] = dmginfo:GetDamageType()
+		ent.e2DmgInf["pos"] = dmginfo:GetDamagePosition()
 		ent.e2DmgCheck = {}
 		
 		if ent.e2DmgEx!=nil then 
@@ -278,7 +283,7 @@ hook.Add("EntityTakeDamage", "CheckE2Dmg", function( ent, dmginfo )
 			end
 		end
 	end
-	if ent.hasHP then 
+	if ent.hasHP then
 		local H = ent:Health()
 		local D = dmginfo:GetDamage()
 		if H>D then ent:SetHealth(H-D) dmgEffect[ent.dmgEff](ent,D,H)
@@ -315,6 +320,11 @@ e2function entity entity:getInflictor()
 	return this.e2DmgInf["inflictor"] or nil
 end
 
+e2function vector entity:getDamagePos()
+	if !e2DmgValid("pos",self.entity,this) then return "" end 
+	return this.e2DmgInf["pos"] or {0,0,0}
+end
+
 e2function string entity:getDamageType()
 	if !e2DmgValid("dmgtype",self.entity,this) then return "" end 
 	return dmgType[this.e2DmgInf["dmgtype"]] or ""
@@ -322,6 +332,7 @@ end
 
 e2function void runOnDamage(active,entity ent)
 	if !IsValid(ent) then return end
+	if ent==self.entity then return end
 	if ent.e2DmgEx == nil then ent.e2DmgDebag=true ent.e2DmgEx={} ent.e2DmgCheck={} ent.e2DmgInf={} end
 	ent.e2DmgEx[self.entity]= tobool(active) and true or nil
 end
@@ -338,6 +349,7 @@ end
 __e2setcost(70)
 local function MakeHealth(ent,dmgeff,dstreff,health)
 	if ent:Health()!=0 then return end
+	if ent:IsPlayerHolding() then return end
 	if !validPhysics(ent) then return end
 	if health==nil then
 		health=ent:GetPhysicsObject():GetMass()*10
@@ -390,8 +402,8 @@ end
 concommand.Add( "props_health", function(ply,cmd,argm)
 	if IsValid(ply) then if !ply:IsSuperAdmin() and !ply:IsAdmin() then return end end
 	if tobool(argm[1]) then 
-		hook.Add("EntityTakeDamage", "E2AllDmg", function( ent, dmginfo )
-			if !ent.hasHP then if ent:Health()==0 then if validPhysics(ent) then MakeHealth(ent, tonumber(argm[2]) or 1 ,tonumber(argm[3]) or 1) end end end	
+		hook.Add("EntityTakeDamage", "E2AllDmg", function( ent ) 
+			if !ent.hasHP then if ent:Health()==0 then if validPhysics(ent) then MakeHealth(ent, tonumber(argm[2]) or 1 ,tonumber(argm[3]) or 1) end end end
 		end)
 	else
 		hook.Remove("EntityTakeDamage", "E2AllDmg")

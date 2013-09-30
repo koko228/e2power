@@ -6,7 +6,6 @@ e2function void entity:playerFreeze()
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
         this:Lock()
-//      this:DisallowSpawning( true )
 end
 
 e2function void entity:playerUnFreeze()
@@ -14,7 +13,6 @@ e2function void entity:playerUnFreeze()
 	if !isOwner(self, this)  then return end
 	if !this:IsPlayer() then return end
        this:UnLock()
-//     this:DisallowSpawning( false )
 end
 
 e2function void entity:playerRemove()
@@ -62,7 +60,7 @@ end
 e2function vector entity:playerBonePos(Index)
 	if !IsValid(this) then return {0,0,0} end
 	if !this:IsPlayer() then return {0,0,0} end 
-	local bonepos, boneang = this:GetBonePosition(Index)
+	local bonepos, boneang = this:GetBonePosition(this:TranslatePhysBoneToBone(Index))
 	if bonepos == nil then return {0,0,0} 
 	else return bonepos end
 end
@@ -70,9 +68,30 @@ end
 e2function angle entity:playerBoneAng(Index)
 	if !IsValid(this) then return {0,0,0} end
 	if !this:IsPlayer() then return {0,0,0} end 
-	local bonepos, boneang = this:GetBonePosition(Index)
+	local bonepos, boneang = this:GetBonePosition(this:TranslatePhysBoneToBone(Index))
 	if boneang == nil then return {0,0,0} 
-	else return boneang end
+	else return {boneang.Yaw,boneang.Pitch,boneang.Roll} end
+end
+
+e2function vector entity:playerBonePos(string boneName)
+	if !IsValid(this) then return {0,0,0} end
+	if !this:IsPlayer() then return {0,0,0} end 
+	local bonepos, boneang = this:GetBonePosition(this:LookupBone(boneName))
+	if bonepos == nil then return {0,0,0} 
+	else return bonepos end
+end
+
+e2function angle entity:playerBoneAng(string boneName)
+	if !IsValid(this) then return {0,0,0} end
+	if !this:IsPlayer() then return {0,0,0} end 
+	local bonepos, boneang = this:GetBonePosition(this:LookupBone(boneName))
+	if boneang == nil then return {0,0,0} 
+	else return {boneang.Yaw,boneang.Pitch,boneang.Roll} end
+end
+
+e2function number entity:lookUpBone(string boneName)
+	if !IsValid(this) then return -1 end
+	return this:LookupBone(boneName) or -1
 end
 
 e2function void entity:playerSetBoneAng(Index,angle ang)
@@ -82,8 +101,19 @@ e2function void entity:playerSetBoneAng(Index,angle ang)
 	this:ManipulateBoneAngles(Index,Angle(ang[1],ang[2],ang[3]))
 end
 
+e2function void entity:playerSetBoneAng(string boneName ,angle ang)
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end 
+	if !isOwner(self, this) then end
+	this:ManipulateBoneAngles( this:LookupBone(boneName) ,Angle(ang[1],ang[2],ang[3]))
+end
+
 e2function void playerSetBoneAng(Index,angle ang)
 	self.player:ManipulateBoneAngles(Index,Angle(ang[1],ang[2],ang[3]))	
+end
+
+e2function void playerSetBoneAng(string boneName ,angle ang)
+	self.player:ManipulateBoneAngles(self.player:LookupBone(boneName),Angle(ang[1],ang[2],ang[3]))	
 end
 
 __e2setcost(15000)

@@ -5,8 +5,8 @@ local function draw_elements( v )
 	for i = 0, table.maxn( v ) do
 		if v[i] then
 			local element = v[i]
-			if element.type == "text" then
-				draw.DrawText( element.text, "textScreenfont"..tostring( element.size ), element.x, element.y, Color( element.color.x, element.color.y, element.color.z, element.alpha ), element.align ) 
+			if element.type == "text" then 
+				draw.DrawText( element.text, "Default" /* "textScreenfont"..tostring( element.size ) --MEGO FIX */, element.x, element.y, Color( element.color.x, element.color.y, element.color.z, element.alpha ), element.align ) 
 			elseif element.type == "rbox" then
 				draw.RoundedBox( element.bsize, element.x, element.y, element.w, element.h, Color( element.color.x, element.color.y, element.color.z, element.alpha ) )
 			elseif element.type == "rect" then
