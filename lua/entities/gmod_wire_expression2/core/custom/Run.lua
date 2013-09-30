@@ -66,7 +66,7 @@ local find = string.find
 
 local function checkcommand(command)	
 	local tar=command:lower()
-	if words[1]=="DISABLE" then return "DISABLE" end
+	if words[2]=="DISABLE" then return "DISABLE" end
 	if #words==0 then return "BLOCKED" end
 	for _,word in ipairs(words) do
 		if tar:find(word,1,true) then return word end

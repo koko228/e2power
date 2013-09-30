@@ -217,7 +217,7 @@ local function E2Power_BuildPanel(Panel)
 		Panel.GroupList:SetMultiSelect(false)
 		Panel.GroupList.LoadGroupList=function(self)
 			Panel.GroupList:Clear()
-			local Groups=util.JSONToTable(GetGlobalString("E2PowerGroupList"))
+			local Groups=util.JSONToTable(GetGlobalString("E2PowerGroupList")) or {}
 			for _,group in pairs(Groups) do
 				Panel.GroupList:AddLine(group)
 			end

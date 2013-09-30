@@ -201,6 +201,7 @@ end
 
 __e2setcost(20)
 e2function number keyPress(string key)
+	if !keys[key:lower()] then return 0 end
 	if self.player:KeyDown(keys[key:lower()]) then return 1 else return 0 end
 end
 

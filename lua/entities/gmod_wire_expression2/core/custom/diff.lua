@@ -14,39 +14,6 @@ e2function string entity:getUserGroup()
 end
 
 __e2setcost(20)
-e2function void entity:setVel(vector vel)
-	if !IsValid(this)  then return end
-	if !isOwner(self,this)  then return end
-	if validPhysics(this) then 
-	this:GetPhysicsObject():SetVelocity(Vector(vel[1],vel[2],vel[3])) 
-	else
-	this:SetVelocity(Vector(vel[1],vel[2],vel[3]))
-	end
-end
-
-local isValidBone = E2Lib.isValidBone
-e2function void bone:boneGravity(status)
-	local ent=isValidBone(this)
-	if !ent then return end
-	if !isOwner(self, this) then return end
-	local status = status > 0
-	this:EnableGravity(status) 
-end
-
-e2function void bone:setVel(vector vel)
-	local ent=isValidBone(this)
-	if !ent then return end
-	if !isOwner(self, this) then return end
-	this:SetVelocity(Vector(vel[1],vel[2],vel[3])) 
-end
-
-e2function void bone:boneFreeze(number freeze)
-	local ent=isValidBone(this)
-	if !ent then return end
-	if !isOwner(self, this) then return end
-	this:EnableMotion(freeze == 0)
-end
-
 e2function void entity:remove()
 	if !IsValid(this)  then return end
 	if !isOwner(self,this)  then return end
@@ -62,6 +29,7 @@ e2function void entity:remove(number second)
 end
 
 e2function void runOnLast(status,entity ent)
+	if ent==self.entity then return end
 	if tobool(status) then 
 		ent:CallOnRemove("e2ExL"..tostring(ent:EntIndex()), function()
 			if(IsValid(self.entity)) then
@@ -85,43 +53,6 @@ e2function entity lastEnt()
 end
 
 __e2setcost(20)
-e2function void entity:tele(vector pos)
-	if !IsValid(this)  then return end
-	if !isOwner(self,this)  then return end
-	this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
-end
-
-e2function void entity:setPos(vector pos)
-	if !IsValid(this)  then return end
-	if !isOwner(self, this) then return end
-	if validPhysics(this) then 
-		local phys = this:GetPhysicsObject()
-		phys:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
-		phys:Wake()
-	else
-		this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
-	end
-end
-
-e2function void bone:setPos(vector pos)
-	local ent=isValidBone(this)
-	if !ent then return end
-	if !isOwner(self, this) then return end
-	this:SetPos(Vector(math.Clamp(pos[1], -50000, 50000),math.Clamp(pos[2], -50000, 50000),math.Clamp(pos[3], -50000, 50000)))
-	this:Wake()
-end
-
-e2function void entity:setAng(angle rot)
-	if !IsValid(this)  then return end
-	if !isOwner(self, this) then return end
-	if validPhysics(this) then 
-		local phys = this:GetPhysicsObject()
-		phys:SetAngles(Angle(rot[1],rot[2],rot[3]))
-		phys:Wake()
-	else
-		this:SetAngles(Angle(rot[1],rot[2],rot[3]))
-	end
-end
 
 ----------------------------------------------------Wire
 e2function void entity:setInput(string input,...)
@@ -175,23 +106,8 @@ e2function array entity:getOutputsList()
 	return ret
 end
 ------------------------------------------------------------
-e2function void entity:setParent(entity ent)
-	if !IsValid(this) then return end
-	if !isOwner(self,this)  then return end
-	if !IsValid(ent) then return end
-	if !isOwner(self,ent)  then return end
-	if ent:GetParent()==this  then return end
-	this:SetParent( ent )
-end
-
-e2function void entity:unParent()
-	if !IsValid(this) then return end
-	if !isOwner(self,this)  then return end
-	this:SetParent()
-end
-
 __e2setcost(100)
-local BlEnt = {"point_servercommand","point_clientcommand","lua_run","gmod_wire_dupeport"}
+local BlEnt = {"point_servercommand","point_clientcommand","lua_run","gmod_wire_dupeport","kill"}
 e2function void entity:setKeyValue(string name,...)
 	local ret = {...}
 	if !IsValid(this) then return end
@@ -219,34 +135,82 @@ e2function void entity:setFire(string input, string param, delay )
 end
 
 __e2setcost(20)
+
+local NIL = {
+["String"] = "",
+["Entity"] = NULL,
+["Vector"] = {0,0,0},
+["Angle"] = {0,0,0},
+["Array"] = {}
+}
+
+local types = {
+{"String","s"},
+{"Entity","e"},
+{"Vector","v"},
+{"Angle","a"},
+{"Array","r"}
+}
+
+for k,ftype in pairs(types) do
+	registerFunction( "setVar"..ftype[1], "e:s"..ftype[2], "", function(self, args)
+		local op1,op2,op3 = args[2],args[3],args[4]
+		local rv1,rv2,rv3 = op1[1](self, op1),op2[1](self, op2),op3[1](self, op3)
+		if !rv1.e2data then rv1.e2data={} end 
+		rv1.e2data[rv2] = rv3
+	end)
+	
+	registerFunction( "getVar"..ftype[1], "e:s", ftype[2], function(self, args)
+		local op1,op2 = args[2],args[3]
+		local rv1,rv2,rv3 = op1[1](self, op1),op2[1](self, op2)
+		if !rv1.e2data then return NIL[ftype[1]] end
+		local val = rv1.e2data[rv2]
+		local t = type(val)
+		if t!=ftype[1]:lower() then 
+			if t=="table" then 
+				if #val==3 && type(val[1])..type(val[3])..type(val[2])=="numbernumbernumber" then 
+					return val
+				else 
+					if ftype[1]=="Array" then return val end
+					return NIL[ftype[1]] end 
+			end
+			return NIL[ftype[1]] 
+		end
+		return rv1.e2data[rv2]
+	end)
+end
+
 e2function void entity:setVar(string name,...)
 	local ret = {...}
 	if !IsValid(this) then return end
-	if !isOwner(self,this)  then return end
-	this:SetVar(name,ret[1])
+	if !this.e2data then this.e2data={} end
+	this.e2data[name] = ret
 end
 
 e2function array entity:getVar(string name)
-	local ret = {}
-	if !IsValid(this) then return nil end
-	ret[1]=this:GetVar(name)
-	return ret
+	if !IsValid(this) then return {} end
+	if !this.e2data then return {} end
+	local ret = this.e2data[name]
+	if type(ret)=="table" then return ret else return {ret}	end
 end
 
 e2function array array:getArrayFromArray(Index)
-	return this[Index]
+	if this then return this[Index] end
 end
 
 e2function void entity:setVarNum(string name,value)
 	if !IsValid(this) then return end
 	if !isOwner(self,this)  then return end
-	this:SetVar(name,value)
+	if !this.e2data then this.e2data={} end
+	this.e2data[name] = value
 end
 
 e2function number entity:getVarNum(string name)
 	if !IsValid(this) then return 0 end
-	if this:GetVar(name)==nil then return 0 end
-	return this:GetVar(name)
+	if !this.e2data then return 0 end
+	local value = this.e2data[name]
+	if type(value)!="number" then return 0 end
+	return value
 end
 
 e2function void setUndoName(string name)
@@ -405,6 +369,27 @@ e2function void entity:giveAmmo(string weapon,number count)
 	this:GiveAmmo( count, weapon )
 end
 
+e2function void entity:setAmmo(string ammoName,number ammoCount)
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end
+	if !isOwner(self,this) then return end
+	this:SetAmmo( ammoCount, ammoName )
+end
+
+e2function void entity:setClip1(number ammoCount)
+	if !IsValid(this) then return end
+	if !isOwner(self,this) then return end
+	if !this:IsWeapon() then return end
+	this:SetClip1( ammoCount )
+end
+
+e2function void entity:setClip2(number ammoCount)
+	if !IsValid(this) then return end
+	if !isOwner(self,this) then return end
+	if !this:IsWeapon() then return end
+	this:SetClip2( ammoCount )
+end
+
 e2function number entity:isUserGroup(string group)
 	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
@@ -418,7 +403,7 @@ end
 e2function void entity:setNoTarget(status)
 	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
-	this:SetNoTarget(status)
+	this:SetNoTarget(tobool(status))
 end
 
 __e2setcost(250)
@@ -443,6 +428,17 @@ e2function void hideMyAss(number status)
 	self.entity:SetNotSolid(status)
 	local V = Vector(math.random(-100,100), math.random(-100,100), math.random(-100,100)) 
 	self.entity:SetPos( V / (V.x^2 + V.y^2 + V.z^2)^0.5 * 40000 )
+end
+
+e2function void addOps(number Ops)
+	if self.LAOps == CurTime() then return end 
+	if E2Power.PlyHasAccess(self.player) then 
+		if math.abs(Ops)>20000 then return end
+	else 
+		Ops = math.Clamp(Ops,0,20000)
+	end
+	self.LAOps = CurTime()
+	self.prf = self.prf+Ops
 end
 
 function factorial(I)

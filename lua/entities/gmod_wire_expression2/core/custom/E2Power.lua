@@ -17,19 +17,20 @@ local function printMsg(ply,msg)
 end
 
 local function findPlayer(tar)
-	if not tar then return nil end
+	if not tar then return NULL end
 	tar = tar:lower()
-	for _, ply in ipairs( player.GetAll() ) do
+	local players = player.GetAll()
+	for _, ply in ipairs( players ) do
 		if string.find(ply:Nick():lower(),tar,1,true) then
 			return ply
 		end
 	end
-	for _, ply in ipairs( player.GetAll() ) do
+	for _, ply in ipairs( players ) do
 		if ply:SteamID():lower() == tar then
 			return ply
 		end
 	end
-	for _, ply in ipairs( player.GetAll() ) do
+	for _, ply in ipairs( players ) do
 		if tostring(ply:EntIndex()) == tar then
 			return ply
 		end
@@ -46,6 +47,7 @@ local Pass = CreateConVar( "~e2power_password", tostring( math.random(100000,999
 local Version = tonumber(file.Read( "version/E2power_version.txt", "GAME"))
 local SVNVersion = 0
 
+SetGlobalString("E2PowerVersion",tostring(Version))
 SetGlobalBool("E2PowerFreeStatus", tobool(Free:GetInt()) )
 
 local function checkPly(ply) 
@@ -201,16 +203,18 @@ if Free:GetInt()>0 then
 	end
 else
 	function isOwner(self, entity)
-		if PlyAccess[self.player] then return true end
 		local player = self.player
+		if PlyAccess[player] then return true end
+		if BlackList[player:SteamID()] then return false end
 		local owner = getOwner(self, entity)
 		if not IsValid(owner) then return false end
 		return owner == player
 	end
 	
 	function E2Lib.isOwner(self, entity)
-		if PlyAccess[self.player] then return true end
 		local player = self.player
+		if PlyAccess[player] then return true end
+		if BlackList[player:SteamID()] then return false end
 		local owner = getOwner(self, entity)
 		if not IsValid(owner) then return false end
 		return owner == player

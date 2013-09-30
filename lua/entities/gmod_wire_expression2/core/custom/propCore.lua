@@ -1,6 +1,5 @@
 /******************************************************************************\
-Prop Core by MrFaul started by ZeikJT
-report any wishes, issues to Mr.Faul@gmx.de (GER or ENG pls)
+Prop Core by MrFaul started by ZeikJT update by [G-moder]FertNoN
 \******************************************************************************/
 
 PropCore = {}
@@ -10,6 +9,13 @@ local sbox_E2_PropCore = CreateConVar( "sbox_E2_PropCore", "2", FCVAR_ARCHIVE )
 
 local E2totalspawnedprops = 0
 local E2tempSpawnedProps = 0
+
+local abs = math.abs 
+local function IsValidPos(pos)
+	if (pos[1]~=pos[1]) or (pos[2]~=pos[2]) or (pos[3]~=pos[3]) then return false end
+	if abs(pos[1]) > 50000 or abs(pos[2]) > 50000 or abs(pos[3]) > 50000 then return false end
+	return true
+end
 
 function PropCore.ValidSpawn()
 	if E2tempSpawnedProps >= sbox_E2_maxPropsPerSecond:GetInt() then return false end
@@ -43,7 +49,10 @@ function PropCore.CreateProp(self,model,pos,angles,freeze)
 	if(!util.IsValidModel(model) || !util.IsValidProp(model) || not PropCore.ValidSpawn() )then
 		return nil
 	end
+	
 	if self.player:GetCount( "props" ) >= (GetConVarNumber("sbox_maxprops") > 0 and GetConVarNumber("sbox_maxprops") or self.player:GetCount( "props" )+1) then return nil end
+	if !IsValidPos(pos) then return nil end
+	
 	local prop
 	if self.data.propSpawnEffect then
 		prop = MakeProp( self.player, pos, angles, model, {}, {} )
@@ -82,8 +91,8 @@ end
 function PropCore.PhysManipulate(this, pos, rot, freeze, gravity, notsolid)
 	if(notsolid!=nil) then this:SetNotSolid(notsolid ~= 0) end
 	local phys = this:GetPhysicsObject()
-	if(pos!=nil) then phys:SetPos(Vector(pos[1],pos[2],pos[3])) end
-	if(rot!=nil) then phys:SetAngle(Angle(rot[1],rot[2],rot[3])) end
+	if(pos!=nil) then E2Lib.setPos( phys, Vector(pos[1],pos[2],pos[3]) ) end
+	if(rot!=nil) then E2Lib.setAng( phys,  Angle(rot[1],rot[2],rot[3]) ) end
 	if(freeze!=nil) then phys:EnableMotion(freeze == 0) end
 	if(gravity!=nil) then phys:EnableGravity(gravity~=0) end
 	phys:Wake()
@@ -94,6 +103,7 @@ function PropCore.PhysManipulate(this, pos, rot, freeze, gravity, notsolid)
 end
 
 --------------------------------------------------------------------------------
+__e2setcost(150)
 e2function entity propSpawn(string model, number frozen)
 	if not PropCore.ValidAction(self, nil, "spawn") then return nil end
 	return PropCore.CreateProp(self,model,self.entity:GetPos()+self.entity:GetUp()*25,self.entity:GetAngles(),frozen)
@@ -145,6 +155,7 @@ e2function number propCanSpawn()
 	return 1
 end
 --------------------------------------------------------------------------------
+__e2setcost(50)
 e2function void entity:propDelete()
 	if not PropCore.ValidAction(self, this, "delete") then return end
 	this:Remove()
@@ -213,16 +224,113 @@ e2function void entity:propSleep()
 	this:GetPhysicsObject():Sleep()
 end
 
+e2function void entity:propMove(status)
+	if not PropCore.ValidAction(self, this, "move") then return end
+	this:SetMoveType( tobool(status) and 6 or 0 )
+end
+
 --------------------------------------------------------------------------------
 
-local function parent_check( child, parent )
+
+e2function void entity:setPos(vector pos)
+	if !IsValid(this)  then return end
+	if !isOwner(self, this) then return end
+	if !IsValidPos(pos) then return end
+	if validPhysics(this) then 
+		local phys = this:GetPhysicsObject()
+		phys:SetPos(Vector(pos[1],pos[2],pos[3]))
+		phys:Wake()
+	else
+		this:SetPos(Vector(pos[1],pos[2],pos[3]))
+	end
+end
+
+e2function void entity:setAng(angle rot)
+	if !IsValid(this)  then return end
+	if !isOwner(self, this) then return end
+	if !IsValidPos(rot) then return end
+	if validPhysics(this) then 
+		local phys = this:GetPhysicsObject()
+		phys:SetAngles(Angle(rot[1],rot[2],rot[3]))
+		phys:Wake()
+	else
+		this:SetAngles(Angle(rot[1],rot[2],rot[3]))
+	end
+end
+
+e2function void entity:tele(vector pos)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	if !IsValidPos(pos) then return end
+	this:SetPos(Vector(pos[1],pos[2],pos[3]))
+end
+
+e2function void entity:setVel(vector vel)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	if validPhysics(this) then 
+	this:GetPhysicsObject():SetVelocity(Vector(vel[1],vel[2],vel[3])) 
+	else
+	this:SetVelocity(Vector(vel[1],vel[2],vel[3]))
+	end
+end
+
+local isValidBone = E2Lib.isValidBone
+e2function void bone:setPos(vector pos)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	if !IsValidPos(pos) then return end
+	this:SetPos(Vector(pos[1],pos[2],pos[3]))
+	this:Wake()
+end
+
+e2function void bone:boneGravity(status)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	local status = status > 0
+	this:EnableGravity(status) 
+end
+
+e2function void bone:setVel(vector vel)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	this:SetVelocity(Vector(vel[1],vel[2],vel[3])) 
+end
+
+e2function void bone:boneFreeze(number freeze)
+	local ent=isValidBone(this)
+	if !ent then return end
+	if !isOwner(self, this) then return end
+	this:EnableMotion(freeze == 0)
+end
+
+local function parent_check( child, parent, self )
 	while IsValid( parent ) do
 		if (child == parent) then
 			return false
 		end
 		parent = parent:GetParent()
+		self.prf = self.prf + 10
 	end
 	return true
+end
+
+e2function void entity:setParent(entity ent)
+	if !IsValid(this) then return end
+	if !isOwner(self,this)  then return end
+	if !IsValid(ent) then return end
+	if !isOwner(self,ent)  then return end
+	if !parent_check( this, ent, self ) then return end
+	this:SetParent( ent )
+end
+
+e2function void entity:unParent()
+	if !IsValid(this) then return end
+	if !isOwner(self,this)  then return end
+	this:SetParent()
 end
 
 e2function void entity:parentTo(entity target)
@@ -230,7 +338,7 @@ e2function void entity:parentTo(entity target)
 	if not IsValid(target) then return nil end
 	if(!isOwner(self, target)) then return end
 	if this == target then return end
-	if (!parent_check( this, target )) then return end
+	if !parent_check( this, target, self ) then return end
 	this:SetParent(target)
 end
 
