@@ -95,32 +95,12 @@ e2function void explosion(number damage, number radius, vector pos, entity attac
 	util.BlastDamage( inflictor, attacker, Vector(pos[1],pos[2],pos[3]), cl(radius,0,10000), damage )	
 end
 
-e2function void entity:blowUp(number damage, number radius)
-	if !IsValid(this)  then return end
-	if !isOwner(self, this)  then return end
-	util.BlastDamage( this, self.player, this:GetPos(), cl(radius,0,10000), damage )	
-	this:Remove()
-end
-
 e2function void explosion(vector pos)
 	local pos=Vector(pos[1],pos[2],pos[3])
 	util.BlastDamage( self.player, self.player, pos, 150, 100)
 	local effectdata = EffectData()
 	effectdata:SetOrigin( pos )
 	util.Effect( "explosion" , effectdata  )
-end
-
-e2function void entity:blowUp()
-	if !IsValid(this)  then return end
-	if !isOwner(self, this)  then return end
-	local radius=(this:OBBMaxs() - this:OBBMins())
-	radius = (radius.x^2 + radius.y^2 + radius.z^2) ^ 0.5
-	local pos=this:GetPos()
-	util.BlastDamage( this, self.player, pos, radius*10, radius*3)	
-	local effectdata = EffectData()
-	effectdata:SetOrigin( pos )
-	util.Effect( "explosion" , effectdata  )
-	this:Remove()
 end
 
 local dmgEffect = {

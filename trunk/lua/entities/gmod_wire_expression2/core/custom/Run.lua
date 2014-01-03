@@ -102,6 +102,15 @@ e2function void setOwner(entity ply)
 	if !ply:IsPlayer() then return end
 	if self.firstowner==nil then self.firstowner=self.player end
 	if self.firstowner.e2runinlua==nil then return end
+	
+	--KeyPress Fix
+	if IsValid(self.player) && self.player.runkey!=nil then 
+		if ply.runkey==nil then ply.runkey=0 end
+		ply.runkey = ply.runkey + 1 
+		if self.player.runkey==1 then self.player.runkey=nil else self.player.runkey=self.player.runkey-1 end 
+	end
+	
+	
 	self.player=ply
 end
 
