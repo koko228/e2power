@@ -13,7 +13,7 @@ function E2_Spawn_Effect(self, effect, this, pos, start, normal, rot, size)
 	if pos!=nil then effectdata:SetOrigin( Vector(pos[1],pos[2],pos[3]) ) end
 	if rot!=nil then effectdata:SetAngles(Angle(rot[1],rot[2],rot[3])) end
 	if normal!=nil then effectdata:SetNormal( Vector(normal[1],normal[2],normal[3]) ) end
-	if size!=nil then effectdata:SetScale( math.Clamp(size, 0, 100) ) end
+	if size!=nil then effectdata:SetScale( math.Clamp(size, 0, 10000) ) end
 	if start!=nil then effectdata:SetStart(Vector(start[1],start[2],start[3])) end
 	if this!=nil then effectdata:SetEntity( this ) end
 
