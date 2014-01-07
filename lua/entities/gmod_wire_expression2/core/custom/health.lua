@@ -49,6 +49,11 @@ e2function void entity:setMaxHealth(number Health)
 	this:SetHealth(Health)
 end
 
+e2function number entity:maxHealth()
+    if !IsValid(this) then return 0 end
+	return this:GetMaxHealth() or 0
+end
+
 __e2setcost(250)
 e2function void entity:shootTo(vector start,vector dir,number spread,number force,number damage,string effect)
 	if !IsValid(this) then return end

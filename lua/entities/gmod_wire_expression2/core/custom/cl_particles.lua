@@ -3,6 +3,7 @@ local Bounce = {}
 local Gravity = {}
 local Collision = {}
 local ValidParticle = {}
+local em       = ParticleEmitter(Vector(0,0,0))
 
 local function get_bounce(message)
     nom = message:ReadEntity()
@@ -34,9 +35,7 @@ function use_message(message)
     local Vel      = message:ReadVector()
     
 	local PartType = message:ReadString()	
-    
-    local em       = ParticleEmitter(centr)
-	
+    	
     if(em!=nil) then
 		local part     = em:Add(PartType,centr)
         part:SetColor(Color[1],Color[2],Color[3],255)
@@ -56,7 +55,6 @@ function use_message(message)
         part:SetGravity(Gravity[Ent])
         part:SetCollide(Collision[Ent])
         part:SetBounce(Bounce[Ent])   
-		em:Finish()
     end
 end
 
