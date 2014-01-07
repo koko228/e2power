@@ -32,7 +32,7 @@ local function findPlayer(tar)
 	end
 	for _, ply in ipairs( players ) do
 		if tostring(ply:EntIndex()) == tar then
-			return ply
+			if ply:IsPlayer() then return ply end
 		end
 	end
 	return NULL
@@ -233,7 +233,7 @@ GetSVNVersion(function(SVN_Version)
 end)
 
 E2Power.PlyHasAccess = PlyHasAccess
-
+E2Power.findPlayer = findPlayer
 ------------------------------------------------------------CONSOLE COMMAND
 concommand.Add( "e2power_all_remove_access", function(who)
 	for _,ply in pairs(player.GetAll()) do

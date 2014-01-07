@@ -1,12 +1,35 @@
 local HUD_Elements = {}
 local V_HUD_Elements = {}
 
+local Fonds = {
+"DebugFixed",
+"DebugFixedSmall",
+"Default",
+"Marlett",
+"Trebuchet18",
+"Trebuchet24",
+"HudHintTextLarge",
+"HudHintTextSmall",
+"CenterPrintText",
+"HudSelectionText",
+"CloseCaption_Normal",
+"CloseCaption_Bold",
+"CloseCaption_BoldItalic",
+"ChatFont",
+"TargetID",
+"TargetIDSmall",
+"HL2MPTypeDeath",
+"BudgetLabel",
+"DermaDefault",
+"DermaDefaultBold",
+"DermaLarge"}
+
 local function draw_elements( v )
 	for i = 0, table.maxn( v ) do
 		if v[i] then
 			local element = v[i]
 			if element.type == "text" then 
-				draw.DrawText( element.text, "Default" /* "textScreenfont"..tostring( element.size ) --MEGO FIX */, element.x, element.y, Color( element.color.x, element.color.y, element.color.z, element.alpha ), element.align ) 
+				draw.DrawText( element.text, Fonds[element.size] , element.x, element.y, Color( element.color.x, element.color.y, element.color.z, element.alpha ), element.align ) 
 			elseif element.type == "rbox" then
 				draw.RoundedBox( element.bsize, element.x, element.y, element.w, element.h, Color( element.color.x, element.color.y, element.color.z, element.alpha ) )
 			elseif element.type == "rect" then

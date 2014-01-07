@@ -1,4 +1,4 @@
-
+local findPlayer = E2Power.findPlayer
 local PlyHasAccess = E2Power.PlyHasAccess 
 concommand.Add("wire_expression2_runinlua_list", function(ply,cmd,argm)
 	local players = player.GetAll()
@@ -11,24 +11,14 @@ end )
 
 concommand.Add("wire_expression2_runinlua_adduser", function(ply,cmd,argm)
 	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
-	target = argm[1]
-	local players = player.GetAll()
-	for _, player in ipairs( players ) do
-		if player:Nick() == target then
-			player.e2runinlua=PlyHasAccess(player)			
-		end
-	end
+	local player = findPlayer(argm[1])
+	if player:IsValid() then player.e2runinlua=PlyHasAccess(player)	end
 end )
 
 concommand.Add("wire_expression2_runinlua_removeuser", function(ply,cmd,argm)
 	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
-	target = argm[1]
-	local players = player.GetAll()
-	for _, player in ipairs( players ) do
-		if player:Nick() == target then
-			player.e2runinlua=false
-		end
-	end
+	local player = findPlayer(argm[1])
+	if player:IsValid() then player.e2runinlua=false end
 end )
 
 local words = {}

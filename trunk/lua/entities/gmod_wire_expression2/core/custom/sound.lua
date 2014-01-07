@@ -6,7 +6,6 @@ local tempSound = 0
 local function SoundURL(cmd, ent, id, volume, pos, url, noplay, tar, ply)	
 	plys = RecipientFilter()
 	if ply==nil then plys:AddAllPlayers() else plys:AddPlayer(ply) end
-	
 	umsg.Start("e2soundURL", plys)
 		umsg.Entity(ent)
 		umsg.Entity(ent:GetPlayer())
@@ -18,6 +17,7 @@ local function SoundURL(cmd, ent, id, volume, pos, url, noplay, tar, ply)
 		end
 		
 		if cmd=="load" then 
+			if !IsValid(tar) and (pos==nil || (pos[1]==0 and pos[2]==0 and pos[3]==0)) then umsg.Char(-1) umsg.End() return end
 			if tempSound>MaxSoundPerSecond:GetInt() then umsg.Char(-1) umsg.End() return end
 			tempSound=tempSound+1
 			if tempSound==1 then timer.Simple( 1, function() tempSound=0 end) end
