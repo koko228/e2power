@@ -349,3 +349,9 @@ e2function vector2 entity:getfingerPoserVar(index)
 	end
 	return Vec
 end
+
+__e2setcost(20)
+e2function number entity:isNoCollideAll()
+    if !IsValid(this) then return end
+    return this:GetCollisionGroup() == COLLISION_GROUP_WORLD and 1 or 0 
+end

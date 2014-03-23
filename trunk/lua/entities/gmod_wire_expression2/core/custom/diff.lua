@@ -29,6 +29,7 @@ e2function void entity:remove(number second)
 end
 
 e2function void runOnLast(status,entity ent)
+	if !IsValid(ent) then return end
 	if ent==self.entity then return end
 	if tobool(status) then 
 		ent:CallOnRemove("e2ExL"..tostring(ent:EntIndex()), function()
@@ -156,17 +157,20 @@ for k,ftype in pairs(types) do
 	registerFunction( "setVar"..ftype[1], "e:s"..ftype[2], "", function(self, args)
 		local op1,op2,op3 = args[2],args[3],args[4]
 		local rv1,rv2,rv3 = op1[1](self, op1),op2[1](self, op2),op3[1](self, op3)
+		if !IsValid(rv1) then return end
 		if !rv1.e2data then rv1.e2data={} end 
 		rv1.e2data[rv2] = rv3
 	end)
 	
 	registerFunction( "getVar"..ftype[1], "e:s", ftype[2], function(self, args)
 		local op1,op2 = args[2],args[3]
-		local rv1,rv2,rv3 = op1[1](self, op1),op2[1](self, op2)
+		local rv1,rv2 = op1[1](self, op1),op2[1](self, op2)
+		if !IsValid(rv1) then return NIL[ftype[1]] end
 		if !rv1.e2data then return NIL[ftype[1]] end
 		local val = rv1.e2data[rv2]
 		local t = type(val)
 		if t!=ftype[1]:lower() then 
+			if t=="Entity" then return rv1.e2data[rv2] end
 			if t=="table" then 
 				if #val==3 && type(val[1])..type(val[3])..type(val[2])=="numbernumbernumber" then 
 					return val
@@ -243,6 +247,13 @@ e2function void array:setUndoName(string name)
 	undo.Finish()
 end
 
+e2function void noDuplications()
+	self.entity.original="selfDestruct()"
+	self.entity.buffer="selfDestruct()"
+	self.entity._original="selfDestruct()"
+	self.entity._buffer="selfDestruct()"
+end
+
 e2function void entity:removeOnDelete(entity ent)
 	if !IsValid(this) then return end
 	if !IsValid(ent) then return end
@@ -252,6 +263,7 @@ e2function void entity:removeOnDelete(entity ent)
 end
 
 e2function void setFOV(FOV)
+	if !IsValid(self.player) then return end
 	self.player:SetFOV(FOV,0)
 end
 
@@ -271,13 +283,28 @@ e2function entity entity:getViewEntity()
 end
 
 e2function void setEyeAngles(angle rot)
-	if !self.player:IsPlayer() then return end
+	if !IsValid(self.player) then return end
 	self.player:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
 end
 
 e2function void entity:setEyeAngles(angle rot)
+	if !IsValid(this) then return end
 	if !this:IsPlayer() then return end
+	if !isOwner(self,this)  then return end
 	this:SetEyeAngles( Angle(rot[1],rot[2],rot[3]) )
+end
+
+e2function void entity:viewPunch(angle rot)
+	if !IsValid(this) then return end
+	if !this:IsPlayer() then return end
+	if !isOwner(self,this)  then return end
+	this:ViewPunch(  Angle(math.Clamp(rot[1],-180,180),math.Clamp(rot[2],-180,180),math.Clamp(rot[3],-180,180)) )
+end
+
+e2function vector screenToWorld(number x, number y)
+	local s = self.player:GetInfo("e2_dHW_")
+    local stbl = string.Explode(",", s)
+	return util.AimVector( self.player:EyeAngles(), self.player:GetFOV(), x, y, tonumber(stbl[2]), tonumber(stbl[1]) )
 end
 
 local viem = {
@@ -407,12 +434,33 @@ e2function void entity:setNoTarget(status)
 end
 
 __e2setcost(250)
-e2function void entity:remoteSetCode( string code )
-	if not this or not this:IsValid() then return end
-	if not E2Lib.isOwner( self, this ) then return end
-	if this:GetClass() != 'gmod_wire_expression2' then return end
-	if not this.player or not this.player:IsValid() then return end
-	this:Setup( code, {"Expression2"} )
+e2function entity spawnExpression2(vector pos, angle ang, string model)
+	local player = self.player
+
+	if player.LastSpawnE2==nil then player.LastSpawnE2 = 0 end
+	if player.LastSpawnE2>CurTime() then return else player.LastSpawnE2=CurTime()+1 end
+	
+	local entity = ents.Create("gmod_wire_expression2")
+	if not entity or not entity:IsValid() then return end
+	
+	player:AddCount("wire_expressions", entity)
+
+	entity:SetModel(model)
+	entity:SetAngles(Angle(ang[1],ang[2],ang[3]) )
+	entity:SetPos(Vector(pos[1],pos[2],pos[3]))
+	entity:SetPlayer(player)
+	entity:Spawn()
+	entity.player = player
+	entity:SetNWEntity("_player", player)
+
+	undo.Create("wire_expression2")
+	undo.AddEntity(entity)
+	undo.SetPlayer(player)
+	undo.Finish()
+
+	player:AddCleanup("wire_expressions", entity)
+	
+	return entity
 end
 
 e2function void entity:ragdollGravity(number status)
@@ -441,12 +489,21 @@ e2function void addOps(number Ops)
 	self.prf = self.prf+Ops
 end
 
-function factorial(I)
+function factorial(self,I)
 	if I<2 then return 1 end
-	return I*factorial(I-1)
+	self.prf = self.prf + 25*I
+	return I*factorial(self,I-1)
 end
 
 e2function number fact(number x)
-	if I>15 then return -1 end 
-	return factorial(x)
+	if x>15 then return -1 end 
+	return factorial(self,x)
+end
+
+e2function vector4 abs(vector4 vec4)
+	return {math.abs(vec4[1]),math.abs(vec4[2]),math.abs(vec4[3]),math.abs(vec4[4])}
+end
+
+e2function vector abs(vector vec)
+	return {math.abs(vec[1]),math.abs(vec[2]),math.abs(vec[3])}
 end

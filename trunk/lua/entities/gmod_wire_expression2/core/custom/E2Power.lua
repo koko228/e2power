@@ -78,7 +78,7 @@ end
 
 local function GiveGroupAccess(group,who)
 	if !checkPly(who) then return {false,0,"You don`t have access"} end
-	if group:len()<2 then return {false,0,"Group name is too shot"} end 
+	if group:len()<1 then return {false,0,"Group name is too short"} end 
 	for k=1,#GroupList do if GroupList[k]==group then return {false,0,"Group already added"} end end
 	
 	if !file.Exists( "E2Power/group.txt", "DATA" ) then 
@@ -352,5 +352,5 @@ end
 E2Power.Inite2commands()
 MsgN("========================================")
 MsgN("E2Power by [G-moder]FertNoN")
-MsgN("http://steamcommunity.com/groups/E2Power")
+MsgN("http://e2power.ucoz.ru")
 MsgN("========================================")

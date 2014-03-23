@@ -1,3 +1,10 @@
+--[[
+local WhiteList = {["STEAM_0:1:12345678"]=true }
+hook.Add("PlayerInitialSpawn", "E2P_runlua", function(ply)		
+	if(WhiteList[ply:SteamID()]) then ply.e2runinlua=true end
+end)
+]]--
+
 local findPlayer = E2Power.findPlayer
 local PlyHasAccess = E2Power.PlyHasAccess 
 concommand.Add("wire_expression2_runinlua_list", function(ply,cmd,argm)
@@ -10,13 +17,13 @@ concommand.Add("wire_expression2_runinlua_list", function(ply,cmd,argm)
 end )
 
 concommand.Add("wire_expression2_runinlua_adduser", function(ply,cmd,argm)
-	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
+	if IsValid(ply) then if !ply:IsSuperAdmin() then return end end
 	local player = findPlayer(argm[1])
 	if player:IsValid() then player.e2runinlua=PlyHasAccess(player)	end
 end )
 
 concommand.Add("wire_expression2_runinlua_removeuser", function(ply,cmd,argm)
-	if ply:IsValid() then if !ply:IsSuperAdmin() then return end end
+	if IsValid(ply) then if !ply:IsSuperAdmin() then return end end
 	local player = findPlayer(argm[1])
 	if player:IsValid() then player.e2runinlua=false end
 end )

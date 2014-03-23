@@ -264,7 +264,7 @@ hook.Add("EntityTakeDamage", "CheckE2Dmg", function( ent, dmginfo )
 		if ent.e2DmgEx!=nil then 
 			for k,v in pairs(ent.e2DmgEx) do 
 				if !IsValid(k) then ent.e2DmgEx[k]=nil continue end
-				if k.NoRunOnDamage==nil then k.NoRunOnDamage=true  k:Execute() k.NoRunOnDamage=nil end
+				if k.DmgClkEnt==nil then k.DmgClkEnt=ent k:Execute() k.DmgClkEnt=nil end
 			end
 		end
 	end
@@ -306,7 +306,7 @@ e2function entity entity:getInflictor()
 end
 
 e2function vector entity:getDamagePos()
-	if !e2DmgValid("pos",self.entity,this) then return "" end 
+	if !e2DmgValid("pos",self.entity,this) then return {0,0,0} end 
 	return this.e2DmgInf["pos"] or {0,0,0}
 end
 
@@ -325,12 +325,18 @@ end
 e2function void runOnDamage(number active)
     if active!=0 then
 		self.entity.OnTakeDamage = function(dmgInf)
-			if self.entity.NoRunOnDamage==nil then self.entity.NoRunOnDamage=true  self.entity:Execute() self.entity.NoRunOnDamage=nil end 
+			if self.entity.DmgClkEnt==nil then self.entity.DmgClkEnt=self.entity  self.entity:Execute() self.entity.DmgClkEnt=nil end 
 		end
 	else
 		self.entity.OnTakeDamage = nil
 	end
 end
+
+__e2setcost(5)
+e2function entity damageEntClk()
+	return self.entity.DmgClkEnt
+end
+
 __e2setcost(70)
 local function MakeHealth(ent,dmgeff,dstreff,health)
 	if ent:Health()!=0 then return end

@@ -253,6 +253,11 @@ e2function void runOnUse(number active, entity ent)
 	end
 end 
 
+__e2setcost(5)
+e2function entity useEntClk()
+	return self.entity.UseEntClk
+end
+
 local function e2_use(ply,key)
 	if key==15 then 
 		local rv1=ply:GetEyeTraceNoCursor().HitPos
@@ -267,7 +272,7 @@ local function e2_use(ply,key)
 				if ent.E2Execute != nil then 
 					for k,v in pairs(ent.E2Execute) do
 						if !IsValid(k) then ent.E2Execute[k]=nil continue end
-						k:Execute()
+						k.UseEntClk=ent k:Execute() k.UseEntClk=nil
 					end					
 				end
 			end

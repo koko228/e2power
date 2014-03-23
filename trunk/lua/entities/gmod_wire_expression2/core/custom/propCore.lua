@@ -229,6 +229,20 @@ e2function void entity:propMove(status)
 	this:SetMoveType( tobool(status) and 6 or 0 )
 end
 
+e2function void entity:propBuoyancy(number buoyancy)
+	if not PropCore.ValidAction(self, this, "buoyancy") then return end
+	this:GetPhysicsObject():SetBuoyancyRatio( math.Clamp(buoyancy/100,0,1) )
+end
+
+e2function void entity:propDamping(number linear,number angular)
+	if not PropCore.ValidAction(self, this, "damping") then return end
+	this:GetPhysicsObject():SetDamping( math.Clamp(linear,-10,10000000) , math.Clamp(angular,-10,10000000) )
+end
+
+--------------------------------------------------------------------------------
+
+
+
 --------------------------------------------------------------------------------
 
 
@@ -273,6 +287,12 @@ e2function void entity:setVel(vector vel)
 	else
 	this:SetVelocity(Vector(vel[1],vel[2],vel[3]))
 	end
+end
+
+e2function void entity:setPersistent(number status)
+	if !IsValid(this)  then return end
+	if !isOwner(self,this)  then return end
+	this:SetPersistent(tobool(status))
 end
 
 local isValidBone = E2Lib.isValidBone
@@ -434,6 +454,38 @@ e2function number isValidProp(string model)
 	if util.IsValidProp(model) then return 1 end
 	return 0
 end
+
+e2function number entity:isPersistent()
+	if !IsValid(this) then return 0 end
+	return this:GetPersistent() and 1 or 0
+end
+
+e2function vector2 entity:getDamping()
+	if !IsValid(this) then return {0,0} end
+	local phys = this:GetPhysicsObject()
+	if IsValid(phys) then return {phys:GetSpeedDamping(),phys:GetRotDamping()} end
+	return {0,0}
+end
+
+e2function number entity:isAsleep()
+	if !IsValid(this) then return 0 end
+	local phys = this:GetPhysicsObject()
+	if IsValid(phys) then return phys:IsAsleep() and 1 or 0 end
+	return 0
+end
+
+e2function number entity:gravity()
+	if !IsValid(this) then return 0 end
+	return this:GetGravity() and 1 or 0
+end
+
+
+
+
+
+
+
+
 
 
 
